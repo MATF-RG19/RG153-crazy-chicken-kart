@@ -30,6 +30,8 @@ static void onTimer(int id);
 
 static void lightInitialization(void);
 static void drawKart(void);
+static void drawSeat(void);
+static void drawTires(void);
 
 //Promenljive
 static float animationParameter = 0;
@@ -62,7 +64,7 @@ int main(int argc, char **argv){
 
 
     //Postavljanje pozadine na crnu boju
-    glClearColor(0, 0, 0, 0);
+    glClearColor(0.6, 0.6, 0.6, 0);
     glutMainLoop();
 
 
@@ -146,18 +148,18 @@ void on_display() {
     //Postavljanje pogleda
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(-3*sin(animationParameter/360), 3, 3*cos(animationParameter/360),
+    gluLookAt(4*sin(animationParameter/360), 3, 4*cos(animationParameter/360),
               0, 0, 0,
               0, 1, 0);
  
     //draw_axes(50);
-    glScalef(3,3,3);
+    glScalef(3,3,2.5);
     drawKart();
     glutSwapBuffers();
 }
 
 void lightInitialization(){
-  float lightPosition[] = { 0, 8, 8, 0};
+  float lightPosition[] = { 8, 8, 0, 0};
   float lightAmbient[] = { 0.1, 0.1, 0.1, 0.1,1};
   float lightDiffuse[] = { 1, 1, 1, 1};
   float lightSpecular[] = { 0.9, 0.9, 0.9, 1};
@@ -202,28 +204,6 @@ void setNormalAndVertexTriangles(TACKA a,TACKA b,TACKA c){
 
 }
 
-void drawSeat(){
-
-
-  glPushMatrix();
-    glColor3f(0.7,0.7,0.7);
-    GLUquadric* quad13 = gluNewQuadric();
-    glTranslatef(-0.3,0.2,0);
-    glRotatef(90,0,1,0);
-    gluCylinder(quad13,0.16,0.16,0.18,20,20);
-    gluCylinder(quad13,0.1,0.1,0.18,20,20);
-  glPopMatrix();
-
-  glPushMatrix();
-    glColor3f(0.7,0.7,0.7);
-    glTranslatef(-0.3,0.2,0);
-    glRotatef(90,0,1,0);
-    gluDisk(quad13,0.1,0.16,20,20);
-    glTranslatef(0,0,0.18);
-    gluDisk(quad13,0.1,0.16,20,20);
-  glPopMatrix();
-
-}
 
 TACKA a,b,c,d;
 void drawKart(){
@@ -320,7 +300,7 @@ void drawKart(){
     setNormalAndVertexQuads(a,b,c,d);
 
    /* 
-    STARO SEDISTE
+    STARO SEDISTE(Previse mi je zao da obrisem deo koda :'(  )
     glColor3f(0.4,0.4,0.4);
     //Donji deo sedista
     a={-0.4,0.08,0.1};
@@ -330,8 +310,8 @@ void drawKart(){
     setNormalAndVertexQuads(a,b,c,d);
 
     a={-0.4,0.08,0.15};
-    b={-0.1,0.08,0.15};
-    c={-0.1,0.12,0.15};
+    b={-0.1,0.08,0.15};                             
+    c={-0.1,0.12,0.15};                             
     d={-0.4,0.12,0.15};
     setNormalAndVertexQuads(a,b,c,d);
 
@@ -394,8 +374,6 @@ void drawKart(){
 
     */
 
-
-
   glEnd();
 
   glBegin(GL_TRIANGLES);
@@ -452,26 +430,25 @@ void drawKart(){
 
     glColor3f(0.3,0.3,0.3);
     GLUquadric* quad = gluNewQuadric();
-    glTranslatef(0.05,0.2,0);
+    glTranslatef(0.04,0.2,0);
     glRotatef(90,1,1,0);
-    gluCylinder(quad,0.01,0.01,0.1,20,20);
+    gluCylinder(quad,0.01,0.01,0.15,20,20);
 
   glPopMatrix();
 
   glPushMatrix();
     glColor3f(0.3,0.3,0.3);
-    glTranslatef(0.05,0.2,0);
+    glTranslatef(0.04,0.2,0);
     glRotatef(90,1,1,0);
-    glutSolidTorus(0.009,0.04,20,20);
+    glutSolidTorus(0.01,0.05,20,20);
 
   glPopMatrix();
 
   glPushMatrix();
     glColor3f(0.3,0.3,0.3);
-    GLUquadric* quadd = gluNewQuadric();
-    glTranslatef(0.05,0.2,0);
+    glTranslatef(0.04,0.2,0);
     glRotatef(90,1,1,0);
-    gluDisk(quadd,0,0.01,20,20);
+    gluDisk(quad,0,0.01,20,20);
   glPopMatrix();
 
 
@@ -486,7 +463,7 @@ void drawKart(){
   glPopMatrix();
 
 
-  //Gas,kocnica,kvacilo 
+  //Kocnica
 
   glPushMatrix();
     glColor3f(0.2,0.2,0.2);
@@ -496,6 +473,8 @@ void drawKart(){
     glutSolidCube(0.1);
   glPopMatrix();
 
+  //Gas
+
   glPushMatrix();
     glColor3f(0.2,0.2,0.2);
     glTranslatef(0.04,0.1,0.05);
@@ -503,6 +482,8 @@ void drawKart(){
     glScalef(0.6,0.5,0.3);
     glutSolidCube(0.1);
   glPopMatrix();
+
+  //Kvacilo
 
   glPushMatrix();
     glColor3f(0.2,0.2,0.2);
@@ -518,60 +499,59 @@ void drawKart(){
 
   glPushMatrix();
     glColor3f(0.7,0.7,0.7);
-    GLUquadric* quad2 = gluNewQuadric();
     glTranslatef(-0.4,0.2,-0.25);
     glRotatef(90,1,1,0);
-    gluCylinder(quad2,0.02,0.02,0.2,20,20);
+    gluCylinder(quad,0.02,0.02,0.2,20,20);
+    gluDisk(quad,0,0.02,20,20);
   glPopMatrix();
 
   glPushMatrix();
     glColor3f(0.7,0.7,0.7);
-    GLUquadric* quad3 = gluNewQuadric();
     glTranslatef(-0.46,0.2,-0.25);
     glRotatef(90,1,1,0);
-    gluCylinder(quad3,0.02,0.02,0.2,20,20);
+    gluCylinder(quad,0.02,0.02,0.2,20,20);
+    gluDisk(quad,0,0.02,20,20);
   glPopMatrix();
 
   glPushMatrix();
     glColor3f(0.7,0.7,0.7);
-    GLUquadric* quad4 = gluNewQuadric();
     glTranslatef(-0.52,0.2,-0.25);
     glRotatef(90,1,1,0);
-    gluCylinder(quad4,0.02,0.02,0.2,20,20);
+    gluCylinder(quad,0.02,0.02,0.2,20,20);
+    gluDisk(quad,0,0.02,20,20);
   glPopMatrix();
 
 
   glPushMatrix();
     glColor3f(0.7,0.7,0.7);
-    GLUquadric* quad5 = gluNewQuadric();
     glTranslatef(-0.4,0.2,0.25);
     glRotatef(90,1,1,0);
-    gluCylinder(quad5,0.02,0.02,0.2,20,20);
+    gluCylinder(quad,0.02,0.02,0.2,20,20);
+    gluDisk(quad,0,0.02,20,20);
   glPopMatrix();
 
   glPushMatrix();
     glColor3f(0.7,0.7,0.7);
-    GLUquadric* quad6 = gluNewQuadric();
     glTranslatef(-0.46,0.2,0.25);
     glRotatef(90,1,1,0);
-    gluCylinder(quad6,0.02,0.02,0.2,20,20);
+    gluCylinder(quad,0.02,0.02,0.2,20,20);
+    gluDisk(quad,0,0.02,20,20);
   glPopMatrix();
 
   glPushMatrix();
     glColor3f(0.7,0.7,0.7);
-    GLUquadric* quad7 = gluNewQuadric();
     glTranslatef(-0.52,0.2,0.25);
     glRotatef(90,1,1,0);
-    gluCylinder(quad7,0.02,0.02,0.2,20,20);
+    gluCylinder(quad,0.02,0.02,0.2,20,20);
+    gluDisk(quad,0,0.02,20,20);
   glPopMatrix();
 
   //Retrovizori
 
   glPushMatrix();
   glColor3f(0.3,0.3,0.3);
-  GLUquadric* quad8 = gluNewQuadric();
   glTranslatef(0.15,0.15,0.25);
-  gluCylinder(quad8,0.01,0.01,0.03,20,20);
+  gluCylinder(quad,0.01,0.01,0.03,20,20);
   glPopMatrix();
 
   glPushMatrix();
@@ -583,9 +563,8 @@ void drawKart(){
 
   glPushMatrix();
   glColor3f(0.3,0.3,0.3);
-  GLUquadric* quad9 = gluNewQuadric();
   glTranslatef(0.15,0.15,-0.28);
-  gluCylinder(quad9,0.01,0.01,0.03,20,20);
+  gluCylinder(quad,0.01,0.01,0.03,20,20);
   glPopMatrix();
 
   glPushMatrix();
@@ -596,48 +575,145 @@ void drawKart(){
   glPopMatrix();
 
 
-  //Tockovi
-  /*
+  // Tockovi
   glPushMatrix();
-    glColor3f(0,0,0);
-    GLUquadric* quad10 = gluNewQuadric();
-    glTranslatef(0.15,0.05,0.33);
-    gluCylinder(quad3,0.08,0.08,0.06,20,20);
-    glColor3f(1,0,0);
-    gluCylinder(quad3,0.05,0.05,0.06,20,20);
+  drawTires();
+  glPopMatrix();
+
+  //Motor
+
+  glPushMatrix();
+    glColor3f(0.4,0.4,0.4);
+    glTranslatef(-0.4,0.12,0);
+    glutSolidCube(0.1);
+    glScalef(1,0.1,1.5);
+    glutSolidCube(0.1);
+    glTranslatef(0,0.25,0);
+    glutSolidCube(0.1);
+    glTranslatef(0,0.25,0);
+    glutSolidCube(0.1);
+    glTranslatef(0,-0.75,0);
+    glutSolidCube(0.1);
+  glPopMatrix();
+
+  //Spojler
+
+  glPushMatrix();
+    glColor3f(0,0,1);
+    glTranslatef(-0.55,0.22,0.12);
+    glRotatef(90,1,0,0); 
+    glRotatef(30,0,1,0);  
+    gluCylinder(quad,0.01,0.01,0.2,20,20);
   glPopMatrix();
 
   glPushMatrix();
-    glColor3f(0,0,0);
-    GLUquadric* quad12 = gluNewQuadric();
-    glTranslatef(0.15,0.05,0.33);
-    gluDisk(quad12,0.05,0.08,20,20);
-    glTranslatef(0,0,0.06);
-    gluDisk(quad12,0.05,0.08,20,20);
-    glColor3f(1,0,0);
-    gluDisk(quad12,0,0.05,20,20);
-
+    glTranslatef(-0.55,0.22,-0.12);
+    glRotatef(90,1,0,0); 
+    glRotatef(30,0,1,0);  
+    gluCylinder(quad,0.01,0.01,0.2,20,20);
   glPopMatrix();
 
   glPushMatrix();
-    glColor3f(0.7,0.7,0.7);
-    glTranslatef(-0.3,0.05,0.33);
-    gluCylinder(quad3,0.07,0.07,0.05,20,20);
-    gluCylinder(quad3,0.04,0.04,0.05,20,20);
+    glTranslatef(-0.55,0.22,0);
+    glScalef(0.7,0.1,4);
+    glutSolidCube(0.1);
+
+  glPopMatrix();
+
+
+  // Vozac
+
+  // Noge
+
+  glPushMatrix();
+    glColor3f(0,0,1);
+    glTranslatef(0.04,0.1,0.05);
+    glRotatef(50,0,0,1);
+    glScalef(0.4,2.5,0.25);
+    glutSolidCube(0.1);
   glPopMatrix();
 
   glPushMatrix();
-    glColor3f(0.7,0.7,0.7);
-    glTranslatef(-0.3,0.05,0.33);
-    gluDisk(quad12,0.04,0.07,20,20);
-    glTranslatef(0,0,0.05);
-    gluDisk(quad12,0.04,0.07,20,20);
-
+    glColor3f(0,0,1);
+    glTranslatef(0.04,0.1,-0.05);
+    glRotatef(50,0,0,1);
+    glScalef(0.4,2.5,0.25);
+    glutSolidCube(0.1);
   glPopMatrix();
 
-  */
+  glPushMatrix();
+    glColor3f(0,0,1);
+    glTranslatef(-0.1,0.14,0.05);
+    glRotatef(-60,0,0,1);
+    glScalef(0.4,1.5,0.25);
+    glutSolidCube(0.1);
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0,0,1);
+    glTranslatef(-0.1,0.14,-0.05);
+    glRotatef(-60,0,0,1);
+    glScalef(0.4,1.5,0.25);
+    glutSolidCube(0.1);
+  glPopMatrix();
+
+  //Torso
+
+  glPushMatrix();
+    glColor3f(0.2,0.4,0);
+    glTranslatef(-0.15,0.2,0);
+    glScalef(0.5,2,1.5);
+    glutSolidCube(0.1);
+  glPopMatrix();
+
+  //Ruke
+
+  glPushMatrix();
+    glColor3f(0.2,0.4,0);
+    glTranslatef(-0.1,0.25,0.089);
+    glRotatef(60,0,0,1);
+    glScalef(0.3,1.2,0.25);
+    glutSolidCube(0.1);
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0.2,0.4,0);
+    glTranslatef(-0.1,0.25,-0.089);
+    glRotatef(60,0,0,1);
+    glScalef(0.3,1.2,0.25);
+    glutSolidCube(0.1);
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0.2,0.4,0);
+    glTranslatef(-0.023,0.205,-0.075);
+    glRotatef(60,0,0,1);
+    glRotatef(-20,1,0,0);
+    glScalef(0.3,0.95,0.25);
+    glutSolidCube(0.1);
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0.2,0.4,0);
+    glTranslatef(-0.023,0.205,0.075);
+    glRotatef(60,0,0,1);
+    glRotatef(20,1,0,0);
+    glScalef(0.3,0.95,0.25);
+    glutSolidCube(0.1);
+  glPopMatrix();
+
+  //Glava
+
+  glPushMatrix();
+    glColor3f(0.898, 0.760, 0.596);
+    glTranslatef(-0.15,0.33,0);
+    glutSolidSphere(0.032,20,20);
+  glPopMatrix();
+
+
 
   //Sefovsko sediste
+  glTranslatef(0.05,0,0);
 
   glPushMatrix();
     glColor3f(0.7,0.7,0.7);
@@ -673,11 +749,134 @@ void drawKart(){
 
   glPopMatrix();
 
+}
 
 
 
+void drawTires() {
+
+  glPushMatrix();
+    glColor3f(0,0,0);
+    glTranslatef(0.15,0.02,0.33);
+    GLUquadric* quad1 = gluNewQuadric();
+    gluCylinder(quad1,0.12,0.12,0.1,20,20);
+    glColor3f(1,0,0);
+    gluCylinder(quad1,0.05,0.05,0.1,20,20);
+    glColor3f(1,0,0);
+    glTranslatef(0,0,-0.03);
+    glRotatef(-animationParameter,0,0,1);
+    gluCylinder(quad1,0.05,0.05,0.05,20,20);
+
+  glPopMatrix();
+  
+  glPushMatrix();
+    glColor3f(0,0,0);
+    glTranslatef(0.15,0.02,0.33);
+    gluDisk(quad1,0.05,0.12,20,20);
+    glTranslatef(0,0,0.1);
+    gluDisk(quad1,0.05,0.12,20,20);
+    glColor3f(1,0,0);
+    gluDisk(quad1,0,0.05,20,20);
+    glTranslatef(0,0,-0.1);
+    gluDisk(quad1,0,0.05,20,20);
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0,0,0);
+    glTranslatef(-0.3,0.02,0.33);
+    gluCylinder(quad1,0.12,0.12,0.1,20,20);
+    glColor3f(1,0,0);
+    gluCylinder(quad1,0.05,0.05,0.1,20,20);
+    glColor3f(1,0,0);
+    glTranslatef(0,0,-0.03);
+    glRotatef(-animationParameter,0,0,1);
+    gluCylinder(quad1,0.05,0.05,0.1,20,20);
+
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0,0,0);
+    glTranslatef(-0.3,0.02,0.33);
+    gluDisk(quad1,0.05,0.12,20,20);
+    glTranslatef(0,0,0.1);
+    gluDisk(quad1,0.05,0.12,20,20);
+    glColor3f(1,0,0);
+    gluDisk(quad1,0,0.05,20,20);
+    glTranslatef(0,0,-0.1);
+    gluDisk(quad1,0,0.05,20,20);
+  glPopMatrix();
 
 
+  glPushMatrix();
+    glColor3f(0,0,0);
+    glTranslatef(-0.3,0.02,-0.43);
+    gluCylinder(quad1,0.12,0.12,0.1,20,20);
+    glColor3f(1,0,0);
+    gluCylinder(quad1,0.05,0.05,0.1,20,20);
+    glColor3f(1,0,0);
+    glTranslatef(0,0,0.03);
+    glRotatef(-animationParameter,0,0,1);
+    gluCylinder(quad1,0.05,0.05,0.1,20,20);
 
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0,0,0);
+    glTranslatef(-0.3,0.02,-0.43);
+    gluDisk(quad1,0.05,0.12,20,20);
+    glTranslatef(0,0,0.1);
+    gluDisk(quad1,0.05,0.12,20,20);
+    glColor3f(1,0,0);
+    gluDisk(quad1,0,0.05,20,20);
+    glTranslatef(0,0,-0.1);
+    gluDisk(quad1,0,0.05,20,20);
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0,0,0);
+    glTranslatef(0.15,0.02,-0.43);
+    gluCylinder(quad1,0.12,0.12,0.1,20,20);
+    glColor3f(1,0,0);
+    gluCylinder(quad1,0.05,0.05,0.1,20,20);
+    glColor3f(1,0,0);
+    glTranslatef(0,0,0.03);
+    glRotatef(-animationParameter,0,0,1);
+    gluCylinder(quad1,0.05,0.05,0.1,20,20);
+
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0,0,0);
+    glTranslatef(0.15,0.02,-0.43);
+    gluDisk(quad1,0.05,0.12,20,20);
+    glTranslatef(0,0,0.1);
+    gluDisk(quad1,0.05,0.12,20,20);
+    glColor3f(1,0,0);
+    gluDisk(quad1,0,0.05,20,20);
+    glTranslatef(0,0,-0.1);
+    gluDisk(quad1,0,0.05,20,20);
+  glPopMatrix();
+}
+
+void drawSeat(){
+
+
+  glPushMatrix();
+    glColor3f(0.7,0.7,0.7);
+    GLUquadric* quad2 = gluNewQuadric();
+    glTranslatef(-0.3,0.2,0);
+    glRotatef(90,0,1,0);
+    gluCylinder(quad2,0.16,0.16,0.18,20,20);
+    gluCylinder(quad2,0.1,0.1,0.18,20,20);
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0.7,0.7,0.7);
+    glTranslatef(-0.3,0.2,0);
+    glRotatef(90,0,1,0);
+    gluDisk(quad2,0.1,0.16,20,20);
+    glTranslatef(0,0,0.18);
+    gluDisk(quad2,0.1,0.16,20,20);
+  glPopMatrix();
 
 }
