@@ -32,10 +32,23 @@ static void lightInitialization(void);
 static void drawKart(void);
 static void drawSeat(void);
 static void drawTires(void);
+static void drawFence(void);
+static void drawTrack(void);
+static void drawGrass(void);
+static void drawDirt(void);
+static void drawCompleteScene(void);
+static void drawChristmasTree(void);
+static void drawTree(void);
+static void drawMoon(void);
 
 //Promenljive
 static float animationParameter = 0;
+static float leftRigtParameter = 0;
 static float animationOngoing = 0;
+static float cameraParameter = 0;
+static float tiresParameter = 0;
+static int lookLeft = 0;
+static int lookRight = 0;
 static int windowWidth;
 static int windowHeight;
 static int zoom = 0;
@@ -63,8 +76,10 @@ int main(int argc, char **argv){
 
 
 
-    //Postavljanje pozadine na crnu boju
-    glClearColor(0.6, 0.6, 0.6, 0);
+
+    //Postavljanje pozadine na svetlo plavu boju
+    //glClearColor(0.529, 0.807, 0.921, 0);
+    glClearColor(0.031, 0.094, 0.227,0);
     glutMainLoop();
 
 
@@ -96,6 +111,7 @@ void on_keyboard(unsigned char key, int x, int y) {
     switch(key) {
         case 'r':
           animationParameter = 0;
+          cameraParameter=0;
           glutPostRedisplay();
           break;
         case 's':
@@ -108,7 +124,19 @@ void on_keyboard(unsigned char key, int x, int y) {
             animationOngoing = 1;
             glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
           }
-          break;        
+          break;
+        case 'a':
+          lookLeft = 1;
+          break;
+        case 'A':
+          lookLeft = 0;
+          break;  
+        case 'f':
+          lookRight = 1;
+          break;
+        case 'F':
+          lookRight = 0;
+          break;    
         case 27:
           exit(0);
           break;  
@@ -118,7 +146,19 @@ void on_keyboard(unsigned char key, int x, int y) {
 
 void onTimer(int id){
     if(id == TIMER_ID){
-      animationParameter+=4;
+      if(cameraParameter<1120)
+        cameraParameter+=5;
+      else
+      {
+        animationParameter+=0.05;
+        tiresParameter+=2;
+      }
+
+      if(lookRight)
+        leftRigtParameter+=5;
+      if(lookLeft)
+        leftRigtParameter-=5;
+
     }
     glutPostRedisplay();
     if (animationOngoing)
@@ -148,13 +188,12 @@ void on_display() {
     //Postavljanje pogleda
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(4*sin(animationParameter/360), 3, 4*cos(animationParameter/360),
-              0, 0, 0,
+    gluLookAt(5*cos(cameraParameter/360), 2.5, 5*sin(cameraParameter/360),
+              1, 0.76, 0,
               0, 1, 0);
+
+    drawCompleteScene();
  
-    //draw_axes(50);
-    glScalef(3,3,2.5);
-    drawKart();
     glutSwapBuffers();
 }
 
@@ -203,7 +242,6 @@ void setNormalAndVertexTriangles(TACKA a,TACKA b,TACKA c){
   glVertex3f(c.x,c.y,c.z);
 
 }
-
 
 TACKA a,b,c,d;
 void drawKart(){
@@ -758,13 +796,13 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(0.15,0.02,0.33);
+    glRotatef(tiresParameter,0,0,1);
     GLUquadric* quad1 = gluNewQuadric();
     gluCylinder(quad1,0.12,0.12,0.1,20,20);
     glColor3f(1,0,0);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
     glColor3f(1,0,0);
     glTranslatef(0,0,-0.03);
-    glRotatef(-animationParameter,0,0,1);
     gluCylinder(quad1,0.05,0.05,0.05,20,20);
 
   glPopMatrix();
@@ -772,6 +810,7 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(0.15,0.02,0.33);
+    glRotatef(tiresParameter,0,0,1);
     gluDisk(quad1,0.05,0.12,20,20);
     glTranslatef(0,0,0.1);
     gluDisk(quad1,0.05,0.12,20,20);
@@ -784,12 +823,12 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(-0.3,0.02,0.33);
+    glRotatef(tiresParameter,0,0,1);
     gluCylinder(quad1,0.12,0.12,0.1,20,20);
     glColor3f(1,0,0);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
     glColor3f(1,0,0);
     glTranslatef(0,0,-0.03);
-    glRotatef(-animationParameter,0,0,1);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
 
   glPopMatrix();
@@ -797,6 +836,7 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(-0.3,0.02,0.33);
+    glRotatef(tiresParameter,0,0,1);
     gluDisk(quad1,0.05,0.12,20,20);
     glTranslatef(0,0,0.1);
     gluDisk(quad1,0.05,0.12,20,20);
@@ -810,12 +850,12 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(-0.3,0.02,-0.43);
+    glRotatef(tiresParameter,0,0,1);
     gluCylinder(quad1,0.12,0.12,0.1,20,20);
     glColor3f(1,0,0);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
     glColor3f(1,0,0);
     glTranslatef(0,0,0.03);
-    glRotatef(-animationParameter,0,0,1);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
 
   glPopMatrix();
@@ -823,6 +863,7 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(-0.3,0.02,-0.43);
+    glRotatef(tiresParameter,0,0,1);
     gluDisk(quad1,0.05,0.12,20,20);
     glTranslatef(0,0,0.1);
     gluDisk(quad1,0.05,0.12,20,20);
@@ -835,12 +876,12 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(0.15,0.02,-0.43);
+    glRotatef(tiresParameter,0,0,1);
     gluCylinder(quad1,0.12,0.12,0.1,20,20);
     glColor3f(1,0,0);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
     glColor3f(1,0,0);
     glTranslatef(0,0,0.03);
-    glRotatef(-animationParameter,0,0,1);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
 
   glPopMatrix();
@@ -848,6 +889,7 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(0.15,0.02,-0.43);
+    glRotatef(tiresParameter,0,0,1);
     gluDisk(quad1,0.05,0.12,20,20);
     glTranslatef(0,0,0.1);
     gluDisk(quad1,0.05,0.12,20,20);
@@ -878,5 +920,293 @@ void drawSeat(){
     glTranslatef(0,0,0.18);
     gluDisk(quad2,0.1,0.16,20,20);
   glPopMatrix();
+
+}
+
+void drawFence(){
+  glPushMatrix();
+    glColor3f(0.37,0.18,0.00);
+    glRotatef(-90,1,0,0);
+    GLUquadric* quad3 = gluNewQuadric();
+    gluCylinder(quad3,0.03,0.03,0.25,20,20);
+  glPopMatrix();
+
+  glPushMatrix();
+    glTranslatef(0,0.25,0);
+    glRotatef(-90,1,0,0);
+    gluDisk(quad3,0,0.03,20,20);
+  glPopMatrix();
+
+  glPushMatrix();
+    glColor3f(0.37,0.18,0.00);
+    glTranslatef(0.5,0,0);
+    glRotatef(-90,1,0,0);
+    gluCylinder(quad3,0.03,0.03,0.25,20,20);
+  glPopMatrix();
+
+  glPushMatrix();
+    glTranslatef(0.5,0.25,0);
+    glRotatef(-90,1,0,0);
+    gluDisk(quad3,0,0.03,20,20);
+  glPopMatrix();
+
+  glPushMatrix();
+    glTranslatef(0.25,0.05,0);
+    glScalef(1,0.05,0.1);
+    glutSolidCube(0.5);
+  glPopMatrix();
+
+  glPushMatrix();
+    glTranslatef(0.25,0.13,0);
+    glScalef(1,0.05,0.1);
+    glutSolidCube(0.5);
+  glPopMatrix();
+
+  glPushMatrix();
+    glTranslatef(0.25,0.21,0);
+    glScalef(1,0.05,0.1);
+    glutSolidCube(0.5);
+  glPopMatrix();
+}
+
+void drawTrack(){
+  glPushMatrix();
+    glColor3f(0.2,0.2,0.2);
+    glScalef(300,0.1,14);
+    glutSolidCube(0.1);
+  glPopMatrix();
+}
+
+void drawGrass(){
+  glPushMatrix();
+    glColor3f(0.043, 0.4, 0.137);
+    glScalef(300,0.1,50);
+    glutSolidCube(0.1);
+  glPopMatrix();
+}
+
+void drawDirt(){
+  glPushMatrix();
+    glColor3f(0.22,0.11,0.00);
+    glScalef(300,0.1,50);
+    glutSolidCube(0.1);
+  glPopMatrix();
+}
+
+void drawChristmasTree() {
+
+  glPushMatrix();
+    glColor3f(0.37,0.18,0.00);
+    glRotatef(-90,1,0,0);
+    GLUquadric* quad4 = gluNewQuadric();
+    gluCylinder(quad4,0.08,0.04,0.25,20,20);
+    glColor3f(0.129, 0.352, 0.027);
+    glTranslatef(0,0,0.25);
+    glutSolidCone(0.3,0.5,20,20);
+    glTranslatef(0,0,0.2);
+    glutSolidCone(0.22,0.3,20,20);
+    glTranslatef(0,0,0.15);
+    glutSolidCone(0.15,0.2,20,20);
+
+  glPopMatrix();
+
+}
+
+void drawTree(){
+
+  glPushMatrix();
+    glColor3f(0.37,0.18,0.00);
+    glRotatef(-90,1,0,0);
+    GLUquadric* quad4 = gluNewQuadric();
+    gluCylinder(quad4,0.08,0.04,0.5,20,20);
+    glTranslatef(0,0,0.6);
+    glColor3f(0.129, 0.352, 0.027);
+    glScalef(1.5,1.5,1);
+    glutSolidSphere(0.25,20,20);
+  glPopMatrix(); 
+
+  //Dodatna grana
+
+  glPushMatrix();
+    glColor3f(0.37,0.18,0.00);
+    glTranslatef(0,0.3,0.05);
+    gluCylinder(quad4,0.02,0.02,0.2,20,20);
+    glColor3f(0.7,0.7,0.7);
+    glTranslatef(0,0,0.07);
+    glRotatef(90,1,0,0);
+    gluCylinder(quad4,0.005,0.005,0.1,20,20);
+    glTranslatef(0,0.1,0);
+    gluCylinder(quad4,0.005,0.005,0.1,20,20);
+  glPopMatrix(); 
+
+  //Guma
+
+  glPushMatrix();
+    glColor3f(0.1,0.1,0.1);
+    glTranslatef(0,0.17,0.17);
+    glRotatef(90,0,1,0);
+    glutSolidTorus(0.02,0.05,20,20);
+
+
+  glPopMatrix();
+
+}
+
+void drawMoon(){
+  glColor3f(0.956, 0.945, 0.788);
+  GLUquadric* quad5 = gluNewQuadric();
+  glRotatef(90,0,1,0);
+  gluDisk(quad5,0,2,100,100);
+}
+
+void drawCompleteScene(){
+
+  //draw_axes(50);
+    glPushMatrix();
+      glScalef(2.5,2.5,2);
+      glTranslatef(0.5,0.1,0);
+      drawKart();
+    glPopMatrix();
+
+    glScalef(3,3,3);
+
+    glPushMatrix();
+      glTranslatef(20,0,0);
+      drawMoon();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(5,0.03,3.2);
+      drawGrass();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(5,0,3.2);
+      drawDirt();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(5,0.03,-3.2);
+      drawGrass();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(5,0,-3.2);
+      drawDirt();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(5,0,0);
+      drawTrack();
+    glPopMatrix();
+
+    glTranslatef(-animationParameter,0,0);
+
+    glPushMatrix();
+      glTranslatef(0.02,0.03,0.73);
+      drawFence();
+      for(int i = 0 ; i < 100 ; i++)
+      {
+        glTranslatef(0.5,0,0);
+        drawFence();
+      }
+    glPopMatrix(); 
+
+    glPushMatrix();
+      glTranslatef(0.02,0.03,-0.73);
+      drawFence();
+      for(int i = 0 ; i < 100 ; i++)
+      {
+        glTranslatef(0.5,0,0);
+        drawFence();
+      }
+    glPopMatrix(); 
+
+
+
+    glPushMatrix();
+      glTranslatef(-5,0,2);
+      drawChristmasTree();
+      for(int i = 0 ; i < 35 ; i++)
+      {
+        glTranslatef(2,0,0);
+        drawChristmasTree();
+      }
+    glPopMatrix();
+
+
+    glPushMatrix();
+      glTranslatef(-4,0,3);
+      drawChristmasTree();
+      for(int i = 0 ; i < 35 ; i++)
+      {
+        glTranslatef(2,0,0);
+        drawChristmasTree();
+      }
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(-5,0,4);
+      drawChristmasTree();
+      for(int i = 0 ; i < 35 ; i++)
+      {
+        glTranslatef(2,0,0);
+        drawChristmasTree();
+      }
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(2.5,0,1.5);
+      drawTree();
+      for(int i = 0 ; i < 4 ; i++)
+      {
+        glTranslatef(8,0,0);
+        drawTree();
+      }
+    glPopMatrix();
+
+    //LEVA STRANA DRVECA
+
+    glPushMatrix();
+      glTranslatef(-5,0,-2);
+      drawChristmasTree();
+      for(int i = 0 ; i < 35 ; i++)
+      {
+        glTranslatef(2,0,0);
+        drawChristmasTree();
+      }
+    glPopMatrix();
+
+
+    glPushMatrix();
+      glTranslatef(-4,0,-3);
+      drawChristmasTree();
+      for(int i = 0 ; i < 35 ; i++)
+      {
+        glTranslatef(2,0,0);
+        drawChristmasTree();
+      }
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(-5,0,-4);
+      drawChristmasTree();
+      for(int i = 0 ; i < 35 ; i++)
+      {
+        glTranslatef(2,0,0);
+        drawChristmasTree();
+      }
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(3,0,-1.5);
+      drawTree();
+      for(int i = 0 ; i < 4 ; i++)
+      {
+        glTranslatef(8,0,0);
+        drawTree();
+      }
+    glPopMatrix();
+
 
 }
