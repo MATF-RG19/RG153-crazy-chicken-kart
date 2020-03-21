@@ -14,5 +14,6 @@ void drawTree(void);
 void drawMoon(void);
 void drawFixedParts(void);
 void drawHilltop(void);
+void drawRedWhiteTrack(void);
 
 #endif

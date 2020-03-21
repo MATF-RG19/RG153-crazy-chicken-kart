@@ -7,8 +7,7 @@
 #include "DrawFunctions.hpp"
 
 
-extern float animationParameter = 0;
-extern float tiresParameter = 0;
+extern float tiresParameter;
 
 
 //Definicija strukture tacka radi lakseg i preglednijeg koda 
@@ -100,13 +99,13 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(0.15,0.02,0.33);
+    glRotatef(-tiresParameter,0,0,1);
     GLUquadric* quad1 = gluNewQuadric();
     gluCylinder(quad1,0.12,0.12,0.1,20,20);
     glColor3f(1,0,0);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
     glColor3f(1,0,0);
     glTranslatef(0,0,-0.03);
-    //glRotatef(-animationParameter,0,0,1);
     gluCylinder(quad1,0.05,0.05,0.05,20,20);
 
   glPopMatrix();
@@ -114,6 +113,7 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(0.15,0.02,0.33);
+    glRotatef(-tiresParameter,0,0,1);
     gluDisk(quad1,0.05,0.12,20,20);
     glTranslatef(0,0,0.1);
     gluDisk(quad1,0.05,0.12,20,20);
@@ -126,12 +126,12 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(-0.3,0.02,0.33);
+    glRotatef(-tiresParameter,0,0,1);
     gluCylinder(quad1,0.12,0.12,0.1,20,20);
     glColor3f(1,0,0);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
     glColor3f(1,0,0);
     glTranslatef(0,0,-0.03);
-    //glRotatef(-animationParameter,0,0,1);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
 
   glPopMatrix();
@@ -139,6 +139,7 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(-0.3,0.02,0.33);
+    glRotatef(-tiresParameter,0,0,1);
     gluDisk(quad1,0.05,0.12,20,20);
     glTranslatef(0,0,0.1);
     gluDisk(quad1,0.05,0.12,20,20);
@@ -152,12 +153,12 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(-0.3,0.02,-0.43);
+    glRotatef(-tiresParameter,0,0,1);
     gluCylinder(quad1,0.12,0.12,0.1,20,20);
     glColor3f(1,0,0);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
     glColor3f(1,0,0);
     glTranslatef(0,0,0.03);
-    //glRotatef(-animationParameter,0,0,1);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
 
   glPopMatrix();
@@ -165,6 +166,7 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(-0.3,0.02,-0.43);
+    glRotatef(-tiresParameter,0,0,1);
     gluDisk(quad1,0.05,0.12,20,20);
     glTranslatef(0,0,0.1);
     gluDisk(quad1,0.05,0.12,20,20);
@@ -177,12 +179,12 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(0.15,0.02,-0.43);
+    glRotatef(-tiresParameter,0,0,1);
     gluCylinder(quad1,0.12,0.12,0.1,20,20);
     glColor3f(1,0,0);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
     glColor3f(1,0,0);
     glTranslatef(0,0,0.03);
-    //glRotatef(-animationParameter,0,0,1);
     gluCylinder(quad1,0.05,0.05,0.1,20,20);
 
   glPopMatrix();
@@ -190,6 +192,7 @@ void drawTires() {
   glPushMatrix();
     glColor3f(0,0,0);
     glTranslatef(0.15,0.02,-0.43);
+    glRotatef(-tiresParameter,0,0,1);
     gluDisk(quad1,0.05,0.12,20,20);
     glTranslatef(0,0,0.1);
     gluDisk(quad1,0.05,0.12,20,20);
@@ -912,6 +915,23 @@ void drawHilltop(){
 
 }
 
+void drawRedWhiteTrack(){
+  glPushMatrix();
+    glColor3f(1,0,0);
+    glutSolidCube(1);
+    glTranslatef(1,0,0);
+    glColor3f(1,1,1);
+    glutSolidCube(1);
+  glPopMatrix();
+}
+
+void drawWhiteTracks(){
+  glPushMatrix();
+    glColor3f(1,1,1);
+    glutSolidCube(1);
+  glPopMatrix();
+}
+
 void drawCompleteScene(){
 
     //draw_axes(150);
@@ -1103,6 +1123,50 @@ void drawCompleteScene(){
       drawGrass();
     glPopMatrix();
 
+    glPushMatrix();
+      glTranslatef(0,0,5.2);
+      glScalef(1,0.1,0.4);
+      drawRedWhiteTrack();
+       for(int i = 0 ; i < 100 ; i++)
+      {
+        glTranslatef(2,0,0);
+        drawRedWhiteTrack();
+      }
+    glPopMatrix();
+
+     glPushMatrix();
+      glTranslatef(0,0,-5.2);
+      glScalef(1,0.1,0.4);
+      drawRedWhiteTrack();
+      for(int i = 0 ; i < 100 ; i++)
+      {
+        glTranslatef(2,0,0);
+        drawRedWhiteTrack();
+      }
+    glPopMatrix();
+
+    glPushMatrix();
+      glScalef(2,0.02,0.2);
+      glTranslatef(0,0,7.6);
+      drawWhiteTracks();
+      for(int i = 0 ; i < 100 ; i++)
+      {
+        glTranslatef(2,0,0);
+        drawWhiteTracks();
+      }
+    glPopMatrix();
+
+    glPushMatrix();
+      glScalef(2,0.02,0.2);
+      glTranslatef(0,0,-7.6);
+      drawWhiteTracks();
+      for(int i = 0 ; i < 100 ; i++)
+      {
+        glTranslatef(2,0,0);
+        drawWhiteTracks();
+      }
+    glPopMatrix();
+
 }
 
 void drawFixedParts(){
@@ -1127,3 +1191,4 @@ void drawFixedParts(){
       drawMoon();
     glPopMatrix();
 }
+

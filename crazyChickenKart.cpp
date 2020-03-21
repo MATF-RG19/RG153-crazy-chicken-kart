@@ -27,7 +27,7 @@ static void lightInitialization(void);
 static float animationParameter = 0;
 static float animationOngoing = 0;
 static float cameraParameter = 0;
-static float tiresParameter = 0;
+float tiresParameter = 0;
 static int windowWidth;
 static int windowHeight;
 static int zoom = 0;
@@ -42,6 +42,7 @@ int main(int argc, char **argv){
     glutInitWindowSize(1200, 1000);
     glutInitWindowPosition(100, 100);
     glutCreateWindow("Crazy Chicken Kart");
+    //glutFullScreen();
 
     //Registrovanje callback funkcija
     glutDisplayFunc(on_display);
@@ -130,11 +131,11 @@ void on_display() {
     //Postavljanje pogleda
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(6*cos(cameraParameter/360), 2.5, 5*sin(cameraParameter/360),
-              0, 0, 0,
+    gluLookAt(4*cos(cameraParameter/360), 2.5, 4*sin(cameraParameter/360),
+              1, 0, 0,
               0, 1, 0);
 
-    /*gluLookAt(-6, 3, 0,
+    /*gluLookAt(-4, 2, 0,
               0, 0, 0,
               0, 1, 0);*/
  	
