@@ -131,7 +131,7 @@ void on_display() {
     //Postavljanje pogleda
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(4*cos(cameraParameter/360), 2.5, 4*sin(cameraParameter/360),
+    gluLookAt(5*cos(cameraParameter/360), 2.5, 4*sin(cameraParameter/360),
               1, 0, 0,
               0, 1, 0);
 

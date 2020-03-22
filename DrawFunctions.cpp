@@ -1167,6 +1167,12 @@ void drawCompleteScene(){
       }
     glPopMatrix();
 
+    glPushMatrix();
+      glTranslatef(15,0,0);
+      glScalef(1,2,1);
+      drawXtrap();
+    glPopMatrix();
+
 }
 
 void drawFixedParts(){
@@ -1190,5 +1196,158 @@ void drawFixedParts(){
       glScalef(1,2,2.5);
       drawMoon();
     glPopMatrix();
+}
+
+void drawXtrap(){
+
+  //Glavna zuta ploca
+  glPushMatrix();
+    glColor3f(1,1,0);
+    glScalef(1,0.05,1);
+    glTranslatef(0,-0.001,0);
+    glutSolidCube(1.5);
+  glPopMatrix();
+
+  //Ivice
+  glBegin(GL_QUADS);
+
+    //Prednja strana
+
+    a={0.95,-0.0375,-0.25};
+    b={0.95,-0.0375,0.25};
+    c={0.75,0.0375,0.25};
+    d={0.75,0.0375,-0.25};
+    setNormalAndVertexQuads(a, b, c, d);
+
+    //Zadnja strana
+    
+    a={-0.95,-0.0375,-0.25};
+    b={-0.95,-0.0375,0.25};
+    c={-0.75,0.0375,0.25};
+    d={-0.75,0.0375,-0.25};
+    setNormalAndVertexQuads(a, b, c, d);
+
+    //Desna strana
+
+    a={-0.75,-0.0375,0.95};
+    b={0.75,-0.0375,0.95};
+    c={0.75,0.0375,0.75};
+    d={-0.75,0.0375,0.75};
+    setNormalAndVertexQuads(a, b, c, d);
+
+    
+
+    //Leva strana
+    a={-0.75,-0.0375,-0.95};
+    b={0.75,-0.0375,-0.95};
+    c={0.75,0.0375,-0.75};
+    d={-0.75,0.0375,-0.75};
+    setNormalAndVertexQuads(a, b, c, d);
+
+    glColor3f(1,0,0);
+
+    //Zadnja strana
+    a={-0.95,-0.0375,0.75};
+    b={-0.75,0.0375,0.75};
+    c={-0.75,0.0375,0.25};
+    d={-0.95,-0.0375,0.25};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={-0.95,-0.0375,-0.25};
+    b={-0.75,0.0375,-0.25};
+    c={-0.75,0.0375,-0.75};
+    d={-0.95,-0.0375,-0.75};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    //Prednja strana
+
+    a={0.95,-0.0375,0.75};
+    b={0.75,0.0375,0.75};
+    c={0.75,0.0375,0.25};
+    d={0.95,-0.0375,0.25};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={0.95,-0.0375,-0.25};
+    b={0.75,0.0375,-0.25};
+    c={0.75,0.0375,-0.75};
+    d={0.95,-0.0375,-0.75};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    //Slovo X
+
+    a={-0.75,0.0375,0.25};
+    b={0.75,0.0375,-0.75};
+    c={0.75,0.0375,-0.25};
+    d={-0.75,0.0375,0.75};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={-0.75,0.0375,-0.25};
+    b={0.75,0.0375,0.75};
+    c={0.75,0.0375,0.25};
+    d={-0.75,0.0375,-0.75};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    glColor3f(0,0,0);
+
+    a={-0.75,0.0377,0.3};
+    b={0.75,0.0377,-0.7};
+    c={0.75,0.0377,-0.3};
+    d={-0.75,0.0377,0.7};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={-0.75,0.0377,-0.3};
+    b={0.75,0.0377,0.7};
+    c={0.75,0.0377,0.3};
+    d={-0.75,0.0377,-0.7};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    
+  glEnd();
+
+  glColor3f(1,0,0);
+
+
+  glBegin(GL_TRIANGLES);
+    a={0.95,-0.0375,0.95};
+    b={0.75,-0.0375,0.95};
+    c={0.75,0.0375,0.75};
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={0.95,-0.0375,0.95};
+    b={0.95,-0.0375,0.75};
+    c={0.75,0.0375,0.75};
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={-0.95,-0.0375,-0.95};
+    b={-0.75,-0.0375,-0.95};
+    c={-0.75,0.0375,-0.75};
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={-0.95,-0.0375,-0.95};
+    b={-0.95,-0.0375,-0.75};
+    c={-0.75,0.0375,-0.75};
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={-0.95,-0.0375,0.95};
+    b={-0.75,-0.0375,0.95};
+    c={-0.75,0.0375,0.75};
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={-0.95,-0.0375,0.95};
+    b={-0.95,-0.0375,0.75};
+    c={-0.75,0.0375,0.75};
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={0.95,-0.0375,-0.95};
+    b={0.75,-0.0375,-0.95};
+    c={0.75,0.0375,-0.75};
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={0.95,-0.0375,-0.95};
+    b={0.95,-0.0375,-0.75};
+    c={0.75,0.0375,-0.75};
+    setNormalAndVertexTriangles(a,b,c);
+  glEnd();
+
 }
 
