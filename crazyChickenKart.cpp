@@ -100,7 +100,7 @@ void onTimer(int id){
         tiresParameter+=2;
       }
 
-      if(animationParameter>56.399712)
+      if(animationParameter>100)
       {
         animationParameter = 0;
           cameraParameter = 0;
@@ -150,7 +150,7 @@ void on_display() {
 }
 
 void lightInitialization(){
-  float lightPosition[] = { 8, 8, 0, 0};
+  float lightPosition[] = { 5*cos(cameraParameter/360), 8, 4*sin(cameraParameter/360), 0};
   float lightAmbient[] = { 0.1, 0.1, 0.1, 0.1,1};
   float lightDiffuse[] = { 1, 1, 1, 1};
   float lightSpecular[] = { 0.9, 0.9, 0.9, 1};

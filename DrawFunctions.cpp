@@ -771,6 +771,883 @@ void drawKart(){
   glPopMatrix();
 
 }
+
+
+void drawTiresForBuggy()
+{
+  //Zadnja desna
+  glPushMatrix();
+      glColor3f(0.1,0.1,0.1);
+      glTranslatef(0.16,0.03,0.23);
+      glRotatef(-tiresParameter,0,0,1);
+      GLUquadric* quad1 = gluNewQuadric();
+      gluCylinder(quad1,0.13,0.13,0.1,20,20);
+      glColor3f(1,0,0);
+      gluCylinder(quad1,0.05,0.05,0.1,20,20);
+      glColor3f(1,0,0);
+      glTranslatef(0,0,-0.03);
+      gluCylinder(quad1,0.05,0.05,0.05,20,20);
+
+  glPopMatrix();
+    
+  glPushMatrix();
+      glColor3f(0.1,0.1,0.1);
+      glTranslatef(0.16,0.03,0.23);
+      glRotatef(-tiresParameter,0,0,1);
+      gluDisk(quad1,0.05,0.13,20,20);
+      glTranslatef(0,0,0.1);
+      gluDisk(quad1,0.05,0.13,20,20);
+      glColor3f(1,0,0);
+      gluDisk(quad1,0,0.05,20,20);
+      glTranslatef(0,0,-0.1);
+      gluDisk(quad1,0,0.05,20,20);
+  glPopMatrix();
+
+  //Prednja desna
+
+  glPushMatrix();
+      glColor3f(0.1,0.1,0.1);
+      glTranslatef(0.95,0.02,0.23);
+      glRotatef(-tiresParameter,0,0,1);
+      gluCylinder(quad1,0.12,0.12,0.1,20,20);
+      glColor3f(1,0,0);
+      gluCylinder(quad1,0.05,0.05,0.1,20,20);
+      glColor3f(1,0,0);
+      glTranslatef(0,0,-0.03);
+      gluCylinder(quad1,0.05,0.05,0.05,20,20);
+
+  glPopMatrix();
+
+
+    
+  glPushMatrix();
+      glColor3f(0.1,0.1,0.1);
+      glTranslatef(0.95,0.02,0.23);
+      glRotatef(-tiresParameter,0,0,1);
+      gluDisk(quad1,0.05,0.12,20,20);
+      glTranslatef(0,0,0.1);
+      gluDisk(quad1,0.05,0.12,20,20);
+      glColor3f(1,0,0);
+      gluDisk(quad1,0,0.05,20,20);
+      glTranslatef(0,0,-0.1);
+      gluDisk(quad1,0,0.05,20,20);
+  glPopMatrix();
+
+  
+  //Zadnja leva
+  
+  glPushMatrix();
+      glColor3f(0.1,0.1,0.1);
+      glTranslatef(0.16,0.03,-0.33);
+      glRotatef(-tiresParameter,0,0,1);
+      gluCylinder(quad1,0.13,0.13,0.1,20,20);
+      glColor3f(1,0,0);
+      gluCylinder(quad1,0.05,0.05,0.1,20,20);
+      glColor3f(1,0,0);
+      glTranslatef(0,0,0.03);
+      glRotatef(-tiresParameter,0,0,1);
+      gluCylinder(quad1,0.05,0.05,0.1,20,20);
+
+  glPopMatrix();
+
+  glPushMatrix();
+      glColor3f(0.1,0.1,0.1);
+      glTranslatef(0.16,0.03,-0.33);
+      glRotatef(-tiresParameter,0,0,1);
+      gluDisk(quad1,0.05,0.13,20,20);
+      glTranslatef(0,0,0.1);
+      gluDisk(quad1,0.05,0.13,20,20);
+      glColor3f(1,0,0);
+      gluDisk(quad1,0,0.05,20,20);
+      glTranslatef(0,0,-0.1);
+      gluDisk(quad1,0,0.05,20,20);
+  glPopMatrix();
+
+  
+
+  glPushMatrix();
+      glColor3f(0.1,0.1,0.1);
+      glTranslatef(0.95,0.02,-0.33);
+      glRotatef(-tiresParameter,0,0,1);
+      gluCylinder(quad1,0.12,0.12,0.1,20,20);
+      glColor3f(1,0,0);
+      gluCylinder(quad1,0.05,0.05,0.1,20,20);
+      glColor3f(1,0,0);
+      glTranslatef(0,0,0.03);
+      glRotatef(-tiresParameter,0,0,1);
+      gluCylinder(quad1,0.05,0.05,0.1,20,20);
+
+  glPopMatrix();
+
+  glPushMatrix();
+      glColor3f(0.1,0.1,0.1);
+      glTranslatef(0.95,0.02,-0.33);
+      glRotatef(-tiresParameter,0,0,1);
+      gluDisk(quad1,0.05,0.12,20,20);
+      glTranslatef(0,0,0.1);
+      gluDisk(quad1,0.05,0.12,20,20);
+      glColor3f(1,0,0);
+      gluDisk(quad1,0,0.05,20,20);
+      glTranslatef(0,0,-0.1);
+      gluDisk(quad1,0,0.05,20,20);
+  glPopMatrix();
+
+
+}
+
+void drawBuggy(){
+
+  glColor3f(0.1,0.1,0.1);
+  glPushMatrix();
+    glScalef(17,17,17);
+    drawTiresForBuggy();
+    
+  glPopMatrix(); 
+
+  glPushMatrix();
+    glColor3f(0.7,0.7,0.7);
+    glTranslatef(0,-1.7,0);
+    glScalef(1000,1,1000);
+    glutSolidCube(0.1);
+  glPopMatrix();  
+
+  glColor3f(0.1,0.1,0.1);
+
+  glBegin(GL_QUADS);
+
+    //Leva strana
+    a={6.5,0,-5};
+    b={6.5,2,-5};
+    c={12,1.5,-5};
+    d={12,0,-5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    a={5,0,-5};
+    b={5,3.5,-5};
+    c={6.5,2,-5};
+    d={6.5,0,-5};
+    
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={5,3.5,-5};
+    b={0,3.5,-5};
+    c={0,3,-5};
+    d={5,3,-5};
+    
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={12,0,-5};
+    b={12,1.5,-5};
+    c={14,3,-5};
+    d={14,0,-5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    
+    a={14,3,-5};
+    b={19,3,-5};
+    c={19,2.5,-5};
+    d={14,2.5,-5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    //Zatvaramo za zadnje tockove leve strane
+
+
+    a={5,0,-5};
+    b={5,0,-4};
+    c={5,2,-4};
+    d={5,2,-5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={5,2,-5};
+    b={5,2,-4};
+    c={3.5,3,-4};
+    d={3.5,3,-5};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={3.5,3,-5};
+    b={3.5,3,-4};
+    c={1.5,3,-4};
+    d={1.5,3,-5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={1.5,3,-5};
+    b={1.5,3,-4};
+    c={0,2,-4};
+    d={0,2,-5};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={0,2,-4};
+    b={0,2,-5};
+    c={0,1,-5};
+    d={0,1,-4};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={0,1,-5};
+    b={0,1,-4};
+    c={-0.5,1,-4};
+    d={-0.5,1,-5};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={-0.5,1,-4};
+    b={-0.5,1,-5};
+    c={-0.5,3.5,-5};
+    d={-0.5,3.5,-4};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={-0.5,3.5,-5};
+    b={-0.5,3.5,-4};
+    c={0,3.5,-4};
+    d={0,3.5,-5};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    a={5,0,-5};
+    b={5,0,-4};
+    c={5,2,-4};
+    d={5,2,-5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+
+    a={0,1,-5};
+    b={-0.5,1,-5};
+    c={-0.5,3.5,-5};
+    d={0,3.5,-5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    //Zatvaramo za zadnje tockove desne strane
+
+
+
+    a={5,2,5};
+    b={5,2,4};
+    c={3.5,3,4};
+    d={3.5,3,5};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={3.5,3,5};
+    b={3.5,3,4};
+    c={1.5,3,4};
+    d={1.5,3,5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={1.5,3,5};
+    b={1.5,3,4};
+    c={0,2,4};
+    d={0,2,5};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={0,2,4};
+    b={0,2,5};
+    c={0,1,5};
+    d={0,1,4};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+
+
+    //Zeleni deo strane
+
+    glColor3f(0,1,0);
+
+    a={6.5,2,-5};
+    b={12,1.5,-5};
+    c={12,2.25,-4.5};
+    d={6.5,2.75,-4.5};
+
+
+
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={6.5,2,-4};
+    b={12,1.5,-4};
+    c={12,2.25,-4.5};
+    d={6.5,2.75,-4.5};
+
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={6.5,2,-5};
+    b={6.5,2.75,-4.5};
+    c={5,4.25,-4.5};
+    d={5,3.5,-5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={6.5,2,-4};
+    b={6.5,2.75,-4.5};
+    c={5,4.25,-4.5};
+    d={5,3.5,-4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={5,3.5,-5};
+    b={5,4.25,-4.5};
+    c={0,4.25,-4.5};
+    d={0,3.5,-5};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={5,3.5,-4};
+    b={5,4.25,-4.5};
+    c={0,4.25,-4.5};
+    d={0,3.5,-4};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    a={12,1.5,-5};
+    b={12,2.25,-4.5};
+    c={14,3.75,-4.5};
+    d={14,3,-5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={12,1.5,-4};
+    b={12,2.25,-4.5};
+    c={14,3.75,-4.5};
+    d={14,3,-4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={14,3,-5};
+    b={14,3.75,-4.5};
+    c={19,3.75,-4.5};
+    d={19,3,-5};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={14,3,-4};
+    b={14,3.75,-4.5};
+    c={19,3.75,-4.5};
+    d={19,3,-4};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    //Zadnji deo zelene strane
+
+    a={-0.5,3.5,-4};
+    b={-0.5,3.5,4};
+    c={0,4.25,4.5};
+    d={0,4.25,-4.5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={0,4.25,4.5};
+    b={0,4.25,-4.5};
+    c={0.5,3.5,-4};
+    d={0.5,3.5,4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    //Desna strana
+
+    glColor3f(0.1,0.1,0.1);
+
+    a={6.5,0,+5};
+    b={6.5,2,+5};
+    c={12,1.5,+5};
+    d={12,0,+5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    a={5,0,+5};
+    b={5,3.5,+5};
+    c={6.5,2,+5};
+    d={6.5,0,+5};
+    
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={5,3.5,+5};
+    b={0,3.5,+5};
+    c={0,3,+5};
+    d={5,3,+5};
+    
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={12,0,+5};
+    b={12,1.5,+5};
+    c={14,3,+5};
+    d={14,0,+5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    
+    a={14,3,+5};
+    b={19,3,+5};
+    c={19,2.5,+5};
+    d={14,2.5,+5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    glColor3f(0,1,0);
+
+    a={6.5,2,+5};
+    b={12,1.5,+5};
+    c={12,2.25,+4.5};
+    d={6.5,2.75,+4.5};
+
+
+
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={6.5,2,+4};
+    b={12,1.5,+4};
+    c={12,2.25,+4.5};
+    d={6.5,2.75,+4.5};
+
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={6.5,2,+5};
+    b={6.5,2.75,+4.5};
+    c={5,4.25,+4.5};
+    d={5,3.5,+5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={6.5,2,+4};
+    b={6.5,2.75,+4.5};
+    c={5,4.25,+4.5};
+    d={5,3.5,+4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={5,3.5,+5};
+    b={5,4.25,+4.5};
+    c={0,4.25,+4.5};
+    d={0,3.5,+5};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={5,3.5,+4};
+    b={5,4.25,+4.5};
+    c={0,4.25,+4.5};
+    d={0,3.5,+4};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    a={12,1.5,+5};
+    b={12,2.25,+4.5};
+    c={14,3.75,+4.5};
+    d={14,3,+5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={12,1.5,+4};
+    b={12,2.25,+4.5};
+    c={14,3.75,+4.5};
+    d={14,3,+4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={14,3,+5};
+    b={14,3.75,+4.5};
+    c={19,3.75,+4.5};
+    d={19,3,+5};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={14,3,+4};
+    b={14,3.75,+4.5};
+    c={19,3.75,+4.5};
+    d={19,3,+4};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    //Unutrasnjost auta
+    glColor3f(0.5,0.5,0.5);
+
+    a={6.5,2,-4};
+    b={12,1.5,-4};
+    c={12,0,-4};
+    d={6.5,0,-4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={6.5,2,-4};
+    b={6.5,0,-4};
+    c={5,0,-4};
+    d={5,3.5,-4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={12,1.5,-4};
+    b={12,0,-4};
+    c={14,0,-4};
+    d={14,3,-4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={6.5,2,4};
+    b={12,1.5,4};
+    c={12,0,4};
+    d={6.5,0,4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={6.5,2,4};
+    b={6.5,0,4};
+    c={5,0,4};
+    d={5,3.5,4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={12,1.5,4};
+    b={12,0,4};
+    c={14,0,4};
+    d={14,3,4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    //Pod
+    a={5,0,-4};
+    b={14,0,-4};
+    c={14,0,4};
+    d={5,0,4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={5,3.5,4};
+    b={-0.5,3.5,4};
+    c={-0.5,3.5,-4};
+    d={5,3.5,-4};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={14,3,4};
+    b={14,3,-4};
+    c={12,1.5,-4};
+    d={12,1.5,4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={12,1.5,-4};
+    b={12,1.5,4};
+    c={12,0,4};
+    d={12,0,-4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={5,3.5,4};
+    b={5,3.5,-4};
+    c={5,0,-4};
+    d={5,0,4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+
+
+    //Hauba
+    
+    glColor3f(0,1,0);
+
+    a={14,3,4};
+    b={19,3,4};
+    c={19,3.25,3};
+    d={14,3.25,3};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={14,3,-4};
+    b={19,3,-4};
+    c={19,3.25,-3};
+    d={14,3.25,-3};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={19,3.25,-3};
+    b={14,3.25,-3};
+    c={14,3.25,3};
+    d={19,3.25,3};
+    
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    //Soferka
+
+    glColor3f(0.9,0.9,0.9);
+    a={14,3.25,-3};
+    b={14,3.25,3};
+    c={10.25,6,3};
+    d={10.25,6,-3};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    a={14,3.25,-3};
+    b={14,3.125,-3.5};
+    c={10.25,5.875,-3.5};
+    d={10.25,6,-3};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={14,3.25,3};
+    b={14,3.125,3.5};
+    c={10.25,5.875,3.5};
+    d={10.25,6,3};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={14,2.875,-3.5};
+    b={10.25,5.625,-3.5};
+    c={10.25,5.625,3.5};
+    d={14,2.875,3.5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+    
+
+    //Leva ivica
+
+    glColor3f(0.3,0.3,0.3);
+    a={14,3,-4};
+    b={14,3.125,-3.5};
+    c={10.25,5.875,-3.5};
+    d={10.25,5.75,-4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={10.25,5.75,-4};
+    b={14,3,-4};
+    c={14,2.875,-3.5};
+    d={10.25,5.625,-3.5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    //Desna ivica
+
+    a={14,3,4};
+    b={14,3.125,3.5};
+    c={10.25,5.875,3.5};
+    d={10.25,5.75,4};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={10.25,5.75,4};
+    b={14,3,4};
+    c={14,2.875,3.5};
+    d={10.25,5.625,3.5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+    //Zatvaranje soferke odozgo
+
+    a={10.25,5.625,-3.5};
+    b={10.25,6,-3};
+    c={10.25,6,3};
+    d={10.25,5.625,3.5};
+
+    setNormalAndVertexQuads(a,b,c,d);
+
+  glEnd();
+
+  glBegin(GL_TRIANGLES);
+
+    glColor3f(0.1,0.1,0.1);
+
+    //Leva strana
+
+    a={5,2,-5};
+    b={3.5,3,-5};
+    c={5,3,-5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={1.5,3,-5};
+    b={0,2,-5};
+    c={0,3,-5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={14,2,-5};
+    b={15.5,2.5,-5};
+    c={14,2.5,-5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+  
+    a={17.5,2.5,-5};
+    b={19,2.5,-5};
+    c={19,2,-5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={1.5,3,-5};
+    b={0,2,-5};
+    c={0,1,-5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    //Zeleni krajevi leve strane
+
+    glColor3f(0,1,0);
+
+    a={0,3.5,-4};
+    b={-0.5,3.5,-4};
+    c={0,4.25,-4.5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={0,3.5,-5};
+    b={-0.5,3.5,-5};
+    c={0,4.25,-4.5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={-0.5,3.5,-5};
+    b={-0.5,3.5,-4};
+    c={0,4.25,-4.5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    //Desna strana
+
+    glColor3f(0.1,0.1,0.1);
+
+    a={5,2,5};
+    b={3.5,3,5};
+    c={5,3,5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={1.5,3,5};
+    b={0,2,5};
+    c={0,3,5};
+
+    setNormalAndVertexTriangles(a,b,c);
+    //skrskr
+    a={1.5,3,5};
+    b={0,2,5};
+    c={0,1,5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={14,2,5};
+    b={15.5,2.5,5};
+    c={14,2.5,5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+  
+    a={17.5,2.5,5};
+    b={19,2.5,5};
+    c={19,2,5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    //Zeleni krajevi desnee strane
+
+    glColor3f(0,1,0);
+
+    a={0,3.5,4};
+    b={-0.5,3.5,4};
+    c={0,4.25,4.5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={0,3.5,5};
+    b={-0.5,3.5,5};
+    c={0,4.25,4.5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    a={-0.5,3.5,5};
+    b={-0.5,3.5,4};
+    c={0,4.25,4.5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    //Zatvaranje leve ivice soferke
+
+    glColor3f(0.2,0.2,0.2);
+    a={10.25,5.75,-4};
+    b={10.25,5.875,-3.5};
+    c={10.25,5.625,-3.5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+
+    a={10.25,5.875,-3.5};
+    b={10.25,5.625,-3.5};
+    c={10.25,6,-3};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+    
+
+    //Zatvaranje desne ivice soferke
+
+    glColor3f(0.2,0.2,0.2);
+    a={10.25,5.75,4};
+    b={10.25,5.875,3.5};
+    c={10.25,5.625,3.5};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+
+    a={10.25,5.875,3.5};
+    b={10.25,5.625,3.5};
+    c={10.25,6,3};
+
+    setNormalAndVertexTriangles(a,b,c);
+
+  glEnd();
+  
+
+}
+
+
+
+
+
+
+
 void drawFence(){
   glPushMatrix();
     glColor3f(0.37,0.18,0.00);
@@ -936,33 +1813,6 @@ void drawCompleteScene(){
 
     //draw_axes(150);
     
-    glPushMatrix();
-      drawTrack();
-    glPopMatrix();
-
-    glPushMatrix();
-      glTranslatef(0,0.1,25.4);
-      glScalef(300,0.01,40);
-      drawGrass();
-    glPopMatrix();
-
-    glPushMatrix();
-      glTranslatef(0,0.1,-25.4);
-      glScalef(300,0.01,40);
-      drawGrass();
-    glPopMatrix();
-
-    glPushMatrix();
-      glTranslatef(0,0,25.4);
-      glScalef(300,0.01,40);
-      drawDirt();
-    glPopMatrix();
-
-    glPushMatrix();
-      glTranslatef(0,0,-25.4);
-      glScalef(300,0.01,40);
-      drawDirt();
-    glPopMatrix();
 
 
     glPushMatrix();
@@ -1173,28 +2023,80 @@ void drawCompleteScene(){
       drawXtrap();
     glPopMatrix();
 
+    glPushMatrix();
+      glTranslatef(10,0,3.6);
+      glScalef(0.35,0.35,0.35);
+      drawBomb();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(9.2,-0.05,3.3);
+      glScalef(0.35,0.35,0.35);
+      drawBomb();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(10,0,3);
+      glScalef(0.35,0.35,0.35);
+      drawBomb();
+    glPopMatrix();
+
 }
 
 void drawFixedParts(){
-  glPushMatrix();
+    glPushMatrix();
+      glTranslatef(1.25,0.3,-3.6);
       glScalef(2.5,2.5,2);
-      glTranslatef(0.5,0.1,0);
       drawKart();
     glPopMatrix();
 
+    glPushMatrix();
+      glTranslatef(0,0.2,0);
+      glScalef(0.15,0.15,0.15);
+      drawBuggy();
+    glPopMatrix();
 
-   /* glPushMatrix();
+
+    glPushMatrix();
       glColor3f(1,0,0);
-      glScalef(2.5,1.25,1.8);
+      glScalef(2.85,1.25,1.8);
       glTranslatef(0.5,0.5,0);
       glutWireCube(1);
     glPopMatrix();
-    */
+    
 
     glPushMatrix();
       glTranslatef(100,0,0);
       glScalef(1,2,2.5);
       drawMoon();
+    glPopMatrix();
+
+    glPushMatrix();
+      drawTrack();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(0,0.1,25.4);
+      glScalef(300,0.01,40);
+      drawGrass();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(0,0.1,-25.4);
+      glScalef(300,0.01,40);
+      drawGrass();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(0,0,25.4);
+      glScalef(300,0.01,40);
+      drawDirt();
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(0,0,-25.4);
+      glScalef(300,0.01,40);
+      drawDirt();
     glPopMatrix();
 }
 
@@ -1349,5 +2251,31 @@ void drawXtrap(){
     setNormalAndVertexTriangles(a,b,c);
   glEnd();
 
+}
+
+void drawBomb() {
+
+  glTranslatef(0,0.9,0);
+
+  glColor3f(0.1,0.1,0.1);
+  glutSolidSphere(1,100,100);
+
+  glPushMatrix();
+    glTranslatef(0,0.85,0.4);
+    glRotatef(-60,1,0,0);
+    GLUquadric* quad3 = gluNewQuadric();
+      gluCylinder(quad3,0.25,0.25,0.3,20,20);
+      glTranslatef(0,0,0.3);
+      gluDisk(quad3,0,0.25,20,20);
+    glPopMatrix();
+
+    glPushMatrix();
+      glColor3f(1,0,0);
+      glTranslatef(0,1.1,0.55);
+    glRotatef(-60,1,0,0);
+    gluCylinder(quad3,0.1,0.1,0.15,20,20);
+    glTranslatef(0,0,0.15);
+    gluDisk(quad3,0,0.1,20,20);
+    glPopMatrix();
 }
 

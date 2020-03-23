@@ -16,5 +16,8 @@ void drawFixedParts(void);
 void drawHilltop(void);
 void drawRedWhiteTrack(void);
 void drawXtrap(void);
+void drawBomb(void);
+void drawBuggy(void);
+void drawTiresForBuggy(void);
 
 #endif
