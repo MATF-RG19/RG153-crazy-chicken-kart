@@ -24,13 +24,20 @@ static void onTimer(int id);
 static void lightInitialization(void);
 
 //Promenljive
-static float animationParameter = 0;
+float animationParameter = 0;
+float roofParameter = 10.25;
+float spoilerParameter = 3.3;
+float tiresParameter = 0;
 static float animationOngoing = 0;
 static float cameraParameter = 0;
-float tiresParameter = 0;
 static int windowWidth;
 static int windowHeight;
 static int zoom = 0;
+static bool roofOn = true;
+static bool roofOff = false;
+static bool takeOfRoof = false;
+static bool putOnRoof = false; 
+static bool activateSpoiler = false;
 
 
 int main(int argc, char **argv){
@@ -70,6 +77,11 @@ void on_keyboard(unsigned char key, int x, int y) {
         case 'r':
           animationParameter = 0;
           cameraParameter = 0;
+          roofParameter=10.25;
+          takeOfRoof=false;
+          putOnRoof=false;
+          spoilerParameter=3.3;
+          activateSpoiler=false;
           glutPostRedisplay();
           break;
         case 's':
@@ -82,7 +94,26 @@ void on_keyboard(unsigned char key, int x, int y) {
             animationOngoing = 1;
             glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
           }
-          break;        
+          break;
+        case 'j':
+          if(!animationOngoing){
+              animationOngoing = 1;
+              glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
+            } 
+          takeOfRoof=true;
+          putOnRoof=false;
+          break;          
+        case 'k':
+          if(!animationOngoing){
+              animationOngoing = 1;
+              glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
+            }
+          putOnRoof=true;
+          takeOfRoof=false;
+          break;
+        case 'l':
+          activateSpoiler=true;
+          break;          
         case 27:
           exit(0);
           break;  
@@ -105,6 +136,15 @@ void onTimer(int id){
         animationParameter = 0;
           cameraParameter = 0;
       }
+
+      if(roofParameter >= 0 && takeOfRoof)
+        roofParameter-=0.06;
+
+      if(roofParameter <= 10.25 && putOnRoof)
+        roofParameter+=0.06;
+
+      if(activateSpoiler)
+        spoilerParameter+=0.05;
     }
     glutPostRedisplay();
     if (animationOngoing)

@@ -19,5 +19,6 @@ void drawXtrap(void);
 void drawBomb(void);
 void drawBuggy(void);
 void drawTiresForBuggy(void);
+void drawRoof(void);
 
 #endif
