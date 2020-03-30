@@ -20,5 +20,6 @@ void drawBomb(void);
 void drawBuggy(void);
 void drawTiresForBuggy(void);
 void drawRoof(void);
-
+void drawBlock(void);
+void drawElectricPole(void);
 #endif
