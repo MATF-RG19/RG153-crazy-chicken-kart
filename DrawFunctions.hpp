@@ -16,10 +16,16 @@ void drawFixedParts(void);
 void drawHilltop(void);
 void drawRedWhiteTrack(void);
 void drawXtrap(void);
+void drawXtrapOnTrack(int track);
 void drawBomb(void);
+void drawBombOnTrack(int track);
 void drawBuggy(void);
 void drawTiresForBuggy(void);
 void drawRoof(void);
 void drawBlock(void);
 void drawElectricPole(void);
+void drawObstacles(void);
+void drawObstacle(int x,int type,int track);
+void drawHole(void);
+void drawHoleOnTrack(int track);
 #endif

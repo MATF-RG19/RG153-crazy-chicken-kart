@@ -8,6 +8,14 @@
 
 using namespace std;
 
+#define OBSTACLE_NUMBER 20
+
+struct OBSTACLE{
+  int x;
+  int track;
+  int type;
+};
+
 
 extern float tiresParameter;
 extern float roofParameter;
@@ -17,9 +25,11 @@ extern float movementParameter;
 //extern float turnParameter;
 extern bool goLeft;
 extern bool goRight;
-extern int prviBlok;
-extern int poslednjiBlok;
-extern vector<float> pozicije;
+extern int firstBlock;
+extern int firstObstacle;
+extern vector<float> blockPosition;
+extern vector<OBSTACLE> obstacle;
+
 
 
 
@@ -3834,10 +3844,14 @@ void drawCompleteScene(){
     for(int i = 0 ; i < 10 ; i++)
     {
       glPushMatrix();
-        glTranslatef(pozicije[i],0,0);
+        glTranslatef(blockPosition[i],0,0);
         drawBlock();
       glPopMatrix();
     }
+
+    glPushMatrix();
+      drawObstacles();
+    glPopMatrix();
 
 
     /*glPushMatrix();
@@ -4134,12 +4148,39 @@ void drawXtrap(void){
 
 }
 
+void drawXtrapOnTrack(int track){
+
+  switch(track)
+  {
+    case 0:
+      glPushMatrix();
+        glScalef(1,3,1);
+        drawXtrap();
+      glPopMatrix();
+      break;
+    case -1:
+      glPushMatrix();
+        glTranslatef(0,0,-3.6);
+        glScalef(1,3,1);
+        drawXtrap();
+      glPopMatrix();
+      break;
+    case 1:
+      glPushMatrix();
+        glTranslatef(0,0,3.6);
+        glScalef(1,3,1);
+        drawXtrap();
+      glPopMatrix();
+      break;    
+  }
+}
+
 void drawBomb() {
 
   glTranslatef(0,0.9,0);
 
   glColor3f(0.1,0.1,0.1);
-  glutSolidSphere(1,100,100);
+  glutSolidSphere(1,20,20);
 
   glPushMatrix();
     glTranslatef(0,0.85,0.4);
@@ -4158,6 +4199,67 @@ void drawBomb() {
     glTranslatef(0,0,0.15);
     gluDisk(quad3,0,0.1,20,20);
     glPopMatrix();
+}
+
+void drawBombOnTrack(int track){
+  switch(track)
+  {
+    case 0:
+      glPushMatrix();
+        glScalef(0.5,0.5,0.5);
+        drawBomb();
+      glPopMatrix();
+      break;
+    case -1:
+      glPushMatrix();
+        glTranslatef(0,0,-3.6);
+        glScalef(0.5,0.5,0.5);
+        drawBomb();
+      glPopMatrix();
+      break;
+    case 1:
+      glPushMatrix();
+        glTranslatef(0,0,3.6);
+        glScalef(0.5,0.5,0.5);
+        drawBomb();
+      glPopMatrix();
+      break;
+  }
+}
+
+void drawHole() {
+  glPushMatrix();
+    glColor3f(0,0,0);
+    glTranslatef(0,0.05,0);
+    GLUquadric* quad9 = gluNewQuadric();
+    glRotatef(-90,1,0,0);
+    gluDisk(quad9,0,1.3,50,50);
+  glPopMatrix();
+}
+
+void drawHoleOnTrack(int track){
+
+  switch(track)
+  {
+    case 0:
+      glPushMatrix();
+        drawHole();
+      glPopMatrix();
+      break;
+    case -1:
+      glPushMatrix();
+        glTranslatef(0,0,-3.6);
+        drawHole();
+      glPopMatrix();
+      break;
+    case 1:
+      glPushMatrix();
+        glTranslatef(0,0,3.6);
+        drawHole();
+      glPopMatrix();
+      break;
+  }
+
 }
 
 
@@ -4230,6 +4332,46 @@ void drawBlock() {
   }
   glPopMatrix();
 
+}
+
+void drawObstacles() {
+
+  for(int i = 0 ; i < OBSTACLE_NUMBER ; i++)
+    {
+      glPushMatrix();
+        drawObstacle(obstacle[i].x,obstacle[i].type,obstacle[i].track);
+      glPopMatrix();
+    }
+
+}
+
+void drawObstacle(int x,int type, int track) {
+
+
+
+  switch (type)
+  {
+    case 0:
+      glPushMatrix();
+        glTranslatef(x,0,0);
+        drawXtrapOnTrack(track);
+      glPopMatrix();
+      break;
+
+    case 1:
+      glPushMatrix();
+        glTranslatef(x,0,0);
+        drawHoleOnTrack(track);
+      glPopMatrix();
+      break;
+
+    case 2:
+      glPushMatrix();
+        glTranslatef(x,0,0);
+        drawBombOnTrack(track);
+      glPopMatrix();
+      break;    
+  }
 }
 
 

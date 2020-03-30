@@ -13,12 +13,14 @@ using namespace std;
 #define TIMER_ID 0
 #define LEN 100
 #define BLOCK_NUMBER 10
+#define OBSTACLE_NUMBER 20
 
 
 //Granice kretanja
 #define MAX_LEFT -3.6
 #define MAX_RIGHT 3.6
 #define MAX_TURN_LENGTH 3.6
+
 
 
 //Callback funkcije
@@ -36,6 +38,14 @@ static void lightInitialization(void);
 static void adjustPositionParameters(void);
 static void resetAllParameters(void);
 
+//Struktura prepreke
+
+struct OBSTACLE {
+	int x;
+	int track;
+	int type;
+};
+
 
 //Promenljive
 float animationParameter = 0;
@@ -46,9 +56,10 @@ float movementParameter = 0;
 //float turnParameter = 0;
 int track = 0; // -1 oznacava levu traku,0 srednju,a 1 desnu
 //int cameraNumber = 2;
-int prviBlok = 0;
-int poslednjiBlok = 228;
-vector<float> pozicije(BLOCK_NUMBER);
+int firstBlock = 0;
+int firstObstacle = 0;
+vector<float> blockPosition(BLOCK_NUMBER);
+vector<OBSTACLE> obstacle(OBSTACLE_NUMBER);
 
 
 
@@ -70,7 +81,7 @@ static bool thirdPerson = true;
 int main(int argc, char **argv){
    
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE | GLUT_MULTISAMPLE);
 
     //Postavljanje prozora
     glutInitWindowSize(800, 600);
@@ -78,16 +89,21 @@ int main(int argc, char **argv){
     glutCreateWindow("Crazy Chicken Kart");
     //glutFullScreen();
 
+    //Inicijalizacija pocetnih pozicija blokova okoline i prepreka
 
     for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
+    	blockPosition[i] = j;
+
+    srand(time(NULL));
+    for(int i = 0 , j = 40; i < OBSTACLE_NUMBER ; i++ , j+=40)
     {
-    	pozicije[i] = j;
-    	//cout << pozicije[i] << endl;
+    	obstacle[i].x = j;
+    	obstacle[i].type = rand()%3;
+    	obstacle[i].track = rand()%3-1;
+
+    	cout << obstacle[i].x << endl;
     }
 
-
-
-    
 
     //Registrovanje callback funkcija
     glutDisplayFunc(on_display);
@@ -219,28 +235,44 @@ void onSpecialKeyPress(int key, int x, int y){
 void onTimer(int id){
     if(id == TIMER_ID){
 
-      if(cameraParameter<1120)
-        cameraParameter+=5;
-      else
-      {
-        animationParameter+=0.75;
+     // if(cameraParameter<1120)
+        //cameraParameter+=5;
+      //else
+      //{
+        animationParameter+=1;
         tiresParameter+=2;
 
         for(int i = 0 ; i < BLOCK_NUMBER ; i++)
+        	blockPosition[i] -= 1;
+
+        if(blockPosition[firstBlock] == -72)
         {
-        	pozicije[i] -= 0.75;
+        	blockPosition[firstBlock] = 168;
+        	firstBlock++;
+
+        	if(firstBlock == BLOCK_NUMBER)
+        		firstBlock = 0;
         }
 
-        if(pozicije[prviBlok] == -72)
-        {
-        	pozicije[prviBlok] = 168;
-        	prviBlok++;
+        for(int i = 0 ; i < OBSTACLE_NUMBER ; i++)
+      		obstacle[i].x -= 1;
 
-        	if(prviBlok == BLOCK_NUMBER)
-        		prviBlok = 0;
-        }
-        
+
+     // cout << "KRAJ" << endl;
+
+
+      if(obstacle[firstObstacle].x == -40)
+      {
+      	obstacle[firstObstacle].x  = 760;
+      	firstObstacle++;
+
+      	if(firstObstacle == OBSTACLE_NUMBER)
+      		firstObstacle = 0;
       }
+        
+      //}
+
+  
 
       if(roofParameter >= 0 && takeOfRoof)
         roofParameter-=0.06;
@@ -272,7 +304,7 @@ void on_reshape(int width, int height) {
 	  // Postavljanje projekcije
 	  glMatrixMode(GL_PROJECTION);
 	  glLoadIdentity();
-	  gluPerspective(60, (float) width / height, 0.4, 150);
+	  gluPerspective(60, (float) width / height, 0.3, 150);
 }
 
 void on_display() {
@@ -285,13 +317,16 @@ void on_display() {
 
 
     if(thirdPerson)
-      gluLookAt(5*cos(cameraParameter/360), 2.5, 4*sin(cameraParameter/360)+movementParameter,
-                1, 0, 0+movementParameter,
+      gluLookAt(-4, 2.5,movementParameter,
+                120, 0,movementParameter,
                 0, 1, 0);
     else
-      gluLookAt(0.75, 0.85, -0.3+movementParameter,
-              150, 0.5, -0.3+movementParameter,
+      gluLookAt(1, 0.85, -0.3+movementParameter,
+              120, 0, movementParameter,
               0, 1, 0);
+
+  	glEnable(GL_MULTISAMPLE);
+    glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_FASTEST);
 
  	
  	 //draw_axes(50);
@@ -380,11 +415,11 @@ void resetAllParameters(){
   movementParameter = 0;
   movementParameter = 0;
   track = 0;
-  prviBlok=0;
+  firstBlock=0;
 
   for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
-    {
-      pozicije[i] = j;
-      //cout << pozicije[i] << endl;
-    }
+  	blockPosition[i] = j;
+
+  for(int i = 0 , j = 40; i < OBSTACLE_NUMBER ; i++ , j+=40)
+    obstacle[i].x = j;
 }
