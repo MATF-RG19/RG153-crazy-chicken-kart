@@ -4283,7 +4283,9 @@ void drawBlock() {
   glPushMatrix();
   glTranslatef(1.8, 0.105, 16.4);
   drawChristmasTree();
-  glTranslatef(12, 0, 0);
+  glTranslatef(8, 0, 0);
+  drawChristmasTree();
+  glTranslatef(8,0,0);
   drawChristmasTree();
   glPopMatrix();
 

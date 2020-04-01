@@ -37,6 +37,7 @@ static void onTimer(int id);
 static void lightInitialization(void);
 static void adjustPositionParameters(void);
 static void resetAllParameters(void);
+static void detectColision(void);
 
 //Struktura prepreke
 
@@ -100,8 +101,6 @@ int main(int argc, char **argv){
     	obstacle[i].x = j;
     	obstacle[i].type = rand()%3;
     	obstacle[i].track = rand()%3-1;
-
-    	cout << obstacle[i].x << endl;
     }
 
 
@@ -235,8 +234,8 @@ void onSpecialKeyPress(int key, int x, int y){
 void onTimer(int id){
     if(id == TIMER_ID){
 
-     // if(cameraParameter<1120)
-        //cameraParameter+=5;
+     //if(cameraParameter<1120)
+       // cameraParameter+=5;
       //else
       //{
         animationParameter+=1;
@@ -258,21 +257,17 @@ void onTimer(int id){
       		obstacle[i].x -= 1;
 
 
-     // cout << "KRAJ" << endl;
-
-
-      if(obstacle[firstObstacle].x == -40)
+      if(obstacle[firstObstacle].x == -20)
       {
-      	obstacle[firstObstacle].x  = 760;
+      	obstacle[firstObstacle].x  = 780;
       	firstObstacle++;
 
       	if(firstObstacle == OBSTACLE_NUMBER)
       		firstObstacle = 0;
       }
-        
-      //}
 
-  
+      detectColision();
+
 
       if(roofParameter >= 0 && takeOfRoof)
         roofParameter-=0.06;
@@ -285,9 +280,6 @@ void onTimer(int id){
 
     	adjustPositionParameters();
 
-
-
-      //cout << animationParameter << endl;
     }
     glutPostRedisplay();
     if (animationOngoing)
@@ -317,7 +309,7 @@ void on_display() {
 
 
     if(thirdPerson)
-      gluLookAt(-4, 2.5,movementParameter,
+      gluLookAt(-5, 3,movementParameter,
                 120, 0,movementParameter,
                 0, 1, 0);
     else
@@ -416,10 +408,89 @@ void resetAllParameters(){
   movementParameter = 0;
   track = 0;
   firstBlock=0;
+  firstObstacle=0;
 
   for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
   	blockPosition[i] = j;
 
-  for(int i = 0 , j = 40; i < OBSTACLE_NUMBER ; i++ , j+=40)
-    obstacle[i].x = j;
+    for(int i = 0 , j = 40; i < OBSTACLE_NUMBER ; i++ , j+=40)
+    {
+    	obstacle[i].x = j;
+    	obstacle[i].type = rand()%3;
+    	obstacle[i].track = rand()%3-1;
+    }
+}
+
+void detectColision() {
+	if(obstacle[firstObstacle].x - 1 == 3)
+
+      	switch(obstacle[firstObstacle].track)
+      	{
+      		case 0:
+      			if(movementParameter < 1.8 && movementParameter > -1.8)
+      			{
+	      			cout << "Udario si u: ";
+	      			switch(obstacle[firstObstacle].type)
+	      			{
+		      			case 0:
+		      				cout << "X zamku" << endl;
+		      				break;
+		      			case 1:
+		      				cout << "Rupu" << endl;
+		      				break;
+		      			case 2:
+		      				cout << "Bombu" << endl;
+		      				break;
+		      		}		
+
+      			
+
+      			}
+      			break;
+      		case 1:
+      			if(movementParameter < 5.4 && movementParameter > 1.8)
+      			{
+	      			cout << "Udario si u: ";
+	      			switch(obstacle[firstObstacle].type)
+	      			{
+		      			case 0:
+		      				cout << "X zamku" << endl;
+		      				break;
+		      			case 1:
+		      				cout << "Rupu" << endl;
+		      				break;
+		      			case 2:
+		      				cout << "Bombu" << endl;
+		      				break;
+		      		}		
+
+      			
+
+      			}
+      			break;
+      		case -1:
+      			if(movementParameter > -5.4 && movementParameter < -1.8)
+      			{
+	      			cout << "Udario si u: ";
+	      			switch(obstacle[firstObstacle].type)
+	      			{
+		      			case 0:
+		      				cout << "X zamku" << endl;
+		      				break;
+		      			case 1:
+		      				cout << "Rupu" << endl;
+		      				break;
+		      			case 2:
+		      				cout << "Bombu" << endl;
+		      				break;
+		      		}		
+
+      			
+
+      			}
+      			break;		
+
+
+
+      	}
 }
