@@ -22,7 +22,7 @@ void drawBombOnTrack(int track);
 void drawBuggy(void);
 void drawTiresForBuggy(void);
 void drawRoof(void);
-void drawBlock(void);
+void drawBlock(int blockNumber);
 void drawElectricPole(void);
 void drawObstacles(void);
 void drawObstacle(int x,int type,int track);

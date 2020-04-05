@@ -11,7 +11,7 @@ using namespace std;
 #define OBSTACLE_NUMBER 20
 
 struct OBSTACLE{
-  int x;
+  float x;
   int track;
   int type;
 };
@@ -20,15 +20,16 @@ struct OBSTACLE{
 extern float tiresParameter;
 extern float roofParameter;
 extern float spoilerParameter;
-extern float animationParameter;
 extern float movementParameter;
 //extern float turnParameter;
 extern bool goLeft;
 extern bool goRight;
+extern bool activateHole;
 extern int firstBlock;
 extern int firstObstacle;
 extern vector<float> blockPosition;
 extern vector<OBSTACLE> obstacle;
+extern float holeParameter,holeRotation;
 
 
 
@@ -3823,10 +3824,10 @@ void drawElectricPole() {
 
   	glBegin(GL_LINES);
   		glVertex3f(0,5.95,1);
-  		glVertex3f(24,5.95,1);
+  		glVertex3f(48,5.95,1);
 
   		glVertex3f(0,5.95,-1);
-  		glVertex3f(24,5.95,-1);
+  		glVertex3f(48,5.95,-1);
   	glEnd();
 
   	glEnable(GL_LIGHTING);
@@ -3845,53 +3846,13 @@ void drawCompleteScene(){
     {
       glPushMatrix();
         glTranslatef(blockPosition[i],0,0);
-        drawBlock();
+        drawBlock(i);
       glPopMatrix();
     }
 
     glPushMatrix();
       drawObstacles();
     glPopMatrix();
-
-
-    /*glPushMatrix();
-      glTranslatef(2,0.105,-9);
-      glScalef(5.5,5.5,5.5);
-      for(int i = 0 ; i < 10 ; i++)
-      {
-        glTranslatef(12,0,0);
-        drawTree();
-      }
-    glPopMatrix();*/
-
-    /*
-
-    glPushMatrix();
-      glTranslatef(15,0,0);
-      glScalef(1,2,1);
-      drawXtrap();
-    glPopMatrix();
-
-    glPushMatrix();
-      glTranslatef(10,0,3.6);
-      glScalef(0.35,0.35,0.35);
-      drawBomb();
-    glPopMatrix();
-
-    glPushMatrix();
-      glTranslatef(9.2,-0.05,3.3);
-      glScalef(0.35,0.35,0.35);
-      drawBomb();
-    glPopMatrix();
-
-    glPushMatrix();
-      glTranslatef(10,0,3);
-      glScalef(0.35,0.35,0.35);
-      drawBomb();
-    glPopMatrix();
-
-    */
-
 }
 
 void drawFixedParts(){
@@ -3905,6 +3866,11 @@ void drawFixedParts(){
       glTranslatef(0,0.2,movementParameter);
       //glRotatef(-turnParameter,0,1,0);
       glScalef(0.15,0.15,0.15);
+      if(activateHole)
+      {
+      	glTranslatef(6*holeParameter,0.15-1.2*holeRotation,0);
+    	glRotatef(8*holeRotation,0,0,-1);
+      }
       drawBuggy();
     glPopMatrix();
 
@@ -4263,7 +4229,7 @@ void drawHoleOnTrack(int track){
 }
 
 
-void drawBlock() {
+void drawBlock(int blockNumber) {
 
   //Ograda
 
@@ -4283,16 +4249,21 @@ void drawBlock() {
   glPushMatrix();
   glTranslatef(1.8, 0.105, 16.4);
   drawChristmasTree();
-  glTranslatef(8, 0, 0);
-  drawChristmasTree();
-  glTranslatef(8,0,0);
-  drawChristmasTree();
+  //glTranslatef(8, 0, 0);
+  //drawChristmasTree();
+  //glTranslatef(8,0,0);
+  //drawChristmasTree();
   glPopMatrix();
+  
 
-  glPushMatrix();
-  glTranslatef(0, 0.105, -6);
-  drawElectricPole();
-  glPopMatrix();
+  if(blockNumber % 2 == 0)
+  {
+
+	  glPushMatrix();
+	  glTranslatef(0, 0.105, -6);
+	  drawElectricPole();
+	  glPopMatrix();
+  }
 
   glPushMatrix();
   glTranslatef(1, 0, 5.2);

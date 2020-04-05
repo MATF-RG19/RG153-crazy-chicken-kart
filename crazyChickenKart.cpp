@@ -10,10 +10,13 @@
 using namespace std;
 
 #define TIMER_INTERVAL 20
-#define TIMER_ID 0
+#define TIMER_ID1 0 // Koristimo za animaciju voznje
+#define TIMER_ID2 1 // Koristimo za animaciju kamere
+#define TIMER_ID3 2 // Koristimo za animaciju prepreka
 #define LEN 100
 #define BLOCK_NUMBER 10
 #define OBSTACLE_NUMBER 20
+#define SPACEBAR 32
 
 
 //Granice kretanja
@@ -42,14 +45,13 @@ static void detectColision(void);
 //Struktura prepreke
 
 struct OBSTACLE {
-	int x;
+	float x;
 	int track;
 	int type;
 };
 
 
 //Promenljive
-float animationParameter = 0;
 float roofParameter = 10.25;
 float spoilerParameter = 3.3;
 float tiresParameter = 0;
@@ -59,6 +61,9 @@ int track = 0; // -1 oznacava levu traku,0 srednju,a 1 desnu
 //int cameraNumber = 2;
 int firstBlock = 0;
 int firstObstacle = 0;
+int tajmercic = 0;
+float holeParameter = 0;
+float holeRotation = 0;
 vector<float> blockPosition(BLOCK_NUMBER);
 vector<OBSTACLE> obstacle(OBSTACLE_NUMBER);
 
@@ -73,9 +78,20 @@ static bool roofOff = false;
 static bool takeOfRoof = false;
 static bool putOnRoof = false; 
 static bool activateSpoiler = false;
+static bool thirdPerson = true;
+static bool pressedStart = false;
+static bool goPressed = false;
 bool goLeft = false;
 bool goRight = false;
-static bool thirdPerson = true;
+bool activateHole = false;
+
+
+//Promenljive za odredjivanje animacija
+
+static float driveAnimation = 0;
+int cameraAnimation = 1;
+int trapAnimation = 0;
+
 
 
 
@@ -137,29 +153,30 @@ void on_keyboard(unsigned char key, int x, int y) {
           	break;
         case 'g':
         case 'G':
-          	if(!animationOngoing)
-          	{
-            	animationOngoing = 1;
-            	glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
+        	if(!pressedStart)
+        	{
+        		pressedStart = true;
+	          	if(!driveAnimation && cameraAnimation == 0)
+	          	{
+	            	driveAnimation = 1;
+	            	glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID1);
+	          	}else if(cameraAnimation)
+	          		glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
           	}
           	break;
-        case 'j':
-          	if(!animationOngoing)
-          	{
-            	animationOngoing = 1;
-            	glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
-            } 
-          	takeOfRoof=true;
-          	putOnRoof=false;
+        case 'j': 
+        	if(cameraAnimation || driveAnimation)
+        	{
+	          	takeOfRoof=true;
+	          	putOnRoof=false;
+          	}
           	break;          
         case 'k':
-          	if(!animationOngoing)
+          	if(cameraAnimation || driveAnimation)
           	{
-            	animationOngoing = 1;
-            	glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID);
-            }
-          	putOnRoof=true;
-          	takeOfRoof=false;
+	          	putOnRoof=true;
+	          	takeOfRoof=false;
+          	}
           	break;
           	/*
         case 'l':
@@ -176,7 +193,7 @@ void on_keyboard(unsigned char key, int x, int y) {
           	break;  
         case 'd':
         case 'D':
-        	if(animationParameter > 0)
+        	if(driveAnimation)
        		{
 		        goRight=true;
 		        goLeft=false;
@@ -187,7 +204,7 @@ void on_keyboard(unsigned char key, int x, int y) {
         	break;
         case 'a':
         case 'A':
-        	if(animationParameter > 0)
+        	if(driveAnimation)
        		{
 		        goLeft=true;
 		        goRight=false;
@@ -195,7 +212,11 @@ void on_keyboard(unsigned char key, int x, int y) {
 	            	track -= 1;
 		        glutPostRedisplay();
        		}
-        	break;	                
+        	break;
+        case SPACEBAR:
+        	if(!goPressed)
+        		goPressed=true;
+        	break;		                
         case 27:
           exit(0);
           break;  
@@ -207,7 +228,7 @@ void onSpecialKeyPress(int key, int x, int y){
 
   switch(key){
     case GLUT_KEY_RIGHT:
-      if(animationParameter > 0)
+      if(driveAnimation)
        {
 	        goRight=true;
 	        goLeft=false;
@@ -217,7 +238,7 @@ void onSpecialKeyPress(int key, int x, int y){
         }
         break;
     case GLUT_KEY_LEFT:
-      if(animationParameter > 0)
+      if(driveAnimation)
       	{
 	        goLeft = true;
 	        goRight = false;
@@ -232,13 +253,10 @@ void onSpecialKeyPress(int key, int x, int y){
 }
 
 void onTimer(int id){
-    if(id == TIMER_ID){
+    if(id == TIMER_ID1){
 
-     //if(cameraParameter<1120)
-       // cameraParameter+=5;
-      //else
-      //{
-        animationParameter+=1;
+    	if(goPressed)
+    	{
         tiresParameter+=2;
 
         for(int i = 0 ; i < BLOCK_NUMBER ; i++)
@@ -279,11 +297,35 @@ void onTimer(int id){
         spoilerParameter+=0.05;*/
 
     	adjustPositionParameters();
+    }
 
+    }else if(id == TIMER_ID2)
+    {
+
+    	cameraParameter+=2.5;
+    	if(cameraParameter > 1130)
+    	{
+    		cameraAnimation = 0;
+    		driveAnimation = 1;
+    	}
+    }else
+    {
+      thirdPerson = true;
+      holeParameter += 0.1;
+
+      if(holeParameter > 1.2)
+      {
+        holeRotation += 0.2;
+        holeParameter += 0.05;
+      }
     }
     glutPostRedisplay();
-    if (animationOngoing)
-      glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID);
+    if (driveAnimation)
+    	glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID1);
+  	else if(cameraAnimation)
+  		glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID2);
+  	else
+  		glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID3);
 }
 
 void on_reshape(int width, int height) {
@@ -307,15 +349,21 @@ void on_display() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-
-    if(thirdPerson)
-      gluLookAt(-5, 3,movementParameter,
-                120, 0,movementParameter,
-                0, 1, 0);
-    else
-      gluLookAt(1, 0.85, -0.3+movementParameter,
-              120, 0, movementParameter,
-              0, 1, 0);
+    if(driveAnimation || trapAnimation)
+    {
+	    if(thirdPerson)
+	      gluLookAt(5*cos(cameraParameter/360), 3, sin(cameraParameter/360)+movementParameter,
+	                120, 0,movementParameter,
+	                0, 1, 0);
+	    else
+	      gluLookAt(1, 0.85, -0.3+movementParameter,
+	              120, 0, movementParameter,
+	              0, 1, 0);
+	}
+	else
+		gluLookAt(5*cos(cameraParameter/360), 3,-2.5*sin(cameraParameter/360),
+		                1.5, cameraParameter/400, 0,
+		                0, 1, 0);
 
   	glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_FASTEST);
@@ -397,7 +445,6 @@ void adjustPositionParameters(){
 }
 
 void resetAllParameters(){
-  animationParameter = 0;
   cameraParameter = 0;
   roofParameter=10.25;
   takeOfRoof=false;
@@ -405,10 +452,20 @@ void resetAllParameters(){
   spoilerParameter=3.3;
   activateSpoiler=false;
   movementParameter = 0;
-  movementParameter = 0;
   track = 0;
   firstBlock=0;
   firstObstacle=0;
+  activateHole = false;
+  driveAnimation = 0;
+  cameraAnimation = 1;
+  trapAnimation = 0;
+  goPressed = false;
+  goLeft = false;
+  goRight = false;
+  tajmercic = 0;
+  holeRotation = 0;
+  holeParameter = 0;
+
 
   for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
   	blockPosition[i] = j;
@@ -434,12 +491,19 @@ void detectColision() {
 	      			{
 		      			case 0:
 		      				cout << "X zamku" << endl;
+		      				driveAnimation = 0;
+		      				trapAnimation = 1;
 		      				break;
 		      			case 1:
 		      				cout << "Rupu" << endl;
+		      				activateHole = true;
+		      				driveAnimation = 0;
+		      				trapAnimation = 1;
 		      				break;
 		      			case 2:
 		      				cout << "Bombu" << endl;
+		      				driveAnimation = 0;
+		      				trapAnimation = 1;
 		      				break;
 		      		}		
 
@@ -455,12 +519,19 @@ void detectColision() {
 	      			{
 		      			case 0:
 		      				cout << "X zamku" << endl;
+		      				driveAnimation = 0;
+		      				trapAnimation = 1;
 		      				break;
 		      			case 1:
 		      				cout << "Rupu" << endl;
+		      				activateHole = true;
+		      				driveAnimation = 0;
+		      				trapAnimation = 1;
 		      				break;
 		      			case 2:
 		      				cout << "Bombu" << endl;
+		      				driveAnimation = 0;
+		      				trapAnimation = 1;
 		      				break;
 		      		}		
 
@@ -476,12 +547,19 @@ void detectColision() {
 	      			{
 		      			case 0:
 		      				cout << "X zamku" << endl;
+		      				driveAnimation = 0;
+		      				trapAnimation = 1;
 		      				break;
 		      			case 1:
 		      				cout << "Rupu" << endl;
+		      				driveAnimation = 0;
+		      				trapAnimation = 1;
+		      				activateHole = true;
 		      				break;
 		      			case 2:
 		      				cout << "Bombu" << endl;
+		      				driveAnimation = 0;
+		      				trapAnimation = 1;
 		      				break;
 		      		}		
 
