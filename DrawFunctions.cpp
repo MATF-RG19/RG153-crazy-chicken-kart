@@ -25,11 +25,15 @@ extern float movementParameter;
 extern bool goLeft;
 extern bool goRight;
 extern bool activateHole;
+extern bool activateXtrap;
+extern bool activateBomb;
 extern int firstBlock;
 extern int firstObstacle;
 extern vector<float> blockPosition;
 extern vector<OBSTACLE> obstacle;
 extern float holeParameter,holeRotation;
+extern float xTrapHorizontal,xTrapVertical,xTrapRotation;
+extern float bombParameter;
 
 
 
@@ -885,10 +889,13 @@ void drawBuggy(){
 
 	glColor3f(0.1,0.1,0.1);
 
+  if(!activateXtrap)
+  {
 	glPushMatrix();
 		glScalef(17,17,17);
 		drawTiresForBuggy();	
-	glPopMatrix();  
+	glPopMatrix();
+  }  
 
   glColor3f(0.1,0.1,0.1);
 
@@ -3862,14 +3869,28 @@ void drawFixedParts(){
       drawKart();
     glPopMatrix();*/
 
+    if(activateBomb)
+    {
+      glPushMatrix();
+        glColor3f(1,0,0);
+        glTranslatef(1.5,0,movementParameter);
+        glutSolidSphere(bombParameter,100,100);
+      glPopMatrix();
+    }
+
     glPushMatrix();
       glTranslatef(0,0.2,movementParameter);
       //glRotatef(-turnParameter,0,1,0);
       glScalef(0.15,0.15,0.15);
       if(activateHole)
       {
-      	glTranslatef(6*holeParameter,0.15-1.2*holeRotation,0);
-    	glRotatef(8*holeRotation,0,0,-1);
+        glTranslatef(6*holeParameter,0.15-1.2*holeRotation,0);
+      	glRotatef(8*holeRotation,0,0,-1);
+      }else if(activateXtrap)
+      {
+        
+        glTranslatef(xTrapHorizontal,xTrapVertical,0);
+        glRotatef(xTrapRotation,0,-1,0);    
       }
       drawBuggy();
     glPopMatrix();

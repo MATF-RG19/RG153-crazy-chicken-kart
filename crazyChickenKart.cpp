@@ -64,6 +64,10 @@ int firstObstacle = 0;
 int tajmercic = 0;
 float holeParameter = 0;
 float holeRotation = 0;
+float xTrapHorizontal = 0;
+float xTrapVertical = 0;
+float xTrapRotation = 0;
+float bombParameter = 0;
 vector<float> blockPosition(BLOCK_NUMBER);
 vector<OBSTACLE> obstacle(OBSTACLE_NUMBER);
 
@@ -84,6 +88,8 @@ static bool goPressed = false;
 bool goLeft = false;
 bool goRight = false;
 bool activateHole = false;
+bool activateXtrap = false;
+bool activateBomb = false;
 
 
 //Promenljive za odredjivanje animacija
@@ -98,7 +104,7 @@ int trapAnimation = 0;
 int main(int argc, char **argv){
    
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE | GLUT_MULTISAMPLE);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE | GLUT_MULTISAMPLE );
 
     //Postavljanje prozora
     glutInitWindowSize(800, 600);
@@ -130,6 +136,9 @@ int main(int argc, char **argv){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
+
+
+
 
 
     //Postavljanje pozadine na crnu boju
@@ -214,7 +223,7 @@ void on_keyboard(unsigned char key, int x, int y) {
        		}
         	break;
         case SPACEBAR:
-        	if(!goPressed)
+        	if(!goPressed && driveAnimation)
         		goPressed=true;
         	break;		                
         case 27:
@@ -311,13 +320,40 @@ void onTimer(int id){
     }else
     {
       thirdPerson = true;
-      holeParameter += 0.1;
 
-      if(holeParameter > 1.2)
+      if(activateHole)
       {
-        holeRotation += 0.2;
-        holeParameter += 0.05;
+        holeParameter += 0.1;
+
+        if(holeParameter > 1.2)
+        {
+          holeRotation += 0.2;
+          holeParameter += 0.05;
+        }
+
+        if( holeParameter > 10)
+          resetAllParameters();
+      }else if(activateXtrap)
+      {
+        if(xTrapHorizontal < 75)
+        {
+          xTrapHorizontal += 0.5;
+          if(xTrapHorizontal > 25)
+            xTrapRotation += 0.5;
+        }
+        else
+          resetAllParameters();
+
+        if(xTrapVertical > -2)
+          xTrapVertical -= 0.05;
+      }else
+      {
+        if(bombParameter < 5.7)
+          bombParameter += 0.3;
+        else
+          resetAllParameters();
       }
+
     }
     glutPostRedisplay();
     if (driveAnimation)
@@ -352,7 +388,7 @@ void on_display() {
     if(driveAnimation || trapAnimation)
     {
 	    if(thirdPerson)
-	      gluLookAt(5*cos(cameraParameter/360), 3, sin(cameraParameter/360)+movementParameter,
+	      gluLookAt(-5, 3,movementParameter,
 	                120, 0,movementParameter,
 	                0, 1, 0);
 	    else
@@ -365,8 +401,10 @@ void on_display() {
 		                1.5, cameraParameter/400, 0,
 		                0, 1, 0);
 
-  	glEnable(GL_MULTISAMPLE);
-    glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_FASTEST);
+    glEnable(GL_MULTISAMPLE);
+    glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+  	
+    
 
  	
  	 //draw_axes(50);
@@ -456,6 +494,8 @@ void resetAllParameters(){
   firstBlock=0;
   firstObstacle=0;
   activateHole = false;
+  activateXtrap = false;
+  activateBomb = false;
   driveAnimation = 0;
   cameraAnimation = 1;
   trapAnimation = 0;
@@ -465,6 +505,11 @@ void resetAllParameters(){
   tajmercic = 0;
   holeRotation = 0;
   holeParameter = 0;
+  xTrapHorizontal = 0;
+  xTrapVertical = 0;
+  xTrapRotation = 0;
+  bombParameter = 0;
+  pressedStart = false;
 
 
   for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
@@ -493,6 +538,7 @@ void detectColision() {
 		      				cout << "X zamku" << endl;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
+                  activateXtrap = true;
 		      				break;
 		      			case 1:
 		      				cout << "Rupu" << endl;
@@ -504,6 +550,7 @@ void detectColision() {
 		      				cout << "Bombu" << endl;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
+                  activateBomb = true;
 		      				break;
 		      		}		
 
@@ -521,6 +568,7 @@ void detectColision() {
 		      				cout << "X zamku" << endl;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
+                  activateXtrap = true;
 		      				break;
 		      			case 1:
 		      				cout << "Rupu" << endl;
@@ -532,6 +580,7 @@ void detectColision() {
 		      				cout << "Bombu" << endl;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
+                  activateBomb = true;
 		      				break;
 		      		}		
 
@@ -549,6 +598,7 @@ void detectColision() {
 		      				cout << "X zamku" << endl;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
+                  activateXtrap = true;
 		      				break;
 		      			case 1:
 		      				cout << "Rupu" << endl;
@@ -560,6 +610,7 @@ void detectColision() {
 		      				cout << "Bombu" << endl;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
+                  activateBomb = true;
 		      				break;
 		      		}		
 
