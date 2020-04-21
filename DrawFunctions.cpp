@@ -17,6 +17,9 @@ struct OBSTACLE{
 };
 
 
+
+
+
 extern float tiresParameter;
 extern float roofParameter;
 extern float spoilerParameter;
@@ -34,7 +37,6 @@ extern vector<OBSTACLE> obstacle;
 extern float holeParameter,holeRotation;
 extern float xTrapHorizontal,xTrapVertical,xTrapRotation;
 extern float bombParameter;
-
 
 
 
@@ -1908,6 +1910,8 @@ void drawBuggy(){
 		c={13.24,2.4375,-3.25};
 		d={13.24,2.4375,-1.25};
 
+    
+
 		setNormalAndVertexQuads(a,b,c,d);
 
 		a={13.24,2.4375,-3.25};
@@ -3016,10 +3020,11 @@ void drawBuggy(){
 	glPopMatrix();
 
 	//Brzinometar
-
+  GLUquadric* quad7 = gluNewQuadric();
+/*
 	glPushMatrix();
 		glColor3f(0,0,0.3);
-		GLUquadric* quad7 = gluNewQuadric();
+		
 		glTranslatef(13.25,2.5,-2.7);
 		glRotatef(90,0,1,0);
 		glRotatef(45,1,0,0);
@@ -3033,6 +3038,7 @@ void drawBuggy(){
 		glRotatef(45,1,0,0);
 		gluDisk(quad7,0,0.3,20,20);
 	glPopMatrix();
+  */
 
 	//RadioO
 
@@ -3978,6 +3984,8 @@ void drawFixedParts(){
       glScalef(300,0.01,20);
       drawHilltop();
     glPopMatrix();*/
+
+
 
 }
 

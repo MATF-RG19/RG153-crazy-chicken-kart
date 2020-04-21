@@ -6,7 +6,7 @@ LDLIBS=-lglut -lGL -lGLU
 
 
 PROGRAM=crazyChickenKart
-OBJECTS=crazyChickenKart.o DrawFunctions.o 
+OBJECTS=crazyChickenKart.o DrawFunctions.o  image.o
 all: $(PROGRAM)
 
 $(PROGRAM): $(OBJECTS)
@@ -17,6 +17,11 @@ wolfQuest.o: crazyChickenKart.cpp
 
 drawFunc.o: DrawFunctions.cpp
 	$(CXX) $(CFLAGS) $(LDLIBS) DrawFunctions.cpp
+
+image.o: image.cpp
+	$(CXX) $(CFLAGS) $(LDLIBS) image.cpp
+
+
 
 clean:
 	rm -rf *o program

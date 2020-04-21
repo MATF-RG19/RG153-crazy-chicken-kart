@@ -6,8 +6,16 @@
 #include <GL/glut.h>
 #include <cmath>
 #include "DrawFunctions.hpp"
+#include "image.hpp"
 
 using namespace std;
+
+#define FILENAME0 "navigation.bmp"
+#define FILENAME1 "speedometer.bmp"
+#define FILENAME2 "plate.bmp"
+
+/* Identifikatori tekstura. */
+static GLuint names[3];
 
 #define TIMER_INTERVAL 20
 #define TIMER_ID1 0 // Koristimo za animaciju voznje
@@ -41,6 +49,8 @@ static void lightInitialization(void);
 static void adjustPositionParameters(void);
 static void resetAllParameters(void);
 static void detectColision(void);
+static void initialize(void);
+static float matrix[16];
 
 //Struktura prepreke
 
@@ -124,6 +134,8 @@ int main(int argc, char **argv){
     	obstacle[i].type = rand()%3;
     	obstacle[i].track = rand()%3-1;
     }
+
+    initialize();
 
 
     //Registrovanje callback funkcija
@@ -392,7 +404,7 @@ void on_display() {
 	                120, 0,movementParameter,
 	                0, 1, 0);
 	    else
-	      gluLookAt(1, 0.85, -0.3+movementParameter,
+	      gluLookAt(1, 0.8, -0.3+movementParameter,
 	              120, 0, movementParameter,
 	              0, 1, 0);
 	}
@@ -403,9 +415,6 @@ void on_display() {
 
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
-  	
-    
-
  	
  	 //draw_axes(50);
    drawFixedParts(); 
@@ -413,6 +422,81 @@ void on_display() {
    glPushMatrix();
     drawCompleteScene();
    glPopMatrix();
+
+   if(!trapAnimation)
+   {
+
+   glPushMatrix();
+	    glTranslatef(0,0.2,movementParameter);
+
+      /*Tekstura navigacije*/
+
+	    glBindTexture(GL_TEXTURE_2D, names[0]);
+	    glBegin(GL_QUADS);
+	        glNormal3f(0, 0, -1);
+
+	        glTexCoord2f(0, 0);
+	        glVertex3f(1.8105,0.23625,-0.0765);
+
+	        glTexCoord2f(1, 0);
+	        glVertex3f(1.8105,0.23625,0.0765);
+
+	        glTexCoord2f(1, 1);
+	        glVertex3f(1.932,0.32625,0.0765);
+
+	        glTexCoord2f(0, 1);
+	        glVertex3f(1.932,0.32625,-0.0765);
+
+
+	    glEnd();
+
+	    glScalef(0.15,0.15,0.15);
+
+	    /*Tekstura brzinometra*/
+	    
+	    
+	    glBindTexture(GL_TEXTURE_2D, names[1]);
+	    glBegin(GL_QUADS);
+	      glNormal3f(0, 0, -1);
+
+	      glTexCoord2f(0, 0);
+	      glVertex3f(12.98,2.25,-3);
+
+	      glTexCoord2f(1, 0);
+	      glVertex3f(12.98,2.25,-1.5);
+
+	      glTexCoord2f(1, 1);
+	      glVertex3f(13.73,2.8125,-1.5);
+
+	      glTexCoord2f(0, 1);
+	      glVertex3f(13.73,2.8125,-3);
+	    glEnd();
+
+      /*Tekstura tablice*/
+
+      glBindTexture(GL_TEXTURE_2D, names[2]);
+      glBegin(GL_QUADS);
+        glNormal3f(0, 0, -1);
+
+        glTexCoord2f(0, 0);
+        glVertex3f(-0.51,2.25,-1.75);
+
+        glTexCoord2f(1, 0);
+        glVertex3f(-0.51,2.25,1.75);
+
+        glTexCoord2f(1, 1);
+        glVertex3f(-0.51,3.25,1.75);
+
+        glTexCoord2f(0, 1);
+        glVertex3f(-0.51,3.25,-1.75);
+      glEnd();
+
+	    /* Iskljucujemo aktivnu teksturu */
+
+	    glBindTexture(GL_TEXTURE_2D, 0);
+    glPopMatrix();
+
+  }
 
     
 
@@ -622,4 +706,89 @@ void detectColision() {
 
 
       	}
+}
+
+
+static void initialize(void)
+{
+    /* Objekat koji predstavlja teskturu ucitanu iz fajla. */
+    Image * image;
+
+    /* Postavlja se boja pozadine. */
+    glClearColor(0, 0, 0, 0);
+
+    /* Ukljucuje se testiranje z-koordinate piksela. */
+    glEnable(GL_DEPTH_TEST);
+
+    /* Ukljucuju se teksture. */
+    glEnable(GL_TEXTURE_2D);
+
+    glTexEnvf(GL_TEXTURE_ENV,
+              GL_TEXTURE_ENV_MODE,
+              GL_REPLACE);
+
+    /*
+     * Inicijalizuje se objekat koji ce sadrzati teksture ucitane iz
+     * fajla.
+     */
+    image = image_init(0, 0);
+
+    /* Kreira se prva tekstura. */
+    image_read(image, FILENAME0);
+
+    /* Generisu se identifikatori tekstura. */
+    glGenTextures(3, names);
+
+    glBindTexture(GL_TEXTURE_2D, names[0]);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 image->width, image->height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
+    /* Kreira se druga tekstura. */
+    image_read(image, FILENAME1);
+
+    glBindTexture(GL_TEXTURE_2D, names[1]);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 image->width, image->height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
+    /* Kreira se treca tekstura. */
+
+    image_read(image, FILENAME2);
+
+    glBindTexture(GL_TEXTURE_2D, names[2]);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 image->width, image->height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
+    /* Iskljucujemo aktivnu teksturu */
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    /* Unistava se objekat za citanje tekstura iz fajla. */
+    image_done(image);
+
+    /* Inicijalizujemo matricu rotacije. */
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
 }
