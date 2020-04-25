@@ -50,7 +50,8 @@ static void onTimer(int id);
 static void lightInitialization(void);
 static void adjustPositionParameters(void);
 static void resetAllParameters(void);
-static void detectColision(void);
+static void detectTrapColision(void);
+static void detectStarColision(void);
 static void initialize(void);
 static float matrix[16];
 
@@ -360,7 +361,8 @@ void onTimer(int id){
       	firstStar++;
       }	
 
-      detectColision();
+      detectTrapColision();
+      detectStarColision();
 
 
       if(roofParameter >= 0 && takeOfRoof)
@@ -695,12 +697,10 @@ void resetAllParameters(){
     {
     	stars[i].x = j;
     	stars[i].track = rand()%3-1;
-    	
-    	cout << stars[i].track << endl;
     }  
 }
 
-void detectColision() {
+void detectTrapColision() {
 	if(obstacle[firstObstacle].x - 1 <= 3 && obstacle[firstObstacle].x + 1 >= 0)
 
       	switch(obstacle[firstObstacle].track)
@@ -799,6 +799,29 @@ void detectColision() {
 
 
       	}
+}
+
+void detectStarColision() {
+	if(stars[firstStar].x <= 3 && stars[firstStar].x >= 1.5)
+	{
+		switch(stars[firstStar].track)
+		{
+			case 0:
+      			if(movementParameter < 1.8 && movementParameter > -1.8)
+      				cout << "Uhvatio si u srednjoj traci" << endl;
+      			break;
+      		case 1:
+      			if(movementParameter < 5.4 && movementParameter > 1.8)
+      				cout << "Uhvatio si u desnoj traci" << endl;
+      			break;
+      		case -1:
+      			if(movementParameter > -5.4 && movementParameter < -1.8)
+      				cout << "Uhvatio si u levoj traci" << endl;
+      			break;				
+
+      			
+		}
+	}
 }
 
 
