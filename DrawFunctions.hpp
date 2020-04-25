@@ -28,4 +28,5 @@ void drawObstacles(void);
 void drawObstacle(float x,int type,int track);
 void drawHole(void);
 void drawHoleOnTrack(int track);
+void drawStars();
 #endif

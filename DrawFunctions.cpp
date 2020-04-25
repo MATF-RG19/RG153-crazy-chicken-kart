@@ -9,11 +9,17 @@
 using namespace std;
 
 #define OBSTACLE_NUMBER 20
+#define STAR_NUMBER 10
 
 struct OBSTACLE{
   float x;
   int track;
   int type;
+};
+
+struct STAR{
+  float x;
+  int track;
 };
 
 
@@ -34,9 +40,11 @@ extern int firstBlock;
 extern int firstObstacle;
 extern vector<float> blockPosition;
 extern vector<OBSTACLE> obstacle;
+extern vector<STAR> stars;
 extern float holeParameter,holeRotation;
 extern float xTrapHorizontal,xTrapVertical,xTrapRotation;
 extern float bombParameter;
+extern int starRotationParameter;
 
 
 
@@ -3865,7 +3873,9 @@ void drawCompleteScene(){
 
     glPushMatrix();
       drawObstacles();
+      drawStars();
     glPopMatrix();
+
 }
 
 void drawFixedParts(){
@@ -4499,7 +4509,7 @@ void drawBlock(int blockNumber) {
   }
 
   if(blockNumber == 0 || blockNumber == 4 || blockNumber == 7)
-  {
+  { 
     glPushMatrix();
       glTranslatef(0,2,-20);
       glRotatef(-45,0,1,0);
@@ -4589,6 +4599,195 @@ void drawObstacle(float x,int type, int track) {
   }
 }
 
+void drawStar(){
+
+
+  glColor3f(0.988, 0.760, 0.003);
+  
+  glBegin(GL_POLYGON);
+    a={2.2,3.1,0};
+    b={3.6,-1.2,0};
+    c={0,-3.8,0};
+    setNormalAndVertexTriangles(a,b,c);
+    glVertex3f(-3.6,-1.2,0);
+    glVertex3f(-2.2,3.1,0);
+  glEnd();
+
+  glBegin(GL_TRIANGLES);
+
+    glVertex3f(0,10,0);
+    glVertex3f(2.2,3.1,0);
+    glVertex3f(-2.2,3.1,0);
+
+    glVertex3f(2.2,3.1,0);
+    glVertex3f(9.5,3.1,0);
+    glVertex3f(3.6,-1.2,0);
+
+    glVertex3f(3.6,-1.2,0);
+    glVertex3f(5.9,-8.1,0);
+    glVertex3f(0,-3.8,0);
+
+    glVertex3f(0,-3.8,0);
+    glVertex3f(-5.9,-8.1,0);
+    glVertex3f(-3.6,-1.2,0);
+
+    glVertex3f(-3.6,-1.2,0);
+    glVertex3f(-9.5,3.1,0);
+    glVertex3f(-2.2,3.1,0);
+
+  glEnd();
+
+  glTranslatef(0,0,2);
+  
+  glBegin(GL_POLYGON);
+    a={2.2,3.1,0};
+    b={3.6,-1.2,0};
+    c={0,-3.8,0};
+    setNormalAndVertexTriangles(a,b,c);
+    glVertex3f(-3.6,-1.2,0);
+    glVertex3f(-2.2,3.1,0);
+  glEnd();
+
+  glBegin(GL_TRIANGLES);
+
+    glVertex3f(0,10,0);
+    glVertex3f(2.2,3.1,0);
+    glVertex3f(-2.2,3.1,0);
+
+    glVertex3f(2.2,3.1,0);
+    glVertex3f(9.5,3.1,0);
+    glVertex3f(3.6,-1.2,0);
+
+    glVertex3f(3.6,-1.2,0);
+    glVertex3f(5.9,-8.1,0);
+    glVertex3f(0,-3.8,0);
+
+    glVertex3f(0,-3.8,0);
+    glVertex3f(-5.9,-8.1,0);
+    glVertex3f(-3.6,-1.2,0);
+
+    glVertex3f(-3.6,-1.2,0);
+    glVertex3f(-9.5,3.1,0);
+    glVertex3f(-2.2,3.1,0);
+
+  glEnd();
+
+  glTranslatef(0,0,-2);
+
+  /* Zatvaramo supljine */
+
+  glBegin(GL_QUADS);
+    a={2.2,3.1,0};
+    b={9.5,3.1,0};
+    c={9.5,3.1,2};
+    d={2.2,3.1,2};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={-2.2,3.1,0};
+    b={-9.5,3.1,0};
+    c={-9.5,3.1,2};
+    d={-2.2,3.1,2};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={0,10,0};
+    b={2.2,3.1,0};
+    c={2.2,3.1,2};
+    d={0,10,2};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={0,10,0};
+    b={-2.2,3.1,0};
+    c={-2.2,3.1,2};
+    d={0,10,2};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={9.5,3.1,0};
+    b={3.6,-1.2,0};
+    c={3.6,-1.2,2};
+    d={9.5,3.1,2};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={-9.5,3.1,0};
+    b={-3.6,-1.2,0};
+    c={-3.6,-1.2,2};
+    d={-9.5,3.1,2};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={3.6,-1.2,0};
+    b={5.9,-8.1,0};
+    c={5.9,-8.1,2};
+    d={3.6,-1.2,2};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={-3.6,-1.2,0};
+    b={-5.9,-8.1,0};
+    c={-5.9,-8.1,2};
+    d={-3.6,-1.2,2};
+    setNormalAndVertexQuads(a,b,c,d);
+
+
+    a={5.9,-8.1,0};
+    b={0,-3.8,0};
+    c={0,-3.8,2};
+    d={5.9,-8.1,2};
+    setNormalAndVertexQuads(a,b,c,d);
+
+    a={-5.9,-8.1,0};
+    b={0,-3.8,0};
+    c={0,-3.8,2};
+    d={-5.9,-8.1,2};
+    setNormalAndVertexQuads(a,b,c,d);
+  glEnd();
+
+
+}
+
+void drawStarOnTrack(int track){
+ 
+  glTranslatef(0,1,0);
+
+
+  switch(track)
+    {
+      case 0:
+        glPushMatrix();
+          glScalef(0.05,0.05,0.05);
+          glRotatef(90+starRotationParameter,0,1,0);
+          drawStar();
+        glPopMatrix();
+        break;
+      case -1:
+        glPushMatrix();
+          glTranslatef(0,0,-3.6);
+          glScalef(0.05,0.05,0.05);
+          glRotatef(90+starRotationParameter,0,1,0);
+          drawStar();
+        glPopMatrix();
+        break;
+      case 1:
+        glPushMatrix();
+          glTranslatef(0,0,3.6);
+          glScalef(0.05,0.05,0.05);
+          glRotatef(90+starRotationParameter,0,1,0);
+          drawStar();
+        glPopMatrix();
+        break;
+    }
+
+
+}
+
+void drawStars() {
+
+  for(int i = 0 ; i < STAR_NUMBER ; i++)
+    {
+      glPushMatrix();
+         glTranslatef(stars[i].x,0,0);
+         drawStarOnTrack(stars[i].track);
+      glPopMatrix();
+    }
+
+}
 
 
 

@@ -25,17 +25,18 @@ static GLuint names[4];
 #define LEN 100
 #define BLOCK_NUMBER 10
 #define OBSTACLE_NUMBER 20
+#define STAR_NUMBER 10
 #define SPACEBAR 32
 
 
-//Granice kretanja
+/* Granice kretanja */
 #define MAX_LEFT -3.6
 #define MAX_RIGHT 3.6
 #define MAX_TURN_LENGTH 3.6
 
 
 
-//Callback funkcije
+/* Callback funkcije */
 
 static void on_display(void);
 static void on_reshape(int width, int height);
@@ -53,7 +54,7 @@ static void detectColision(void);
 static void initialize(void);
 static float matrix[16];
 
-//Struktura prepreke
+/* Struktura prepreke */
 
 struct OBSTACLE {
 	float x;
@@ -61,8 +62,16 @@ struct OBSTACLE {
 	int type;
 };
 
+/* Struktura zvezde */
 
-//Promenljive
+struct STARS {
+	float x;
+	int track;
+};
+
+
+/* Promenljive */
+
 float roofParameter = 10.25;
 float spoilerParameter = 3.3;
 float tiresParameter = 0;
@@ -70,11 +79,6 @@ float movementParameter = 0;
 //float turnParameter = 0;
 int track = 0; // -1 oznacava levu traku,0 srednju,a 1 desnu
 //int cameraNumber = 2;
-int firstBlock = 0;
-int lastBlock = 9;
-int firstObstacle = 0;
-int lastObstacle = 19;
-int tajmercic = 0;
 float holeParameter = 0;
 float holeRotation = 0;
 float xTrapHorizontal = 0;
@@ -82,8 +86,24 @@ float xTrapVertical = 0;
 float xTrapRotation = 0;
 float bombParameter = 0;
 float movementSpeed = 0;
+int starRotationParameter = 0;
 vector<float> blockPosition(BLOCK_NUMBER);
 vector<OBSTACLE> obstacle(OBSTACLE_NUMBER);
+vector<STARS> stars(STAR_NUMBER);
+
+/* Pokazivaci na prvi i poslednji blok */
+int firstBlock = 0;
+int lastBlock = 9;
+
+/* Pokazivaci na prvu i poslenju prepreku */
+
+int firstObstacle = 0;
+int lastObstacle = 19;
+
+/* Pokazivaci na prvu i poslednju zvezdu */
+
+int firstStar = 0;
+int lastStar = 9;
 
 
 
@@ -106,7 +126,7 @@ bool activateXtrap = false;
 bool activateBomb = false;
 
 
-//Promenljive za odredjivanje animacija
+/* Promenljive za odredjivanje animacija */
 
 static float driveAnimation = 0;
 int cameraAnimation = 1;
@@ -120,13 +140,14 @@ int main(int argc, char **argv){
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE | GLUT_MULTISAMPLE );
 
-    //Postavljanje prozora
+    /* Postavljanje prozora */
+
     glutInitWindowSize(800, 600);
     glutInitWindowPosition(500, 300);
     glutCreateWindow("Crazy Chicken Kart");
     //glutFullScreen();
 
-    //Inicijalizacija pocetnih pozicija blokova okoline i prepreka
+    /* Inicijalizacija pocetnih pozicija blokova okoline,prepreka i zvezdica */
 
     for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
     	blockPosition[i] = j;
@@ -138,6 +159,16 @@ int main(int argc, char **argv){
     	obstacle[i].type = rand()%3;
     	obstacle[i].track = rand()%3-1;
     }
+
+    for(int i = 0 , j = 250 ; i < STAR_NUMBER ; i++ ,j+=250)
+    {
+    	stars[i].x = j;
+    	stars[i].track = rand()%3-1;
+    }
+
+
+
+
 
     initialize();
 
@@ -283,6 +314,7 @@ void onTimer(int id){
     	if(goPressed)
     	{
         tiresParameter+=2;
+        starRotationParameter += 5;
 
         if(movementSpeed < 1)
         	movementSpeed += 0.005;
@@ -317,6 +349,16 @@ void onTimer(int id){
       	if(firstObstacle == OBSTACLE_NUMBER)
       		firstObstacle = 0;
       }
+
+      for(int i = 0 ; i < STAR_NUMBER ; i++)
+      		stars[i].x -= movementSpeed;
+
+      if(stars[firstStar].x <= -20)
+      {
+      	stars[firstStar].x = stars[lastStar].x + 250;
+      	lastStar = firstStar;
+      	firstStar++;
+      }	
 
       detectColision();
 
@@ -625,7 +667,6 @@ void resetAllParameters(){
   goPressed = false;
   goLeft = false;
   goRight = false;
-  tajmercic = 0;
   holeRotation = 0;
   holeParameter = 0;
   xTrapHorizontal = 0;
@@ -635,6 +676,8 @@ void resetAllParameters(){
   pressedStart = false;
   lastBlock = 9;
   lastObstacle = 19;
+  lastStar = 9;
+  firstStar = 0;
   movementSpeed = 0;
 
 
@@ -647,6 +690,14 @@ void resetAllParameters(){
     	obstacle[i].type = rand()%3;
     	obstacle[i].track = rand()%3-1;
     }
+
+  for(int i = 0 , j = 250 ; i < STAR_NUMBER ; i++ ,j+=250)
+    {
+    	stars[i].x = j;
+    	stars[i].track = rand()%3-1;
+    	
+    	cout << stars[i].track << endl;
+    }  
 }
 
 void detectColision() {
