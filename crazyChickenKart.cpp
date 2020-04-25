@@ -13,9 +13,10 @@ using namespace std;
 #define FILENAME0 "navigation.bmp"
 #define FILENAME1 "speedometer.bmp"
 #define FILENAME2 "plate.bmp"
+#define FILENAME3 "sky.bmp"
 
 /* Identifikatori tekstura. */
-static GLuint names[3];
+static GLuint names[4];
 
 #define TIMER_INTERVAL 20
 #define TIMER_ID1 0 // Koristimo za animaciju voznje
@@ -423,12 +424,37 @@ void on_display() {
     drawCompleteScene();
    glPopMatrix();
 
+
+   glPushMatrix();
+    	glTranslatef(0,0.2,movementParameter);
+
+	   	/* Tekstura neba */
+
+	    glBindTexture(GL_TEXTURE_2D, names[3]);
+	    glBegin(GL_QUADS);
+	        glNormal3f(0, 0, -1);
+
+	        glTexCoord2f(0, 0);
+	        glVertex3f(140,-50,-200);
+
+	        glTexCoord2f(1, 0);
+	        glVertex3f(140,-50,200);
+
+	        glTexCoord2f(1, 1);
+	        glVertex3f(140,90,200);
+
+	        glTexCoord2f(0, 1);
+	        glVertex3f(140,90,-200);
+	      glEnd();
+    glPopMatrix();
+   
+
    if(!trapAnimation)
    {
 
-   glPushMatrix();
-	    glTranslatef(0,0.2,movementParameter);
+	   glPushMatrix();
 
+	   glTranslatef(0,0.2,movementParameter);
       /*Tekstura navigacije*/
 
 	    glBindTexture(GL_TEXTURE_2D, names[0]);
@@ -491,12 +517,13 @@ void on_display() {
         glVertex3f(-0.51,3.25,-1.75);
       glEnd();
 
-	    /* Iskljucujemo aktivnu teksturu */
-
-	    glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
 
   }
+
+  	/* Iskljucujemo aktivnu teksturu */
+
+	    glBindTexture(GL_TEXTURE_2D, 0);
 
     
 
@@ -608,7 +635,7 @@ void resetAllParameters(){
 }
 
 void detectColision() {
-	if(obstacle[firstObstacle].x - 1 == 3)
+	if(obstacle[firstObstacle].x - 1 <= 3 && obstacle[firstObstacle].x + 1 >= 0)
 
       	switch(obstacle[firstObstacle].track)
       	{
@@ -737,7 +764,7 @@ static void initialize(void)
     image_read(image, FILENAME0);
 
     /* Generisu se identifikatori tekstura. */
-    glGenTextures(3, names);
+    glGenTextures(4, names);
 
     glBindTexture(GL_TEXTURE_2D, names[0]);
     glTexParameteri(GL_TEXTURE_2D,
@@ -771,6 +798,21 @@ static void initialize(void)
     image_read(image, FILENAME2);
 
     glBindTexture(GL_TEXTURE_2D, names[2]);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 image->width, image->height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
+    /* Kreira se cetvrta tekstura. */
+
+    image_read(image, FILENAME3);
+
+    glBindTexture(GL_TEXTURE_2D, names[3]);
     glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D,

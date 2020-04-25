@@ -3397,7 +3397,7 @@ void drawRoof(){
     glClipPlane(GL_CLIP_PLANE1, clip_plane1);
     glEnable(GL_CLIP_PLANE1);
 
-    glColor3f(0.2,0.2,0.2);
+    glColor3f(0.1,0.1,0.1);
 
 	glBegin(GL_QUADS);
 
@@ -3832,7 +3832,7 @@ void drawElectricPole() {
 
   	glDisable(GL_LIGHTING);
 
-  	glLineWidth(3);
+  	glLineWidth(1.5);
   	glColor3f(0,0,0);
 
   	glBegin(GL_LINES);
@@ -3937,9 +3937,9 @@ void drawFixedParts(){
     glPopMatrix();
 
     glPushMatrix();
-      glColor3f(0,0,1);
-      glTranslatef(0,-0.1,10);
-      glScalef(300,0.01,20);
+      glColor3f(0.094, 0.301, 0.447);
+      glTranslatef(0,0,10);
+      glScalef(300,0.01,7);
       glutSolidCube(1);
     glPopMatrix();
 
@@ -4257,6 +4257,210 @@ void drawHoleOnTrack(int track){
 
 }
 
+void drawHouse(){
+
+  /* Glavni deo kuce*/
+
+  glPushMatrix();
+      glScalef(1,0.5,0.6);
+      glColor3f(0.803, 0.521, 0.247);
+      glutSolidCube(9);
+      glColor3f(0,0,0);
+      glScalef(1.01,1.01,1.01);
+      glutWireCube(9);
+    glPopMatrix();
+
+    /* Trem sa stepenicama */
+
+    glPushMatrix();
+      glColor3f(0.4,0.4,0.4);
+      glTranslatef(-2.3,-1.7,1.36);
+      glScalef(1,0.2,1.8);
+      glutSolidCube(4.5);
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(0.5,-1.7,2.7);
+      glScalef(4,1,3);
+      glutSolidCube(0.9);
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(0.5,-1.85,3.8);
+      glScalef(4,0.7,1.5);
+      glutSolidCube(0.9);
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(0.95,-1.95,4.2);
+      glScalef(3,0.5,1.5);
+      glutSolidCube(0.9);
+    glPopMatrix();
+
+    /* Ograda trema */
+
+    glPushMatrix();
+      glColor3f(0.545, 0.270, 0.074);
+      glTranslatef(-4.45,-0.6,4);
+      glScalef(0.05,0.3,0.65);
+      glutSolidCube(4);
+    glPopMatrix();
+
+    glPushMatrix();
+      glColor3f(0.545, 0.270, 0.074);
+      glTranslatef(-2.35,-0.6,5.3);
+      glRotatef(90,0,1,0);
+      glScalef(0.05,0.3,1.1);
+      glutSolidCube(4);
+    glPopMatrix();
+
+    /* Prozori */
+
+    glPushMatrix();
+      glColor3f(0.133, 0.874, 0.945);
+      glTranslatef(-3.2,0.9,2.1);
+      glutSolidCube(1.3);
+      glColor3f(0,0,0);
+      glScalef(1.01,1.01,1.01);
+      glutWireCube(1.3);
+
+      glTranslatef(1.3,0,0);
+      glColor3f(0.133, 0.874, 0.945);
+      glutSolidCube(1.3);
+      glColor3f(0,0,0);
+      glScalef(1.01,1.01,1.01);
+      glutWireCube(1.3);
+
+      glTranslatef(5.6,0,0);
+      glColor3f(0.133, 0.874, 0.945);
+      glutSolidCube(1.3);
+      glColor3f(0,0,0);
+      glScalef(1.01,1.01,1.01);
+      glutWireCube(1.3);
+    glPopMatrix();
+
+    glPushMatrix();
+      glColor3f(0.133, 0.874, 0.945);
+      glTranslatef(-3.9,0.9,0);
+      glScalef(1,1,2);
+      glutSolidCube(1.3);
+      glColor3f(0,0,0);
+      glScalef(1.01,1.01,1.01);
+      glutWireCube(1.3);
+    glPopMatrix();
+
+    /* Vrata */
+
+    glPushMatrix();
+      glColor3f(0.956, 0.643, 0.376);
+      glTranslatef(0.9,0.1,1.8);
+      glScalef(0.9,1.3,1);
+      glutSolidCube(2);
+      glColor3f(0,0,0);
+      glScalef(1.01,1.01,1.01);
+      glutWireCube(2);
+    glPopMatrix();
+
+
+    /* Krov */
+    glPushMatrix();
+
+      glColor3f(0.545, 0.270, 0.074);
+
+      glBegin(GL_TRIANGLES);
+      a={-4.5,2.25,-2.7};
+      b={-4.5,2.25,4};
+      c={-4.5,5,-1};
+      setNormalAndVertexTriangles(a,b,c);
+
+      a={4.5,2.25,-2.7};
+      b={4.5,2.25,4};
+      c={4.5,5,-1};
+      setNormalAndVertexTriangles(a,b,c);
+
+      glEnd();
+
+      glColor3f(1,0,0);
+
+      glBegin(GL_QUADS);
+        a={-5,2.25,4};
+        b={5,2.25,4};
+        c={5,5,-1};
+        d={-5,5,-1};
+        setNormalAndVertexQuads(a,b,c,d);
+
+        a={5,5,-1};
+        b={-5,5,-1};
+        c={-5,2.25,-2.7};
+        d={5,2.25,-2.7};
+        setNormalAndVertexQuads(a,b,c,d);
+      glEnd();
+    glPopMatrix();
+
+    /* Odzak */
+
+    glPushMatrix();
+      glTranslatef(-3.8,4.5,0.3);
+      glColor3f(0.4,0.4,0.4);
+      glScalef(1,2,1);
+      glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+      glColor3f(0.4,0.4,0.4);
+      glTranslatef(-3.8,5.6,0.3);
+      glScalef(1.2,0.2,1.2);
+      glutSolidCube(1);
+
+
+
+    glPopMatrix();
+
+    /* Kucica za kuce */
+
+    glPushMatrix();
+      glTranslatef(-7,-1.25,0);
+      glColor3f(1,0,0);
+      glBegin(GL_QUADS);
+        a={1,0.6,1.7};
+        b={1,0.6,-1.7};
+        c={0,1.8,-1.7};
+        d={0,1.8,1.7};
+        setNormalAndVertexQuads(a,b,c,d);
+
+        a={-1,0.6,1.7};
+        b={-1,0.6,-1.7};
+        c={0,1.8,-1.7};
+        d={0,1.8,1.7};
+        setNormalAndVertexQuads(a,b,c,d);
+      glEnd();
+      glColor3f(0.545, 0.270, 0.074);
+
+      glBegin(GL_TRIANGLES);
+        a={-0.8,0.8,1.5};
+        b={0.8,0.8,1.5};
+        c={0,1.8,1.5};
+        setNormalAndVertexTriangles(a,b,c);
+
+        a={-0.8,0.8,-1.5};
+        b={0.8,0.8,-1.5};
+        c={0,1.8,-1.5};
+        setNormalAndVertexTriangles(a,b,c);
+      glEnd();
+      glScalef(0.8,0.8,1.5);
+      glutSolidCube(2);
+    glPopMatrix();
+
+    glPushMatrix();
+      glTranslatef(-7,-2,1.51);
+      glColor3f(0,0,0); 
+      GLUquadric* quad10 = gluNewQuadric();
+      glScalef(0.5,1.5,1);
+      gluDisk(quad10,0,1,20,20);
+    glPopMatrix();
+
+}
+
 
 void drawBlock(int blockNumber) {
 
@@ -4289,9 +4493,18 @@ void drawBlock(int blockNumber) {
   {
 
 	  glPushMatrix();
-	  glTranslatef(0, 0.105, -6);
-	  drawElectricPole();
+  	  glTranslatef(0, 0.105, -6);
+  	  drawElectricPole();
 	  glPopMatrix();
+  }
+
+  if(blockNumber == 0 || blockNumber == 4 || blockNumber == 7)
+  {
+    glPushMatrix();
+      glTranslatef(0,2,-20);
+      glRotatef(-45,0,1,0);
+      drawHouse();
+    glPopMatrix();
   }
 
   glPushMatrix();
