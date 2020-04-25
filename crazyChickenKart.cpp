@@ -71,7 +71,9 @@ float movementParameter = 0;
 int track = 0; // -1 oznacava levu traku,0 srednju,a 1 desnu
 //int cameraNumber = 2;
 int firstBlock = 0;
+int lastBlock = 9;
 int firstObstacle = 0;
+int lastObstacle = 19;
 int tajmercic = 0;
 float holeParameter = 0;
 float holeRotation = 0;
@@ -79,6 +81,7 @@ float xTrapHorizontal = 0;
 float xTrapVertical = 0;
 float xTrapRotation = 0;
 float bombParameter = 0;
+float movementSpeed = 0;
 vector<float> blockPosition(BLOCK_NUMBER);
 vector<OBSTACLE> obstacle(OBSTACLE_NUMBER);
 
@@ -281,12 +284,20 @@ void onTimer(int id){
     	{
         tiresParameter+=2;
 
-        for(int i = 0 ; i < BLOCK_NUMBER ; i++)
-        	blockPosition[i] -= 1;
+        if(movementSpeed < 1)
+        	movementSpeed += 0.005;
+        else if(movementSpeed < 1.5)
+        	movementSpeed += 0.0025;
+        else if(movementSpeed < 4)
+        	movementSpeed += 0.001;
 
-        if(blockPosition[firstBlock] == -72)
+        for(int i = 0 ; i < BLOCK_NUMBER ; i++)
+        	blockPosition[i] -= movementSpeed;
+
+        if(blockPosition[firstBlock] <= -72)
         {
-        	blockPosition[firstBlock] = 168;
+        	blockPosition[firstBlock] = blockPosition[lastBlock] + 24;
+        	lastBlock = firstBlock;
         	firstBlock++;
 
         	if(firstBlock == BLOCK_NUMBER)
@@ -294,12 +305,13 @@ void onTimer(int id){
         }
 
         for(int i = 0 ; i < OBSTACLE_NUMBER ; i++)
-      		obstacle[i].x -= 1;
+      		obstacle[i].x -= movementSpeed;
 
 
-      if(obstacle[firstObstacle].x == -20)
+      if(obstacle[firstObstacle].x <= -20)
       {
-      	obstacle[firstObstacle].x  = 780;
+      	obstacle[firstObstacle].x  = obstacle[lastObstacle].x + 40;
+      	lastObstacle = firstObstacle;
       	firstObstacle++;
 
       	if(firstObstacle == OBSTACLE_NUMBER)
@@ -621,6 +633,9 @@ void resetAllParameters(){
   xTrapRotation = 0;
   bombParameter = 0;
   pressedStart = false;
+  lastBlock = 9;
+  lastObstacle = 19;
+  movementSpeed = 0;
 
 
   for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)

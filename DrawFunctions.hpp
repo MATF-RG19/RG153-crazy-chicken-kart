@@ -25,7 +25,7 @@ void drawRoof(void);
 void drawBlock(int blockNumber);
 void drawElectricPole(void);
 void drawObstacles(void);
-void drawObstacle(int x,int type,int track);
+void drawObstacle(float x,int type,int track);
 void drawHole(void);
 void drawHoleOnTrack(int track);
 #endif

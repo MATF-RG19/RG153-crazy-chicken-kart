@@ -4560,7 +4560,7 @@ void drawObstacles() {
 
 }
 
-void drawObstacle(int x,int type, int track) {
+void drawObstacle(float x,int type, int track) {
 
 
 
