@@ -54,7 +54,7 @@ static void adjustPositionParameters(void);
 static void resetAllParameters(void);
 static void detectTrapColision(void);
 static void detectStarColision(void);
-static void initialize(void);
+static void initializeTextures(void);
 static float matrix[16];
 
 /* Struktura prepreke */
@@ -149,7 +149,7 @@ int main(int argc, char **argv){
     glutInitWindowSize(800, 600);
     glutInitWindowPosition(500, 300);
     glutCreateWindow("Crazy Chicken Kart");
-    //glutFullScreen();
+    glutFullScreen();
 
     /* Inicijalizacija pocetnih pozicija blokova okoline,prepreka i zvezdica */
 
@@ -170,33 +170,27 @@ int main(int argc, char **argv){
     	stars[i].track = rand()%3-1;
     }
 
+    /* Inicijalizacija tekstura */
 
+    initializeTextures();
 
+    /* Registrovanje callback funkcija */
 
-
-    initialize();
-
-
-    //Registrovanje callback funkcija
     glutDisplayFunc(on_display);
     glutReshapeFunc(on_reshape);
     glutKeyboardFunc(on_keyboard);
     glutSpecialFunc(onSpecialKeyPress);
 
-    //Ukljucivanje dodatnih opengl opcija
+    /* Ukljucivanje dodatnih opengl opcija */
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
 
+    /*Postavljanje pozadine na crnu boju */
 
-
-
-
-    //Postavljanje pozadine na crnu boju
     glClearColor(0.031, 0.094, 0.227,0);
     glutMainLoop();
-
-
 
     return 0;
 }
@@ -227,9 +221,9 @@ void on_keyboard(unsigned char key, int x, int y) {
         case 'j': 
         	if(cameraAnimation || driveAnimation)
         	{
-	          	takeOfRoof=true;
-	          	putOnRoof=false;
-          	}
+	         	takeOfRoof=true;
+	         	putOnRoof=false;
+          }
           	break;          
         case 'k':
           	if(cameraAnimation || driveAnimation)
@@ -238,10 +232,10 @@ void on_keyboard(unsigned char key, int x, int y) {
 	          	takeOfRoof=false;
           	}
           	break;
-          	/*
+          	
         case 'l':
           	activateSpoiler=true;
-          	break;*/
+          	break;
         case 'f':
           	if(thirdPerson)
             	thirdPerson = false;
@@ -384,8 +378,8 @@ void onTimer(int id){
       if(roofParameter <= 10.25 && putOnRoof)
         roofParameter+=0.06;
 
-      /*if(activateSpoiler)
-        spoilerParameter+=0.05;*/
+      if(activateSpoiler)
+        spoilerParameter+=0.05;
 
     	adjustPositionParameters();
     }
@@ -459,23 +453,29 @@ void onTimer(int id){
 }
 
 void on_reshape(int width, int height) {
+
 	  windowWidth = width;
 	  windowHeight = height;
 
-	  // Viewport
+	  /* Viewport */
+
 	  glViewport(0, 0, width, height);
 
-	  // Postavljanje projekcije
+	  /* Postavljanje projekcije */
+
 	  glMatrixMode(GL_PROJECTION);
 	  glLoadIdentity();
 	  gluPerspective(60, (float) width / height, 0.3, 150);
 }
 
 void on_display() {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  lightInitialization();
 
-    //Postavljanje pogleda
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    lightInitialization();
+
+    /* Postavljanje pogleda */
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -489,11 +489,13 @@ void on_display() {
 	      gluLookAt(1, 0.8, -0.3+movementParameter,
 	              120, 0, movementParameter,
 	              0, 1, 0);
-	}
+	  }
 	else
 		gluLookAt(5*cos(cameraParameter/360), 3,-2.5*sin(cameraParameter/360),
 		                1.5, cameraParameter/400, 0,
 		                0, 1, 0);
+
+    /* Aktiviranje multisamplovanja(anti-aliasing) */
 
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
@@ -533,8 +535,8 @@ void on_display() {
    {
 
 	   glPushMatrix();
-
 	   glTranslatef(0,0.2,movementParameter);
+
       /*Tekstura navigacije*/
 
 	    glBindTexture(GL_TEXTURE_2D, names[0]);
@@ -628,7 +630,7 @@ void lightInitialization(){
 void adjustPositionParameters(){
 
 
-	//Iz srednje u desnu
+	  /* Iz srednje u desnu */
   	if(goRight && track==1)
   	{
         movementParameter+=0.2;
@@ -851,7 +853,7 @@ void detectStarColision() {
 }
 
 
-static void initialize(void)
+static void initializeTextures(void)
 {
     /* Objekat koji predstavlja teskturu ucitanu iz fajla. */
     Image * image;

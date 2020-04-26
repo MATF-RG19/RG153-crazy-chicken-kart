@@ -3544,11 +3544,11 @@ void drawRoof(){
 
 	//Spojler
 
-	//double clip_plane2[] = {0, -1, 0, spoilerParameter};
-   // glClipPlane(GL_CLIP_PLANE2, clip_plane2);
-    //glEnable(GL_CLIP_PLANE2);
+	double clip_plane2[] = {0, -1, 0, spoilerParameter};
+    glClipPlane(GL_CLIP_PLANE2, clip_plane2);
+    glEnable(GL_CLIP_PLANE2);
 
-	glColor3f(0.4,0.4,0.4);
+	glColor3f(0,1,0);
 	glPushMatrix();
 		glTranslatef(2,3.3,3);
 		glRotatef(-90,1,0,0);
@@ -3571,7 +3571,7 @@ void drawRoof(){
 
 	glPopMatrix();
 
-	//glDisable(GL_CLIP_PLANE2);
+	glDisable(GL_CLIP_PLANE2);
 
 
 
