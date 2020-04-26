@@ -5,6 +5,7 @@
 #include <ctime>
 #include <GL/glut.h>
 #include <cmath>
+#include <cstring>
 #include "DrawFunctions.hpp"
 #include "image.hpp"
 
@@ -27,6 +28,7 @@ static GLuint names[4];
 #define OBSTACLE_NUMBER 20
 #define STAR_NUMBER 10
 #define SPACEBAR 32
+#define STAR_POINTS 100
 
 
 /* Granice kretanja */
@@ -79,7 +81,6 @@ float tiresParameter = 0;
 float movementParameter = 0;
 //float turnParameter = 0;
 int track = 0; // -1 oznacava levu traku,0 srednju,a 1 desnu
-//int cameraNumber = 2;
 float holeParameter = 0;
 float holeRotation = 0;
 float xTrapHorizontal = 0;
@@ -88,6 +89,8 @@ float xTrapRotation = 0;
 float bombParameter = 0;
 float movementSpeed = 0;
 int starRotationParameter = 0;
+int score = 0;
+int starsCollected = 0;
 vector<float> blockPosition(BLOCK_NUMBER);
 vector<OBSTACLE> obstacle(OBSTACLE_NUMBER);
 vector<STARS> stars(STAR_NUMBER);
@@ -318,11 +321,21 @@ void onTimer(int id){
         starRotationParameter += 5;
 
         if(movementSpeed < 1)
+        {
         	movementSpeed += 0.005;
+        	score += 1;
+        }
         else if(movementSpeed < 1.5)
+        {
         	movementSpeed += 0.0025;
+        	score += 2;
+        }
         else if(movementSpeed < 4)
+        {
         	movementSpeed += 0.001;
+        	score += 3;
+        }
+
 
         for(int i = 0 ; i < BLOCK_NUMBER ; i++)
         	blockPosition[i] -= movementSpeed;
@@ -401,7 +414,11 @@ void onTimer(int id){
         }
 
         if( holeParameter > 10)
-          resetAllParameters();
+        {
+      		score += starsCollected*STAR_POINTS;
+      		cout << score << endl;
+          	resetAllParameters();  
+        }
       }else if(activateXtrap)
       {
         if(xTrapHorizontal < 75)
@@ -411,7 +428,11 @@ void onTimer(int id){
             xTrapRotation += 0.5;
         }
         else
+        {
+	      score += starsCollected*STAR_POINTS;
+	      cout << score << endl;
           resetAllParameters();
+        }
 
         if(xTrapVertical > -2)
           xTrapVertical -= 0.05;
@@ -420,7 +441,11 @@ void onTimer(int id){
         if(bombParameter < 5.7)
           bombParameter += 0.3;
         else
+        {
+	      score += starsCollected*STAR_POINTS;
+	      cout << score << endl;
           resetAllParameters();
+        }
       }
 
     }
@@ -474,12 +499,11 @@ void on_display() {
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
  	
  	 //draw_axes(50);
-   drawFixedParts(); 
+   drawFixedParts();
 
    glPushMatrix();
     drawCompleteScene();
    glPopMatrix();
-
 
    glPushMatrix();
     	glTranslatef(0,0.2,movementParameter);
@@ -491,10 +515,10 @@ void on_display() {
 	        glNormal3f(0, 0, -1);
 
 	        glTexCoord2f(0, 0);
-	        glVertex3f(140,-50,-200);
+	        glVertex3f(140,-25,-200);
 
 	        glTexCoord2f(1, 0);
-	        glVertex3f(140,-50,200);
+	        glVertex3f(140,-25,200);
 
 	        glTexCoord2f(1, 1);
 	        glVertex3f(140,90,200);
@@ -681,6 +705,8 @@ void resetAllParameters(){
   lastStar = 9;
   firstStar = 0;
   movementSpeed = 0;
+  score = 0;
+  starsCollected = 0;
 
 
   for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
@@ -808,15 +834,15 @@ void detectStarColision() {
 		{
 			case 0:
       			if(movementParameter < 1.8 && movementParameter > -1.8)
-      				cout << "Uhvatio si u srednjoj traci" << endl;
+      				starsCollected += 1;
       			break;
       		case 1:
       			if(movementParameter < 5.4 && movementParameter > 1.8)
-      				cout << "Uhvatio si u desnoj traci" << endl;
+      				starsCollected += 1;
       			break;
       		case -1:
       			if(movementParameter > -5.4 && movementParameter < -1.8)
-      				cout << "Uhvatio si u levoj traci" << endl;
+      				starsCollected += 1;
       			break;				
 
       			
