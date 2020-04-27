@@ -15,9 +15,10 @@ using namespace std;
 #define FILENAME1 "speedometer.bmp"
 #define FILENAME2 "plate.bmp"
 #define FILENAME3 "sky.bmp"
+#define FILENAME4 "keyguide.bmp"
 
 /* Identifikatori tekstura. */
-static GLuint names[4];
+static GLuint names[5];
 
 #define TIMER_INTERVAL 20
 #define TIMER_ID1 0 // Koristimo za animaciju voznje
@@ -55,6 +56,8 @@ static void resetAllParameters(void);
 static void detectTrapColision(void);
 static void detectStarColision(void);
 static void initializeTextures(void);
+static void displayStartScreen(void);
+static void displayEndScreen(void);
 static float matrix[16];
 
 /* Struktura prepreke */
@@ -117,12 +120,13 @@ static int windowWidth;
 static int windowHeight;
 static bool roofOn = true;
 static bool roofOff = false;
-static bool takeOfRoof = false;
+static bool takeOffRoof = false;
 static bool putOnRoof = false; 
 static bool activateSpoiler = false;
 static bool thirdPerson = true;
 static bool pressedStart = false;
 static bool goPressed = false;
+static bool keyGuideScreen = true;
 bool goLeft = false;
 bool goRight = false;
 bool activateHole = false;
@@ -209,6 +213,7 @@ void on_keyboard(unsigned char key, int x, int y) {
         case 'G':
         	if(!pressedStart)
         	{
+            keyGuideScreen = false;
         		pressedStart = true;
 	          	if(!driveAnimation && cameraAnimation == 0)
 	          	{
@@ -218,22 +223,21 @@ void on_keyboard(unsigned char key, int x, int y) {
 	          		glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
           	}
           	break;
-        case 'j': 
-        	if(cameraAnimation || driveAnimation)
-        	{
-	         	takeOfRoof=true;
-	         	putOnRoof=false;
+        case 'q':
+        case 'Q':
+          if(takeOffRoof)
+          {
+            putOnRoof = true;
+            takeOffRoof = false;
           }
-          	break;          
-        case 'k':
-          	if(cameraAnimation || driveAnimation)
-          	{
-	          	putOnRoof=true;
-	          	takeOfRoof=false;
-          	}
-          	break;
+          else
+          {
+            takeOffRoof = true; 
+            putOnRoof = false;
+          }
+        	break;
           	
-        case 'l':
+        case 'e':
           	activateSpoiler=true;
           	break;
         case 'f':
@@ -309,79 +313,99 @@ void onSpecialKeyPress(int key, int x, int y){
 void onTimer(int id){
     if(id == TIMER_ID1){
 
-    	if(goPressed)
-    	{
-        tiresParameter+=2;
-        starRotationParameter += 5;
+    	if(goPressed) {
 
-        if(movementSpeed < 1)
-        {
-        	movementSpeed += 0.005;
-        	score += 1;
-        }
-        else if(movementSpeed < 1.5)
-        {
-        	movementSpeed += 0.0025;
-        	score += 2;
-        }
-        else if(movementSpeed < 4)
-        {
-        	movementSpeed += 0.001;
-        	score += 3;
-        }
+	        tiresParameter+=2;
+	        starRotationParameter += 5;
 
+	        /* Uvecavanje brzine kretanja */
 
-        for(int i = 0 ; i < BLOCK_NUMBER ; i++)
-        	blockPosition[i] -= movementSpeed;
+	        if(movementSpeed < 1) {	
+	        	movementSpeed += 0.005;
+	        	score += 1;
+	        }
+	        else if(movementSpeed < 1.5) {
+	        	movementSpeed += 0.0025;
+	        	score += 2;
+	        }
+	        else if(movementSpeed < 4) {
+	        	movementSpeed += 0.001;
+	        	score += 3;
+	        }
 
-        if(blockPosition[firstBlock] <= -72)
-        {
-        	blockPosition[firstBlock] = blockPosition[lastBlock] + 24;
-        	lastBlock = firstBlock;
-        	firstBlock++;
-
-        	if(firstBlock == BLOCK_NUMBER)
-        		firstBlock = 0;
-        }
-
-        for(int i = 0 ; i < OBSTACLE_NUMBER ; i++)
-      		obstacle[i].x -= movementSpeed;
+	        /* Promena pozicija blokova u zavisnosti od brzine kretanja.
+	           Kada prvi blok dodje na poziciju manju od -72 on se translira
+	           na poziciju poslednjeg bloka plus 24 (24 je duzina jednog bloka)
+	           Ako pokazivac za prvi blok pokazuje na poslednji blok(9),njega prebacujemo
+	           da pokazuje na prvi blok(0) */
 
 
-      if(obstacle[firstObstacle].x <= -20)
-      {
-      	obstacle[firstObstacle].x  = obstacle[lastObstacle].x + 40;
-      	lastObstacle = firstObstacle;
-      	firstObstacle++;
+	        for(int i = 0 ; i < BLOCK_NUMBER ; i++)
+	        	blockPosition[i] -= movementSpeed;
 
-      	if(firstObstacle == OBSTACLE_NUMBER)
-      		firstObstacle = 0;
-      }
+	        if(blockPosition[firstBlock] <= -72) {
+	        	blockPosition[firstBlock] = blockPosition[lastBlock] + 24;
+	        	lastBlock = firstBlock;
+	        	firstBlock++;
 
-      for(int i = 0 ; i < STAR_NUMBER ; i++)
-      		stars[i].x -= movementSpeed;
+	        	if(firstBlock == BLOCK_NUMBER)
+	        		firstBlock = 0;
+	        }
 
-      if(stars[firstStar].x <= -20)
-      {
-      	stars[firstStar].x = stars[lastStar].x + 250;
-      	lastStar = firstStar;
-      	firstStar++;
-      }	
+	        /* Vrsi se promena pozicija prepreka po istom principu kao sa blokovima */
 
-      detectTrapColision();
-      detectStarColision();
+	        for( int i = 0 ; i < OBSTACLE_NUMBER ; i++)
+	        	obstacle[i].x -= movementSpeed;
+
+	        if( obstacle[firstObstacle].x <= -20 ) {
+
+	        	obstacle[firstObstacle].x = obstacle[lastObstacle].x + 40;
+	        	lastObstacle = firstObstacle;
+	        	firstObstacle++;
+
+	        	if(firstObstacle == OBSTACLE_NUMBER)
+	        		firstObstacle = 0;
+
+	        }
+
+	        /* Vrsi se promena pozicija zvezdica po istom principu kao sa blokovima i preprekama */
+
+	        for( int i = 0 ; i < STAR_NUMBER ; i++ )
+	        	stars[i].x -= movementSpeed;
+
+	        if(stars[firstStar].x <= -20) {
+
+	        	stars[firstStar].x = stars[lastStar].x + 250;
+	        	lastStar = firstStar;
+	        	firstStar++;
+	        }
+
+	        /* Detektovanje kolizije */
+
+	        detectTrapColision();
+	        detectStarColision();
 
 
-      if(roofParameter >= 0 && takeOfRoof)
-        roofParameter-=0.06;
+	        /* Promene parametara za skidanje krova,aktiviranje spojlera */
 
-      if(roofParameter <= 10.25 && putOnRoof)
-        roofParameter+=0.06;
+	        if(roofParameter >= 0 && takeOffRoof)
+	        	roofParameter -= 0.06;
 
-      if(activateSpoiler)
-        spoilerParameter+=0.05;
+	        if(roofParameter <= 10.25 && putOnRoof)
+	        	roofParameter += 0.06;
 
-    	adjustPositionParameters();
+	        if(activateSpoiler)
+	        	spoilerParameter += 0.05;
+
+	        /* Promene pozicije buggy-ja */
+
+	        adjustPositionParameters();
+
+
+
+
+
+	       
     }
 
     }else if(id == TIMER_ID2)
@@ -506,6 +530,9 @@ void on_display() {
    glPushMatrix();
     drawCompleteScene();
    glPopMatrix();
+
+   if(keyGuideScreen)
+    displayStartScreen();
 
    glPushMatrix();
     	glTranslatef(0,0.2,movementParameter);
@@ -678,7 +705,7 @@ void adjustPositionParameters(){
 void resetAllParameters(){
   cameraParameter = 0;
   roofParameter=10.25;
-  takeOfRoof=false;
+  takeOffRoof=false;
   putOnRoof=false;
   spoilerParameter=3.3;
   activateSpoiler=false;
@@ -881,7 +908,7 @@ static void initializeTextures(void)
     image_read(image, FILENAME0);
 
     /* Generisu se identifikatori tekstura. */
-    glGenTextures(4, names);
+    glGenTextures(5, names);
 
     glBindTexture(GL_TEXTURE_2D, names[0]);
     glTexParameteri(GL_TEXTURE_2D,
@@ -940,6 +967,21 @@ static void initializeTextures(void)
                  image->width, image->height, 0,
                  GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
 
+    /* Kreira se peta tekstura. */
+
+    image_read(image, FILENAME4);
+
+    glBindTexture(GL_TEXTURE_2D, names[4]);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 image->width, image->height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
     /* Iskljucujemo aktivnu teksturu */
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -951,3 +993,40 @@ static void initializeTextures(void)
     glLoadIdentity();
     glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
 }
+
+void displayStartScreen() {
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, names[4]);
+  glMatrixMode(GL_PROJECTION);
+
+  glPushMatrix();
+	  glLoadIdentity();
+	  gluOrtho2D(0, windowWidth,0, windowHeight);
+	    
+	  glMatrixMode(GL_MODELVIEW);
+	  glLoadIdentity();
+
+	  glBegin(GL_QUADS);
+		  glTexCoord2f(0, 0);
+		  glVertex2f(0,0);
+
+		  glTexCoord2f(0, 1);
+		  glVertex2f(0, windowHeight);
+
+		  glTexCoord2f(1, 1);
+		  glVertex2f(windowWidth,windowHeight);
+
+		  glTexCoord2f(1, 0);
+		  glVertex2f(windowWidth,0);
+	  glEnd();
+	    
+	  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  
+  glMatrixMode(GL_MODELVIEW);
+
+}
+
