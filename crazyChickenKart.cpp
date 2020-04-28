@@ -72,7 +72,9 @@ struct OBSTACLE {
 
 struct STARS {
 	float x;
+  float y;
 	int track;
+  bool goUp;
 };
 
 
@@ -153,7 +155,7 @@ int main(int argc, char **argv){
     glutInitWindowSize(800, 600);
     glutInitWindowPosition(500, 300);
     glutCreateWindow("Crazy Chicken Kart");
-    glutFullScreen();
+    //glutFullScreen();
 
     /* Inicijalizacija pocetnih pozicija blokova okoline,prepreka i zvezdica */
 
@@ -172,6 +174,8 @@ int main(int argc, char **argv){
     {
     	stars[i].x = j;
     	stars[i].track = rand()%3-1;
+      stars[i].goUp = false;
+      stars[i].y = 0;
     }
 
     /* Inicijalizacija tekstura */
@@ -328,7 +332,7 @@ void onTimer(int id){
 	        	movementSpeed += 0.0025;
 	        	score += 2;
 	        }
-	        else if(movementSpeed < 4) {
+	        else if(movementSpeed < 3) {
 	        	movementSpeed += 0.001;
 	        	score += 3;
 	        }
@@ -370,20 +374,35 @@ void onTimer(int id){
 
 	        /* Vrsi se promena pozicija zvezdica po istom principu kao sa blokovima i preprekama */
 
-	        for( int i = 0 ; i < STAR_NUMBER ; i++ )
+	        for( int i = 0 ; i < STAR_NUMBER ; i++ ) {
 	        	stars[i].x -= movementSpeed;
+            if(stars[i].goUp && stars[i].y < 4) {
+              stars[i].y += 1;
+              
+            }
+          }
 
 	        if(stars[firstStar].x <= -20) {
 
+            stars[firstStar].goUp = false;
+            stars[firstStar].y = 0;
 	        	stars[firstStar].x = stars[lastStar].x + 250;
 	        	lastStar = firstStar;
 	        	firstStar++;
+
+            if(firstStar == STAR_NUMBER)
+              firstStar = 0;
 	        }
 
-	        /* Detektovanje kolizije */
+	        /* Detektovanje kolizije sa zamkama */
+          
+          detectTrapColision();
 
-	        detectTrapColision();
-	        detectStarColision();
+          /* Detektovanje kolizije sa zvezdicama, naredbom if(!stars[firstStar].goUp)
+             izbegavamo ponavljanje detekcije kolizije iste zvezdice */
+
+          if(!stars[firstStar].goUp)
+	          detectStarColision();
 
 
 	        /* Promene parametara za skidanje krova,aktiviranje spojlera */
@@ -752,6 +771,8 @@ void resetAllParameters(){
     {
     	stars[i].x = j;
     	stars[i].track = rand()%3-1;
+      stars[i].goUp = false;
+      stars[i].y = 0;
     }  
 }
 
@@ -857,21 +878,30 @@ void detectTrapColision() {
 }
 
 void detectStarColision() {
-	if(stars[firstStar].x <= 3 && stars[firstStar].x >= 1.5)
+	if(stars[firstStar].x <= 3 && stars[firstStar].x >= 0)
 	{
 		switch(stars[firstStar].track)
 		{
 			case 0:
-      			if(movementParameter < 1.8 && movementParameter > -1.8)
-      				starsCollected += 1;
+      			if(movementParameter < 1.8 && movementParameter > -1.8) {
+      				    starsCollected += 1;
+              		stars[firstStar].goUp = true;
+                  cout << "Uhvatio si zvezdicu u srednjoj traci" << endl;
+              	}
       			break;
       		case 1:
-      			if(movementParameter < 5.4 && movementParameter > 1.8)
-      				starsCollected += 1;
+      			if(movementParameter < 5.4 && movementParameter > 1.8) {
+      				    starsCollected += 1;
+              		stars[firstStar].goUp = true;
+                  cout << "Uhvatio si zvezdicu u desnoj traci" << endl;
+              	}
       			break;
       		case -1:
-      			if(movementParameter > -5.4 && movementParameter < -1.8)
-      				starsCollected += 1;
+      			if(movementParameter > -5.4 && movementParameter < -1.8) {
+      				  starsCollected += 1;
+              	stars[firstStar].goUp = true;
+                cout << "Uhvatio si zvezdicu u levoj traci" << endl;
+              }
       			break;				
 
       			

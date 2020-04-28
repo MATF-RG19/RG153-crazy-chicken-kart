@@ -19,7 +19,9 @@ struct OBSTACLE{
 
 struct STAR{
   float x;
+  float y;
   int track;
+  bool goUp;
 };
 
 
@@ -4782,7 +4784,7 @@ void drawStars() {
   for(int i = 0 ; i < STAR_NUMBER ; i++)
     {
       glPushMatrix();
-         glTranslatef(stars[i].x,0,0);
+         glTranslatef(stars[i].x,stars[i].y,0);
          drawStarOnTrack(stars[i].track);
       glPopMatrix();
     }
