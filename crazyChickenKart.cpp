@@ -29,6 +29,7 @@ static GLuint names[5];
 #define OBSTACLE_NUMBER 20
 #define STAR_NUMBER 10
 #define SPACEBAR 32
+#define ESC 27
 #define STAR_POINTS 100
 
 
@@ -129,6 +130,7 @@ static bool thirdPerson = true;
 static bool pressedStart = false;
 static bool goPressed = false;
 static bool keyGuideScreen = true;
+static bool godMode = false;
 bool goLeft = false;
 bool goRight = false;
 bool activateHole = false;
@@ -148,7 +150,7 @@ int trapAnimation = 0;
 int main(int argc, char **argv){
    
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE | GLUT_MULTISAMPLE );
+    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE | GLUT_MULTISAMPLE | GLUT_ALPHA );
 
     /* Postavljanje prozora */
 
@@ -249,9 +251,6 @@ void on_keyboard(unsigned char key, int x, int y) {
             	thirdPerson = false;
           	else
             	thirdPerson = true;
-            /*cameraNumber++;
-            if(cameraNumber==3)
-            	cameraNumber=0;*/
           	break;  
         case 'd':
         case 'D':
@@ -278,8 +277,15 @@ void on_keyboard(unsigned char key, int x, int y) {
         case SPACEBAR:
         	if(!goPressed && driveAnimation)
         		goPressed=true;
-        	break;		                
-        case 27:
+        	break;
+        case 'k':
+        case 'K':
+          if(!godMode)
+            godMode = true;
+          else
+            godMode = false;
+          break;  		                
+        case ESC:
           exit(0);
           break;  
             
@@ -394,9 +400,12 @@ void onTimer(int id){
               firstStar = 0;
 	        }
 
-	        /* Detektovanje kolizije sa zamkama */
+	        /* Detektovanje kolizije sa preprekama se aktivira u 
+             zavisnosti od bool promenljive godMode(da li je 
+             aktiviran stit oko buggy-ja) */
           
-          detectTrapColision();
+          if(!godMode)
+            detectTrapColision();
 
           /* Detektovanje kolizije sa zvezdicama, naredbom if(!stars[firstStar].goUp)
              izbegavamo ponavljanje detekcije kolizije iste zvezdice */
@@ -419,11 +428,6 @@ void onTimer(int id){
 	        /* Promene pozicije buggy-ja */
 
 	        adjustPositionParameters();
-
-
-
-
-
 	       
     }
 
@@ -550,6 +554,7 @@ void on_display() {
     drawCompleteScene();
    glPopMatrix();
 
+
    if(keyGuideScreen)
     displayStartScreen();
 
@@ -649,9 +654,25 @@ void on_display() {
 
   }
 
-  	/* Iskljucujemo aktivnu teksturu */
+  /* Iskljucujemo aktivnu teksturu */
 
-	    glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+  if(godMode) {
+
+     glPushMatrix();
+        glDisable(GL_LIGHTING);
+        glEnable (GL_BLEND);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glColor4f (0.0f, 0.0f, 1.0f, 0.5f);
+        glTranslatef(1.2,0.2,movementParameter);
+        glScalef(1.94,1.1,1.2);
+        glRotatef(starRotationParameter,-1,0,0);
+        glutSolidSphere(1.2,50,50);
+        glDisable (GL_BLEND);
+        glEnable(GL_LIGHTING); 
+     glPopMatrix();
+   }
 
     
 
@@ -755,6 +776,7 @@ void resetAllParameters(){
   movementSpeed = 0;
   score = 0;
   starsCollected = 0;
+  godMode = false;
 
 
   for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
@@ -886,21 +908,21 @@ void detectStarColision() {
       			if(movementParameter < 1.8 && movementParameter > -1.8) {
       				    starsCollected += 1;
               		stars[firstStar].goUp = true;
-                  cout << "Uhvatio si zvezdicu u srednjoj traci" << endl;
+                  cout << "Uhvatio si zvezdicu u srednjoj traci,poeni: " << score << endl;
               	}
       			break;
       		case 1:
       			if(movementParameter < 5.4 && movementParameter > 1.8) {
       				    starsCollected += 1;
               		stars[firstStar].goUp = true;
-                  cout << "Uhvatio si zvezdicu u desnoj traci" << endl;
+                  cout << "Uhvatio si zvezdicu u desnoj traci,poeni: " << score << endl;
               	}
       			break;
       		case -1:
       			if(movementParameter > -5.4 && movementParameter < -1.8) {
       				  starsCollected += 1;
               	stars[firstStar].goUp = true;
-                cout << "Uhvatio si zvezdicu u levoj traci" << endl;
+                cout << "Uhvatio si zvezdicu u levoj traci,poeni: " << score << endl;
               }
       			break;				
 
