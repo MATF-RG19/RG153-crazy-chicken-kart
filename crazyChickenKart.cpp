@@ -242,14 +242,17 @@ void on_keyboard(unsigned char key, int x, int y) {
         case 'G':
         	if(!pressedStart)
         	{
-            keyGuideScreen = false;
+        		engine->play2D("Sounds/song.wav",true);
+            	keyGuideScreen = false;
         		pressedStart = true;
 	          	if(!driveAnimation && cameraAnimation == 0)
 	          	{
 	            	driveAnimation = 1;
 	            	glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID1);
 	          	}else if(cameraAnimation)
+	          	{
 	          		glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
+	          	}
           	}
           	break;
         case 'q':
@@ -791,7 +794,6 @@ void resetAllParameters(){
   xTrapVertical = 0;
   xTrapRotation = 0;
   bombParameter = 0;
-  pressedStart = false;
   lastBlock = 9;
   lastObstacle = 19;
   lastStar = 9;
