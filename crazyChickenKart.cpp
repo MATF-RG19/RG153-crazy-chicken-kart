@@ -8,8 +8,17 @@
 #include <cstring>
 #include "DrawFunctions.hpp"
 #include "image.hpp"
+#include "irrKlang/include/irrKlang.h"
+
+/* https://learnopengl.com/In-Practice/2D-Game/Audio JoeyDeVries<3 */
 
 using namespace std;
+using namespace irrklang;
+
+/* Da bi mogli da koristimo irrKlang.dll fajl,
+   moramo da se povezemo sa irrKlang.lib.
+   Povezujemo se preko narednog pragma komentara */
+#pragma comment(lib, "irrKlang.lib")
 
 #define FILENAME0 "navigation.bmp"
 #define FILENAME1 "speedometer.bmp"
@@ -145,6 +154,11 @@ int cameraAnimation = 1;
 int trapAnimation = 0;
 
 
+/* Pokrecemo sound engine sa default parametrima */
+
+ISoundEngine* engine = createIrrKlangDevice();
+
+
 
 
 int main(int argc, char **argv){
@@ -197,9 +211,18 @@ int main(int argc, char **argv){
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
 
-    /*Postavljanje pozadine na crnu boju */
+    /* Postavljanje pozadine na crnu boju */
 
     glClearColor(0.031, 0.094, 0.227,0);
+
+    /* Provera da li je engine uspesno pokrenut */
+
+    if(!engine) {
+      cerr << "Greska pri pokretanju engine!" << endl;
+      return -1;
+    }
+
+
     glutMainLoop();
 
     return 0;
@@ -814,18 +837,21 @@ void detectTrapColision() {
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
                   activateXtrap = true;
+                  engine->play2D("Sounds/xtrap.wav");
 		      				break;
 		      			case 1:
 		      				cout << "Rupu" << endl;
 		      				activateHole = true;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
+                  engine->play2D("Sounds/hole.wav");
 		      				break;
 		      			case 2:
 		      				cout << "Bombu" << endl;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
                   activateBomb = true;
+                  engine->play2D("Sounds/explosion.wav");
 		      				break;
 		      		}		
 
@@ -844,18 +870,21 @@ void detectTrapColision() {
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
                   activateXtrap = true;
+                  engine->play2D("Sounds/xtrap.wav");
 		      				break;
 		      			case 1:
 		      				cout << "Rupu" << endl;
 		      				activateHole = true;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
+                  engine->play2D("Sounds/hole.wav");
 		      				break;
 		      			case 2:
 		      				cout << "Bombu" << endl;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
                   activateBomb = true;
+                  engine->play2D("Sounds/explosion.wav");
 		      				break;
 		      		}		
 
@@ -874,18 +903,21 @@ void detectTrapColision() {
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
                   activateXtrap = true;
+                  engine->play2D("Sounds/xtrap.wav");
 		      				break;
 		      			case 1:
 		      				cout << "Rupu" << endl;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
 		      				activateHole = true;
+                  engine->play2D("Sounds/hole.wav");
 		      				break;
 		      			case 2:
 		      				cout << "Bombu" << endl;
 		      				driveAnimation = 0;
 		      				trapAnimation = 1;
                   activateBomb = true;
+                  engine->play2D("Sounds/explosion.wav");
 		      				break;
 		      		}		
 
@@ -908,6 +940,7 @@ void detectStarColision() {
       			if(movementParameter < 1.8 && movementParameter > -1.8) {
       				    starsCollected += 1;
               		stars[firstStar].goUp = true;
+                  engine->play2D("Sounds/star.wav");
                   cout << "Uhvatio si zvezdicu u srednjoj traci,poeni: " << score << endl;
               	}
       			break;
@@ -915,6 +948,7 @@ void detectStarColision() {
       			if(movementParameter < 5.4 && movementParameter > 1.8) {
       				    starsCollected += 1;
               		stars[firstStar].goUp = true;
+                  engine->play2D("Sounds/star.wav");
                   cout << "Uhvatio si zvezdicu u desnoj traci,poeni: " << score << endl;
               	}
       			break;
@@ -922,6 +956,7 @@ void detectStarColision() {
       			if(movementParameter > -5.4 && movementParameter < -1.8) {
       				  starsCollected += 1;
               	stars[firstStar].goUp = true;
+                engine->play2D("Sounds/star.wav");
                 cout << "Uhvatio si zvezdicu u levoj traci,poeni: " << score << endl;
               }
       			break;				

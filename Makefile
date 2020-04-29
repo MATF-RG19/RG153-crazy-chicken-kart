@@ -1,18 +1,21 @@
 CXX=g++
 CC=gcc
 CFLAGS=-c
-LDLIBS=-lglut -lGL -lGLU
-
+LDLIBS=-lglut -lGL -lGLU -lm
+OPTS =  -I"irrKlang/include" -L"/usr/lib" irrKlang/bin/linux-gcc-64/libIrrKlang.so -pthread
 
 
 PROGRAM=crazyChickenKart
 OBJECTS=crazyChickenKart.o DrawFunctions.o  image.o
+
+
+
 all: $(PROGRAM)
 
 $(PROGRAM): $(OBJECTS)
-	$(CXX) -o $(PROGRAM) $(OBJECTS) $(LDLIBS) -lm
+	$(CXX) -o $(PROGRAM) $(OBJECTS) $(LDLIBS) $(OPTS)
 
-wolfQuest.o: crazyChickenKart.cpp
+crazyChickenKart.o: crazyChickenKart.cpp
 	$(CXX) $(CFLAGS) $(LDLIBS) crazyChickenKart.cpp 
 
 drawFunc.o: DrawFunctions.cpp
