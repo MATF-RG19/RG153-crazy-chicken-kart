@@ -25,9 +25,10 @@ using namespace irrklang;
 #define FILENAME2 "plate.bmp"
 #define FILENAME3 "sky.bmp"
 #define FILENAME4 "keyguide.bmp"
+#define FILENAME5 "scoregui.bmp"
 
 /* Identifikatori tekstura. */
-static GLuint names[5];
+static GLuint names[6];
 
 #define TIMER_INTERVAL 20
 #define TIMER_ID1 0 // Koristimo za animaciju voznje
@@ -68,6 +69,7 @@ static void detectStarColision(void);
 static void initializeTextures(void);
 static void displayStartScreen(void);
 static void displayEndScreen(void);
+static void displayScore(int score,int starsCollected);
 static float matrix[16];
 
 /* Struktura prepreke */
@@ -171,7 +173,7 @@ int main(int argc, char **argv){
     glutInitWindowSize(800, 600);
     glutInitWindowPosition(500, 300);
     glutCreateWindow("Crazy Chicken Kart");
-    //glutFullScreen();
+    glutFullScreen();
 
     /* Inicijalizacija pocetnih pozicija blokova okoline,prepreka i zvezdica */
 
@@ -302,15 +304,24 @@ void on_keyboard(unsigned char key, int x, int y) {
         	break;
         case SPACEBAR:
         	if(!goPressed && driveAnimation)
+          {
         		goPressed=true;
+          }
         	break;
         case 'k':
         case 'K':
           if(!godMode)
+          {
             godMode = true;
+          }
           else
             godMode = false;
-          break;  		                
+          break;
+        case 'h':
+        case 'H':
+          if(!trapAnimation)
+            engine->play2D("Sounds/horn.wav");
+          break;    		                
         case ESC:
           exit(0);
           break;  
@@ -368,6 +379,11 @@ void onTimer(int id){
 	        	movementSpeed += 0.001;
 	        	score += 3;
 	        }
+          else
+          {
+            score += 5;
+          }
+          
 
 	        /* Promena pozicija blokova u zavisnosti od brzine kretanja.
 	           Kada prvi blok dodje na poziciju manju od -72 on se translira
@@ -538,7 +554,7 @@ void on_reshape(int width, int height) {
 
 	  glMatrixMode(GL_PROJECTION);
 	  glLoadIdentity();
-	  gluPerspective(60, (float) width / height, 0.3, 150);
+	  gluPerspective(60, (float) width / height, 0.3, 250);
 }
 
 void on_display() {
@@ -580,9 +596,16 @@ void on_display() {
     drawCompleteScene();
    glPopMatrix();
 
+   glPushMatrix();
+    glDisable(GL_LIGHTING);
+      displayScore(score,starsCollected);
+    glEnable(GL_LIGHTING);
+   glPopMatrix();
+
 
    if(keyGuideScreen)
     displayStartScreen();
+ 
 
    glPushMatrix();
     	glTranslatef(0,0.2,movementParameter);
@@ -685,6 +708,8 @@ void on_display() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
   if(godMode) {
+
+
 
      glPushMatrix();
         glDisable(GL_LIGHTING);
@@ -997,7 +1022,7 @@ static void initializeTextures(void)
     image_read(image, FILENAME0);
 
     /* Generisu se identifikatori tekstura. */
-    glGenTextures(5, names);
+    glGenTextures(6, names);
 
     glBindTexture(GL_TEXTURE_2D, names[0]);
     glTexParameteri(GL_TEXTURE_2D,
@@ -1071,6 +1096,21 @@ static void initializeTextures(void)
                  image->width, image->height, 0,
                  GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
 
+    /* Kreira se sesta tekstura. */
+
+    image_read(image, FILENAME5);
+
+    glBindTexture(GL_TEXTURE_2D, names[5]);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 image->width, image->height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);             
+
     /* Iskljucujemo aktivnu teksturu */
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -1115,6 +1155,62 @@ void displayStartScreen() {
 	  glMatrixMode(GL_PROJECTION);
   glPopMatrix();
   
+  glMatrixMode(GL_MODELVIEW);
+
+}
+
+
+void displayScore(int score,int starsCollected){
+
+  string scoreString;
+  scoreString.append(to_string(score));
+
+  string starsString;
+  starsString.append(to_string(starsCollected));
+
+	glColor3f(0,0,0);
+
+  glMatrixMode(GL_PROJECTION);
+
+  glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0,windowWidth,0,windowHeight);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glPushMatrix();
+
+      glRasterPos2f(windowWidth-130,windowHeight-47);
+      for(int i = 0 ; i < scoreString.length() ; i++ )
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, scoreString[i]);
+
+      glRasterPos2f(windowWidth-130,windowHeight-82);
+      for(int i = 0 ; i < starsString.length() ; i++ )
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, starsString[i]);
+
+      glEnable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D, names[5]);  
+    
+
+	  glBegin(GL_QUADS);
+		  glTexCoord2f(0, 0);
+		  glVertex2f(windowWidth-230,windowHeight-100);
+
+		  glTexCoord2f(0, 1);
+		  glVertex2f(windowWidth-230,windowHeight-20);
+
+		  glTexCoord2f(1, 1);
+		  glVertex2f(windowWidth-50,windowHeight-20);
+
+		  glTexCoord2f(1, 0);
+		  glVertex2f(windowWidth-50,windowHeight-100);
+	  glEnd();  
+
+    glPopMatrix();
+
+    glMatrixMode(GL_PROJECTION);    
+  glPopMatrix();
+
   glMatrixMode(GL_MODELVIEW);
 
 }

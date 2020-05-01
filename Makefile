@@ -1,6 +1,6 @@
-CXX=g++
+CXX=g++ 
 CC=gcc
-CFLAGS=-c
+CFLAGS=-c 
 LDLIBS=-lglut -lGL -lGLU -lm
 OPTS =  -I"irrKlang/include" -L"/usr/lib" irrKlang/bin/linux-gcc-64/libIrrKlang.so -pthread
 
