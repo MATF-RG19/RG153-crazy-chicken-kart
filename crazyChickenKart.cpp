@@ -10,7 +10,6 @@
 #include "image.hpp"
 #include "irrKlang/include/irrKlang.h"
 
-/* https://learnopengl.com/In-Practice/2D-Game/Audio JoeyDeVries<3 */
 
 using namespace std;
 using namespace irrklang;
@@ -18,25 +17,28 @@ using namespace irrklang;
 /* Da bi mogli da koristimo irrKlang.dll fajl,
    moramo da se povezemo sa irrKlang.lib.
    Povezujemo se preko narednog pragma komentara */
+
 #pragma comment(lib, "irrKlang.lib")
 
-#define FILENAME0 "navigation.bmp"
-#define FILENAME1 "speedometer.bmp"
-#define FILENAME2 "plate.bmp"
-#define FILENAME3 "sky.bmp"
-#define FILENAME4 "keyguide.bmp"
-#define FILENAME5 "scoregui.bmp"
+#define FILENAME0 "Textures/navigation.bmp"
+#define FILENAME1 "Textures/speedometer.bmp"
+#define FILENAME2 "Textures/plate.bmp"
+#define FILENAME3 "Textures/sky.bmp"
+#define FILENAME4 "Textures/keyguide.bmp"
+#define FILENAME5 "Textures/scoregui.bmp"
+#define FILENAME6 "Textures/gameover.bmp"
 
 /* Identifikatori tekstura. */
-static GLuint names[6];
+
+static GLuint names[7];
 
 #define TIMER_INTERVAL 20
-#define TIMER_ID1 0 // Koristimo za animaciju voznje
-#define TIMER_ID2 1 // Koristimo za animaciju kamere
-#define TIMER_ID3 2 // Koristimo za animaciju prepreka
+#define TIMER_ID1 0 /* Koristimo za animaciju voznje */
+#define TIMER_ID2 1 /* Koristimo za animaciju kamere */
+#define TIMER_ID3 2 /* Koristimo za animaciju prepreka */
 #define LEN 100
 #define BLOCK_NUMBER 10
-#define OBSTACLE_NUMBER 20
+#define OBSTACLE_NUMBER 40
 #define STAR_NUMBER 10
 #define SPACEBAR 32
 #define ESC 27
@@ -44,6 +46,7 @@ static GLuint names[6];
 
 
 /* Granice kretanja */
+
 #define MAX_LEFT -3.6
 #define MAX_RIGHT 3.6
 #define MAX_TURN_LENGTH 3.6
@@ -75,18 +78,18 @@ static float matrix[16];
 /* Struktura prepreke */
 
 struct OBSTACLE {
-	float x;
-	int track;
-	int type;
+	float x; /* Predstavlja x koordinatu na kojoj cemo iscrtavati prepreku */
+	int track; /* Predstavlja traku u kojoj cemo iscrtavati prepreku */
+	int type; /* Predstavlja tip prepreke koju cemo iscrtavati */
 };
 
 /* Struktura zvezde */
 
 struct STARS {
-	float x;
-  float y;
-	int track;
-  bool goUp;
+	float x; /* Predstavlja x koordinatu na kojoj cemo iscrtavati zvezdicu */
+  float y; /* Predstavlja y koordinatu na kojoj cemo iscrtavati zvezdicu */
+	int track; /* Predstavlja traku u kojoj cemo iscrtavati zvezdicu */
+  bool goUp; /* Boolean promenljiva za pokretanje animacije skupljanja zvezdice */
 };
 
 
@@ -97,7 +100,7 @@ float spoilerParameter = 3.3;
 float tiresParameter = 0;
 float movementParameter = 0;
 //float turnParameter = 0;
-int track = 0; // -1 oznacava levu traku,0 srednju,a 1 desnu
+int track = 0; /* -1 oznacava levu traku,0 srednju,a 1 desnu */
 float holeParameter = 0;
 float holeRotation = 0;
 float xTrapHorizontal = 0;
@@ -113,13 +116,14 @@ vector<OBSTACLE> obstacle(OBSTACLE_NUMBER);
 vector<STARS> stars(STAR_NUMBER);
 
 /* Pokazivaci na prvi i poslednji blok */
+
 int firstBlock = 0;
 int lastBlock = 9;
 
 /* Pokazivaci na prvu i poslenju prepreku */
 
 int firstObstacle = 0;
-int lastObstacle = 19;
+int lastObstacle = 39;
 
 /* Pokazivaci na prvu i poslednju zvezdu */
 
@@ -142,6 +146,7 @@ static bool pressedStart = false;
 static bool goPressed = false;
 static bool keyGuideScreen = true;
 static bool godMode = false;
+static bool endScreen = false;
 bool goLeft = false;
 bool goRight = false;
 bool activateHole = false;
@@ -159,8 +164,6 @@ int trapAnimation = 0;
 /* Pokrecemo sound engine sa default parametrima */
 
 ISoundEngine* engine = createIrrKlangDevice();
-
-
 
 
 int main(int argc, char **argv){
@@ -207,6 +210,9 @@ int main(int argc, char **argv){
     glutKeyboardFunc(on_keyboard);
     glutSpecialFunc(onSpecialKeyPress);
 
+
+    glutDisplayFunc(displayStartScreen);
+
     /* Ukljucivanje dodatnih opengl opcija */
 
     glEnable(GL_DEPTH_TEST);
@@ -219,10 +225,14 @@ int main(int argc, char **argv){
 
     /* Provera da li je engine uspesno pokrenut */
 
-    if(!engine) {
+    if(!engine) 
+    {
       cerr << "Greska pri pokretanju engine!" << endl;
       return -1;
     }
+
+
+    engine->play2D("Sounds/song.wav",true);
 
 
     glutMainLoop();
@@ -231,32 +241,32 @@ int main(int argc, char **argv){
 }
 
 void on_keyboard(unsigned char key, int x, int y) {
-    switch(key) {
+    switch(key) 
+    {
         case 'r':
         	resetAllParameters();
         	glutPostRedisplay();
         	break;
         case 's':
         case 'S':
-          	animationOngoing = 0;
-          	break;
+          animationOngoing = 0;
+          break;
         case 'g':
         case 'G':
         	if(!pressedStart)
-        	{
-        		engine->play2D("Sounds/song.wav",true);
-            	keyGuideScreen = false;
+        	{  
+        		glutDisplayFunc(on_display);     		
+            keyGuideScreen = false;
         		pressedStart = true;
 	          	if(!driveAnimation && cameraAnimation == 0)
 	          	{
 	            	driveAnimation = 1;
 	            	glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID1);
 	          	}else if(cameraAnimation)
-	          	{
 	          		glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
-	          	}
-          	}
-          	break;
+
+          }
+          break;
         case 'q':
         case 'Q':
           if(takeOffRoof)
@@ -269,25 +279,26 @@ void on_keyboard(unsigned char key, int x, int y) {
             takeOffRoof = true; 
             putOnRoof = false;
           }
-        	break;
-          	
+        	break;         	
         case 'e':
-          	activateSpoiler=true;
-          	break;
+          activateSpoiler=true;
+          break;
         case 'f':
-          	if(thirdPerson)
-            	thirdPerson = false;
-          	else
-            	thirdPerson = true;
-          	break;  
+        	if(thirdPerson)
+           	thirdPerson = false;
+          else
+          	thirdPerson = true;
+          break;  
         case 'd':
         case 'D':
         	if(driveAnimation)
        		{
 		        goRight=true;
 		        goLeft=false;
-	          	if(track != 1)
-	            	track += 1;
+
+	          if(track != 1)
+	          	track += 1;
+
 		        glutPostRedisplay();
        		}
         	break;
@@ -297,25 +308,25 @@ void on_keyboard(unsigned char key, int x, int y) {
        		{
 		        goLeft=true;
 		        goRight=false;
-	          	if(track != -1)
-	            	track -= 1;
+
+	          if(track != -1)
+	            track -= 1;
+
 		        glutPostRedisplay();
        		}
         	break;
         case SPACEBAR:
         	if(!goPressed && driveAnimation)
-          {
         		goPressed=true;
-          }
+
         	break;
         case 'k':
         case 'K':
           if(!godMode)
-          {
             godMode = true;
-          }
           else
             godMode = false;
+
           break;
         case 'h':
         case 'H':
@@ -331,58 +342,75 @@ void on_keyboard(unsigned char key, int x, int y) {
 
 void onSpecialKeyPress(int key, int x, int y){
 
-  switch(key){
+  switch(key)
+  {
     case GLUT_KEY_RIGHT:
       if(driveAnimation)
-       {
-	        goRight=true;
-	        goLeft=false;
-          if(track != 1)
-            track += 1;
-	        glutPostRedisplay();
-        }
-        break;
+      {
+	      goRight=true;
+	      goLeft=false;
+        if(track != 1)
+          track += 1;
+	      glutPostRedisplay();
+      }
+      break;
     case GLUT_KEY_LEFT:
       if(driveAnimation)
-      	{
-	        goLeft = true;
-	        goRight = false;
-          if(track != -1)
-            track -= 1;
-	        glutPostRedisplay();
+      {
+	      goLeft = true;
+	      goRight = false;
+        if(track != -1)
+          track -= 1;
+	      glutPostRedisplay();
     	}
-        break;
-      
-    
+      break;  
   }
 }
 
 void onTimer(int id){
-    if(id == TIMER_ID1){
 
-    	if(goPressed) {
+    /* Promene parametara za skidanje krova,aktiviranje spojlera */
+
+	        if(roofParameter >= 0 && takeOffRoof)
+	        	roofParameter -= 0.06;
+
+	        if(roofParameter <= 10.25 && putOnRoof)
+	        	roofParameter += 0.06;
+
+	        if(activateSpoiler)
+	        	spoilerParameter += 0.05;
+
+
+            
+    if(id == TIMER_ID1)
+    {
+
+    	if(goPressed) 
+      {
 
 	        tiresParameter+=2;
 	        starRotationParameter += 5;
 
 	        /* Uvecavanje brzine kretanja */
 
-	        if(movementSpeed < 1) {	
+	        if(movementSpeed < 1 && !endScreen) 
+          {	
 	        	movementSpeed += 0.005;
 	        	score += 1;
 	        }
-	        else if(movementSpeed < 1.5) {
+	        else if(movementSpeed < 1.5 && !endScreen) 
+          {
 	        	movementSpeed += 0.0025;
 	        	score += 2;
 	        }
-	        else if(movementSpeed < 3) {
+	        else if(movementSpeed < 3 && !endScreen) 
+          {
 	        	movementSpeed += 0.001;
 	        	score += 3;
 	        }
-          else
-          {
+          else if(!endScreen)
             score += 5;
-          }
+
           
 
 	        /* Promena pozicija blokova u zavisnosti od brzine kretanja.
@@ -395,7 +423,8 @@ void onTimer(int id){
 	        for(int i = 0 ; i < BLOCK_NUMBER ; i++)
 	        	blockPosition[i] -= movementSpeed;
 
-	        if(blockPosition[firstBlock] <= -72) {
+	        if(blockPosition[firstBlock] <= -72) 
+          {
 	        	blockPosition[firstBlock] = blockPosition[lastBlock] + 24;
 	        	lastBlock = firstBlock;
 	        	firstBlock++;
@@ -409,7 +438,8 @@ void onTimer(int id){
 	        for( int i = 0 ; i < OBSTACLE_NUMBER ; i++)
 	        	obstacle[i].x -= movementSpeed;
 
-	        if( obstacle[firstObstacle].x <= -20 ) {
+	        if( obstacle[firstObstacle].x <= -20 ) 
+          {
 
 	        	obstacle[firstObstacle].x = obstacle[lastObstacle].x + 40;
 	        	lastObstacle = firstObstacle;
@@ -422,15 +452,16 @@ void onTimer(int id){
 
 	        /* Vrsi se promena pozicija zvezdica po istom principu kao sa blokovima i preprekama */
 
-	        for( int i = 0 ; i < STAR_NUMBER ; i++ ) {
+	        for( int i = 0 ; i < STAR_NUMBER ; i++ ) 
+          {
 	        	stars[i].x -= movementSpeed;
-            if(stars[i].goUp && stars[i].y < 4) {
+
+            if(stars[i].goUp && stars[i].y < 4) 
               stars[i].y += 1;
-              
-            }
           }
 
-	        if(stars[firstStar].x <= -20) {
+	        if(stars[firstStar].x <= -20) 
+          {
 
             stars[firstStar].goUp = false;
             stars[firstStar].y = 0;
@@ -456,24 +487,14 @@ void onTimer(int id){
 	          detectStarColision();
 
 
-	        /* Promene parametara za skidanje krova,aktiviranje spojlera */
-
-	        if(roofParameter >= 0 && takeOffRoof)
-	        	roofParameter -= 0.06;
-
-	        if(roofParameter <= 10.25 && putOnRoof)
-	        	roofParameter += 0.06;
-
-	        if(activateSpoiler)
-	        	spoilerParameter += 0.05;
-
 	        /* Promene pozicije buggy-ja */
 
 	        adjustPositionParameters();
 	       
     }
 
-    }else if(id == TIMER_ID2)
+    }
+    else if(id == TIMER_ID2)
     {
 
     	cameraParameter+=2.5;
@@ -482,7 +503,8 @@ void onTimer(int id){
     		cameraAnimation = 0;
     		driveAnimation = 1;
     	}
-    }else
+    }
+    else
     {
       thirdPerson = true;
 
@@ -498,11 +520,16 @@ void onTimer(int id){
 
         if( holeParameter > 10)
         {
-      		score += starsCollected*STAR_POINTS;
       		cout << score << endl;
-          	resetAllParameters();  
+          glutDisplayFunc(displayEndScreen);
+          if(!endScreen)
+          {
+          engine->play2D("Sounds/yousuck.wav");
+          endScreen = true;
+          }
         }
-      }else if(activateXtrap)
+      }
+      else if(activateXtrap)
       {
         if(xTrapHorizontal < 75)
         {
@@ -512,22 +539,31 @@ void onTimer(int id){
         }
         else
         {
-	      score += starsCollected*STAR_POINTS;
 	      cout << score << endl;
-          resetAllParameters();
+        glutDisplayFunc(displayEndScreen);
+        if(!endScreen)
+          {
+          engine->play2D("Sounds/yousuck.wav");
+          endScreen = true;
+          }
         }
 
         if(xTrapVertical > -2)
           xTrapVertical -= 0.05;
-      }else
+      }
+      else
       {
         if(bombParameter < 5.7)
           bombParameter += 0.3;
         else
         {
-	      score += starsCollected*STAR_POINTS;
 	      cout << score << endl;
-          resetAllParameters();
+        glutDisplayFunc(displayEndScreen);
+        if(!endScreen)
+          {
+          engine->play2D("Sounds/yousuck.wav");
+          endScreen = true;
+          }
         }
       }
 
@@ -579,7 +615,7 @@ void on_display() {
 	              120, 0, movementParameter,
 	              0, 1, 0);
 	  }
-	else
+	  else
 		gluLookAt(5*cos(cameraParameter/360), 3,-2.5*sin(cameraParameter/360),
 		                1.5, cameraParameter/400, 0,
 		                0, 1, 0);
@@ -601,10 +637,7 @@ void on_display() {
       displayScore(score,starsCollected);
     glEnable(GL_LIGHTING);
    glPopMatrix();
-
-
-   if(keyGuideScreen)
-    displayStartScreen();
+         
  
 
    glPushMatrix();
@@ -708,8 +741,6 @@ void on_display() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
   if(godMode) {
-
-
 
      glPushMatrix();
         glDisable(GL_LIGHTING);
@@ -820,13 +851,14 @@ void resetAllParameters(){
   xTrapRotation = 0;
   bombParameter = 0;
   lastBlock = 9;
-  lastObstacle = 19;
+  lastObstacle = 39;
   lastStar = 9;
   firstStar = 0;
   movementSpeed = 0;
   score = 0;
   starsCollected = 0;
   godMode = false;
+  endScreen = false;
 
 
   for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
@@ -845,7 +877,9 @@ void resetAllParameters(){
     	stars[i].track = rand()%3-1;
       stars[i].goUp = false;
       stars[i].y = 0;
-    }  
+    }
+
+    glutDisplayFunc(on_display);  
 }
 
 void detectTrapColision() {
@@ -967,6 +1001,7 @@ void detectStarColision() {
       			if(movementParameter < 1.8 && movementParameter > -1.8) {
       				    starsCollected += 1;
               		stars[firstStar].goUp = true;
+                  score += STAR_POINTS;
                   engine->play2D("Sounds/star.wav");
                   cout << "Uhvatio si zvezdicu u srednjoj traci,poeni: " << score << endl;
               	}
@@ -975,6 +1010,7 @@ void detectStarColision() {
       			if(movementParameter < 5.4 && movementParameter > 1.8) {
       				    starsCollected += 1;
               		stars[firstStar].goUp = true;
+                  score += STAR_POINTS;
                   engine->play2D("Sounds/star.wav");
                   cout << "Uhvatio si zvezdicu u desnoj traci,poeni: " << score << endl;
               	}
@@ -983,6 +1019,7 @@ void detectStarColision() {
       			if(movementParameter > -5.4 && movementParameter < -1.8) {
       				  starsCollected += 1;
               	stars[firstStar].goUp = true;
+                score += STAR_POINTS;
                 engine->play2D("Sounds/star.wav");
                 cout << "Uhvatio si zvezdicu u levoj traci,poeni: " << score << endl;
               }
@@ -1022,7 +1059,7 @@ static void initializeTextures(void)
     image_read(image, FILENAME0);
 
     /* Generisu se identifikatori tekstura. */
-    glGenTextures(6, names);
+    glGenTextures(7, names);
 
     glBindTexture(GL_TEXTURE_2D, names[0]);
     glTexParameteri(GL_TEXTURE_2D,
@@ -1109,7 +1146,22 @@ static void initializeTextures(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                  image->width, image->height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);             
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
+    /* Kreira se sedma tekstura. */
+
+    image_read(image, FILENAME6);
+
+    glBindTexture(GL_TEXTURE_2D, names[6]);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 image->width, image->height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);                           
 
     /* Iskljucujemo aktivnu teksturu */
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -1125,7 +1177,8 @@ static void initializeTextures(void)
 
 void displayStartScreen() {
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 	
+
 
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, names[4]);
@@ -1156,6 +1209,46 @@ void displayStartScreen() {
   glPopMatrix();
   
   glMatrixMode(GL_MODELVIEW);
+
+  glutSwapBuffers();
+
+}
+
+void displayEndScreen() {
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, names[6]);
+  glMatrixMode(GL_PROJECTION);
+
+  glPushMatrix();
+	  glLoadIdentity();
+	  gluOrtho2D(0, windowWidth,0, windowHeight);
+	    
+	  glMatrixMode(GL_MODELVIEW);
+	  glLoadIdentity();
+
+	  glBegin(GL_QUADS);
+		  glTexCoord2f(0, 0);
+		  glVertex2f(0,0);
+
+		  glTexCoord2f(0, 1);
+		  glVertex2f(0, windowHeight);
+
+		  glTexCoord2f(1, 1);
+		  glVertex2f(windowWidth,windowHeight);
+
+		  glTexCoord2f(1, 0);
+		  glVertex2f(windowWidth,0);
+	  glEnd();
+	    
+	  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  
+  glMatrixMode(GL_MODELVIEW);
+
+  glutSwapBuffers();
 
 }
 

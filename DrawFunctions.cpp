@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define OBSTACLE_NUMBER 20
+#define OBSTACLE_NUMBER 40
 #define STAR_NUMBER 10
 
 struct OBSTACLE{
@@ -3321,6 +3321,9 @@ void drawBuggy(){
 	//Volan
 
 	glPushMatrix();
+	glTranslatef(11.5,2.3,-2.2);
+	glRotatef(movementParameter*25,1,0,0);
+	glTranslatef(-11.5,-2.3,+2.2);
     glBegin(GL_QUADS);
       glColor3f(1,0,0);
 
@@ -3345,11 +3348,24 @@ void drawBuggy(){
       
       setNormalAndVertexQuads(a,b,c,d);
     glEnd();
+
+	glPopMatrix();
+
+	glPushMatrix();
 		glColor3f(0.2,0.2,0.2);
 		glTranslatef(11.5,2.3,-2.2);
+		glRotatef(movementParameter*25,1,0,0);
 		glRotatef(90,0,1,0);
 		glutSolidTorus(0.12,0.55,20,20);
-		glTranslatef(0,0.05,-0.06);
+	glPopMatrix();
+
+
+
+
+	glPushMatrix();
+		glTranslatef(11.42,2.3,-2.2);
+		glRotatef(movementParameter*25,1,0,0);
+		glRotatef(90,0,1,0);
 		gluDisk(quad7,0,0.2,20,20);
 	glPopMatrix();
 
