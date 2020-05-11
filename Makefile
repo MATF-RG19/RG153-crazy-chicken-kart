@@ -21,8 +21,8 @@ crazyChickenKart.o: crazyChickenKart.cpp
 drawFunc.o: DrawFunctions.cpp
 	$(CXX) $(CFLAGS) $(LDLIBS) DrawFunctions.cpp
 
-image.o: image.cpp
-	$(CXX) $(CFLAGS) $(LDLIBS) image.cpp
+image.o: Textures/image.cpp
+	$(CXX) $(CFLAGS) $(LDLIBS) Textures/image.cpp
 
 
 

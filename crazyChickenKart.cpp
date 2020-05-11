@@ -7,7 +7,7 @@
 #include <cmath>
 #include <cstring>
 #include "DrawFunctions.hpp"
-#include "image.hpp"
+#include "Textures/image.hpp"
 #include "irrKlang/include/irrKlang.h"
 
 
@@ -27,10 +27,11 @@ using namespace irrklang;
 #define FILENAME4 "Textures/keyguide.bmp"
 #define FILENAME5 "Textures/scoregui.bmp"
 #define FILENAME6 "Textures/gameover.bmp"
+#define FILENAME7 "Textures/win.bmp"
 
 /* Identifikatori tekstura. */
 
-static GLuint names[7];
+static GLuint names[9];
 
 #define TIMER_INTERVAL 20
 #define TIMER_ID1 0 /* Koristimo za animaciju voznje */
@@ -38,7 +39,7 @@ static GLuint names[7];
 #define TIMER_ID3 2 /* Koristimo za animaciju prepreka */
 #define LEN 100
 #define BLOCK_NUMBER 10
-#define OBSTACLE_NUMBER 40
+#define OBSTACLE_NUMBER 60
 #define STAR_NUMBER 10
 #define SPACEBAR 32
 #define ESC 27
@@ -72,6 +73,7 @@ static void detectStarColision(void);
 static void initializeTextures(void);
 static void displayStartScreen(void);
 static void displayEndScreen(void);
+static void displayYouWinScreen(void);
 static void displayScore(int score,int starsCollected);
 static float matrix[16];
 
@@ -123,7 +125,7 @@ int lastBlock = 9;
 /* Pokazivaci na prvu i poslenju prepreku */
 
 int firstObstacle = 0;
-int lastObstacle = 39;
+int lastObstacle = 59;
 
 /* Pokazivaci na prvu i poslednju zvezdu */
 
@@ -147,6 +149,7 @@ static bool goPressed = false;
 static bool keyGuideScreen = true;
 static bool godMode = false;
 static bool endScreen = false;
+static bool claps = false;
 bool goLeft = false;
 bool goRight = false;
 bool activateHole = false;
@@ -158,7 +161,8 @@ bool activateBomb = false;
 
 static float driveAnimation = 0;
 int cameraAnimation = 1;
-int trapAnimation = 0;
+int endAnimation = 0;
+int winScreen = 0;
 
 
 /* Pokrecemo sound engine sa default parametrima */
@@ -323,14 +327,21 @@ void on_keyboard(unsigned char key, int x, int y) {
         case 'k':
         case 'K':
           if(!godMode)
+          {
             godMode = true;
+            engine->play2D("Sounds/laugh.wav");
+            engine->play2D("Sounds/siren.wav",true);
+          }
           else
+          {
             godMode = false;
+            engine->removeSoundSource("Sounds/siren.wav");
+          }
 
           break;
         case 'h':
         case 'H':
-          if(!trapAnimation)
+          if(!endAnimation)
             engine->play2D("Sounds/horn.wav");
           break;    		                
         case ESC:
@@ -378,7 +389,7 @@ void onTimer(int id){
 	        	roofParameter += 0.06;
 
 	        if(activateSpoiler)
-	        	spoilerParameter += 0.05;
+	        	spoilerParameter += 0.05;       
 
 
             
@@ -410,6 +421,20 @@ void onTimer(int id){
 	        }
           else if(!endScreen)
             score += 5;
+
+          if(score > 15000)
+          {
+            driveAnimation = 0;
+            endAnimation = 1;
+            winScreen = 1;
+          }  
+
+
+          /*if(score > 150)
+          {
+            driveAnimation = 0;
+            glutDisplayFunc(displayEndScreen);
+          }  */
 
           
 
@@ -504,77 +529,90 @@ void onTimer(int id){
     		driveAnimation = 1;
     	}
     }
-    else
+    else if(id == TIMER_ID3)
     {
-      thirdPerson = true;
-
-      if(activateHole)
+      if(winScreen)
       {
-        holeParameter += 0.1;
-
-        if(holeParameter > 1.2)
+        engine->removeSoundSource("Sounds/siren.wav");
+        if(!claps)
         {
-          holeRotation += 0.2;
-          holeParameter += 0.05;
+        claps = true;
+        engine->play2D("Sounds/claps.wav");
         }
-
-        if( holeParameter > 10)
-        {
-      		cout << score << endl;
-          glutDisplayFunc(displayEndScreen);
-          if(!endScreen)
-          {
-          engine->play2D("Sounds/yousuck.wav");
-          endScreen = true;
-          }
-        }
-      }
-      else if(activateXtrap)
-      {
-        if(xTrapHorizontal < 75)
-        {
-          xTrapHorizontal += 0.5;
-          if(xTrapHorizontal > 25)
-            xTrapRotation += 0.5;
-        }
-        else
-        {
-	      cout << score << endl;
-        glutDisplayFunc(displayEndScreen);
-        if(!endScreen)
-          {
-          engine->play2D("Sounds/yousuck.wav");
-          endScreen = true;
-          }
-        }
-
-        if(xTrapVertical > -2)
-          xTrapVertical -= 0.05;
+        glutDisplayFunc(displayYouWinScreen);
       }
       else
       {
-        if(bombParameter < 5.7)
-          bombParameter += 0.3;
+        thirdPerson = true;
+
+        if(activateHole)
+        {
+          holeParameter += 0.1;
+
+          if(holeParameter > 1.2)
+          {
+            holeRotation += 0.2;
+            holeParameter += 0.05;
+          }
+
+          if( holeParameter > 10)
+          {
+            cout << score << endl;
+            glutDisplayFunc(displayEndScreen);
+            if(!endScreen)
+            {
+            engine->play2D("Sounds/yousuck.wav");
+            endScreen = true;
+            }
+          }
+        }
+        else if(activateXtrap)
+        {
+          if(xTrapHorizontal < 75)
+          {
+            xTrapHorizontal += 0.5;
+            if(xTrapHorizontal > 25)
+              xTrapRotation += 0.5;
+          }
+          else
+          {
+          cout << score << endl;
+          glutDisplayFunc(displayEndScreen);
+          if(!endScreen)
+            {
+            engine->play2D("Sounds/yousuck.wav");
+            endScreen = true;
+            }
+          }
+
+          if(xTrapVertical > -2)
+            xTrapVertical -= 0.05;
+        }
         else
         {
-	      cout << score << endl;
-        glutDisplayFunc(displayEndScreen);
-        if(!endScreen)
+          if(bombParameter < 5.7)
+            bombParameter += 0.3;
+          else
           {
-          engine->play2D("Sounds/yousuck.wav");
-          endScreen = true;
+          cout << score << endl;
+          glutDisplayFunc(displayEndScreen);
+          if(!endScreen)
+            {
+            engine->play2D("Sounds/yousuck.wav");
+            endScreen = true;
+            }
           }
         }
       }
-
     }
+    
     glutPostRedisplay();
     if (driveAnimation)
     	glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID1);
   	else if(cameraAnimation)
   		glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID2);
-  	else
-  		glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID3);
+  	else if(endAnimation)
+  		glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID3);   
 }
 
 void on_reshape(int width, int height) {
@@ -604,7 +642,7 @@ void on_display() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    if(driveAnimation || trapAnimation)
+    if(driveAnimation || endAnimation)
     {
 	    if(thirdPerson)
 	      gluLookAt(-5, 3,movementParameter,
@@ -632,11 +670,33 @@ void on_display() {
     drawCompleteScene();
    glPopMatrix();
 
-   glPushMatrix();
-    glDisable(GL_LIGHTING);
-      displayScore(score,starsCollected);
-    glEnable(GL_LIGHTING);
-   glPopMatrix();
+  if(driveAnimation)
+  {
+    glPushMatrix();
+      glDisable(GL_LIGHTING);
+        displayScore(score,starsCollected);
+      glEnable(GL_LIGHTING);
+    glPopMatrix();
+  }
+
+
+   glBindTexture(GL_TEXTURE_2D, names[7]);
+	    glBegin(GL_QUADS);
+	        glNormal3f(0, 0, -1);
+
+	        glTexCoord2f(0, 0);
+	        glVertex3f(140,-25,200);
+
+	        glTexCoord2f(1, 0);
+	        glVertex3f(0,-25,200);
+
+	        glTexCoord2f(1, 1);
+	        glVertex3f(0,90,200);
+
+	        glTexCoord2f(0, 1);
+	        glVertex3f(140,90,200);
+	      glEnd();
+    glPopMatrix();
          
  
 
@@ -662,9 +722,8 @@ void on_display() {
 	        glVertex3f(140,90,-200);
 	      glEnd();
     glPopMatrix();
-   
 
-   if(!trapAnimation)
+   if(!endAnimation)
    {
 
 	   glPushMatrix();
@@ -840,7 +899,8 @@ void resetAllParameters(){
   activateBomb = false;
   driveAnimation = 0;
   cameraAnimation = 1;
-  trapAnimation = 0;
+  endAnimation = 0;
+  winScreen = 0;
   goPressed = false;
   goLeft = false;
   goRight = false;
@@ -851,7 +911,7 @@ void resetAllParameters(){
   xTrapRotation = 0;
   bombParameter = 0;
   lastBlock = 9;
-  lastObstacle = 39;
+  lastObstacle = 59;
   lastStar = 9;
   firstStar = 0;
   movementSpeed = 0;
@@ -859,6 +919,11 @@ void resetAllParameters(){
   starsCollected = 0;
   godMode = false;
   endScreen = false;
+
+  engine->removeSoundSource("Sounds/siren.wav");
+  engine->removeSoundSource("Sounds/song.wav");
+  engine->removeSoundSource("Sounds/claps.wav");
+  engine->play2D("Sounds/song.wav",true);
 
 
   for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
@@ -896,7 +961,7 @@ void detectTrapColision() {
 		      			case 0:
 		      				cout << "X zamku" << endl;
 		      				driveAnimation = 0;
-		      				trapAnimation = 1;
+		      				endAnimation = 1;
                   activateXtrap = true;
                   engine->play2D("Sounds/xtrap.wav");
 		      				break;
@@ -904,13 +969,13 @@ void detectTrapColision() {
 		      				cout << "Rupu" << endl;
 		      				activateHole = true;
 		      				driveAnimation = 0;
-		      				trapAnimation = 1;
+		      				endAnimation = 1;
                   engine->play2D("Sounds/hole.wav");
 		      				break;
 		      			case 2:
 		      				cout << "Bombu" << endl;
 		      				driveAnimation = 0;
-		      				trapAnimation = 1;
+		      				endAnimation = 1;
                   activateBomb = true;
                   engine->play2D("Sounds/explosion.wav");
 		      				break;
@@ -929,7 +994,7 @@ void detectTrapColision() {
 		      			case 0:
 		      				cout << "X zamku" << endl;
 		      				driveAnimation = 0;
-		      				trapAnimation = 1;
+		      				endAnimation = 1;
                   activateXtrap = true;
                   engine->play2D("Sounds/xtrap.wav");
 		      				break;
@@ -937,13 +1002,13 @@ void detectTrapColision() {
 		      				cout << "Rupu" << endl;
 		      				activateHole = true;
 		      				driveAnimation = 0;
-		      				trapAnimation = 1;
+		      				endAnimation = 1;
                   engine->play2D("Sounds/hole.wav");
 		      				break;
 		      			case 2:
 		      				cout << "Bombu" << endl;
 		      				driveAnimation = 0;
-		      				trapAnimation = 1;
+		      				endAnimation = 1;
                   activateBomb = true;
                   engine->play2D("Sounds/explosion.wav");
 		      				break;
@@ -962,21 +1027,21 @@ void detectTrapColision() {
 		      			case 0:
 		      				cout << "X zamku" << endl;
 		      				driveAnimation = 0;
-		      				trapAnimation = 1;
+		      				endAnimation = 1;
                   activateXtrap = true;
                   engine->play2D("Sounds/xtrap.wav");
 		      				break;
 		      			case 1:
 		      				cout << "Rupu" << endl;
 		      				driveAnimation = 0;
-		      				trapAnimation = 1;
+		      				endAnimation = 1;
 		      				activateHole = true;
                   engine->play2D("Sounds/hole.wav");
 		      				break;
 		      			case 2:
 		      				cout << "Bombu" << endl;
 		      				driveAnimation = 0;
-		      				trapAnimation = 1;
+		      				endAnimation = 1;
                   activateBomb = true;
                   engine->play2D("Sounds/explosion.wav");
 		      				break;
@@ -1059,7 +1124,7 @@ static void initializeTextures(void)
     image_read(image, FILENAME0);
 
     /* Generisu se identifikatori tekstura. */
-    glGenTextures(7, names);
+    glGenTextures(9, names);
 
     glBindTexture(GL_TEXTURE_2D, names[0]);
     glTexParameteri(GL_TEXTURE_2D,
@@ -1161,7 +1226,38 @@ static void initializeTextures(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                  image->width, image->height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);                           
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
+
+    /* Kreira se osma tekstura. */
+
+    image_read(image, FILENAME3);
+
+    glBindTexture(GL_TEXTURE_2D, names[7]);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 image->width, image->height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
+    /* Kreira se deveta tekstura. */             
+
+    image_read(image, FILENAME7);
+
+    glBindTexture(GL_TEXTURE_2D, names[8]);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 image->width, image->height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);                                                                   
 
     /* Iskljucujemo aktivnu teksturu */
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -1252,6 +1348,46 @@ void displayEndScreen() {
 
 }
 
+void displayYouWinScreen() {
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, names[8]);
+  glMatrixMode(GL_PROJECTION);
+
+  glPushMatrix();
+	  glLoadIdentity();
+	  gluOrtho2D(0, windowWidth,0, windowHeight);
+	    
+	  glMatrixMode(GL_MODELVIEW);
+	  glLoadIdentity();
+
+	  glBegin(GL_QUADS);
+		  glTexCoord2f(0, 0);
+		  glVertex2f(0,0);
+
+		  glTexCoord2f(0, 1);
+		  glVertex2f(0, windowHeight);
+
+		  glTexCoord2f(1, 1);
+		  glVertex2f(windowWidth,windowHeight);
+
+		  glTexCoord2f(1, 0);
+		  glVertex2f(windowWidth,0);
+	  glEnd();
+	    
+	  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  
+  glMatrixMode(GL_MODELVIEW);
+
+  
+
+  glutSwapBuffers();
+
+}
+
 
 void displayScore(int score,int starsCollected){
 
@@ -1282,22 +1418,25 @@ void displayScore(int score,int starsCollected){
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, starsString[i]);
 
       glEnable(GL_TEXTURE_2D);
+
+      /* Tekstura za gui scora */
       glBindTexture(GL_TEXTURE_2D, names[5]);  
     
 
-	  glBegin(GL_QUADS);
-		  glTexCoord2f(0, 0);
-		  glVertex2f(windowWidth-230,windowHeight-100);
+      glBegin(GL_QUADS);
+        glTexCoord2f(0, 0);
+        glVertex2f(windowWidth-230,windowHeight-100);
 
-		  glTexCoord2f(0, 1);
-		  glVertex2f(windowWidth-230,windowHeight-20);
+        glTexCoord2f(0, 1);
+        glVertex2f(windowWidth-230,windowHeight-20);
 
-		  glTexCoord2f(1, 1);
-		  glVertex2f(windowWidth-50,windowHeight-20);
+        glTexCoord2f(1, 1);
+        glVertex2f(windowWidth-50,windowHeight-20);
 
-		  glTexCoord2f(1, 0);
-		  glVertex2f(windowWidth-50,windowHeight-100);
-	  glEnd();  
+        glTexCoord2f(1, 0);
+        glVertex2f(windowWidth-50,windowHeight-100);
+      glEnd();
+      
 
     glPopMatrix();
 

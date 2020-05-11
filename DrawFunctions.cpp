@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define OBSTACLE_NUMBER 40
+#define OBSTACLE_NUMBER 60
 #define STAR_NUMBER 10
 
 struct OBSTACLE{
