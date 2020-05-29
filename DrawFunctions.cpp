@@ -3598,6 +3598,22 @@ void drawBuggy(){
 	glPopMatrix();
 
 
+	/* Soferka */
+
+	glPushMatrix();
+		glDisable(GL_LIGHTING);
+        glEnable (GL_BLEND);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glColor4f (0.0f, 1.0f, 0.0f, 0.1f);
+    	glTranslatef(12,4.3,0);
+   		glRotatef(55,0,0,1);
+   		glScalef(0.01,0.45,0.68);
+    	glutSolidCube(10);
+		glDisable (GL_BLEND);
+        glEnable(GL_LIGHTING);
+    glPopMatrix();
+
+
 }
 
 void drawFence(){
@@ -4075,6 +4091,8 @@ void drawHouse(){
       gluDisk(quad10,0,1,20,20);
     glPopMatrix();
 
+	
+
 }
 
 
@@ -4085,31 +4103,6 @@ void drawFixedParts(){
       drawKart();
     glPopMatrix();*/
 
-    if(activateBomb)
-    {
-      glPushMatrix();
-        glColor3f(1,0,0);
-        glTranslatef(1.5,0,movementParameter);
-        glutSolidSphere(bombParameter,100,100);
-      glPopMatrix();
-    }
-
-    glPushMatrix();
-      glTranslatef(0,0.2,movementParameter);
-      //glRotatef(-turnParameter,0,1,0);
-      glScalef(0.15,0.15,0.15);
-      if(activateHole)
-      {
-        glTranslatef(6*holeParameter,0.15-1.2*holeRotation,0);
-      	glRotatef(8*holeRotation,0,0,-1);
-      }else if(activateXtrap)
-      {
-        
-        glTranslatef(xTrapHorizontal,xTrapVertical,0);
-        glRotatef(xTrapRotation,0,-1,0);    
-      }
-      drawBuggy();
-    glPopMatrix();
 
     /*
     glPushMatrix();
@@ -4194,6 +4187,32 @@ void drawFixedParts(){
       glScalef(300,0.01,20);
       drawHilltop();
     glPopMatrix();*/
+
+	if(activateBomb)
+    {
+      glPushMatrix();
+        glColor3f(1,0,0);
+        glTranslatef(1.5,0,movementParameter);
+        glutSolidSphere(bombParameter,100,100);
+      glPopMatrix();
+    }
+
+    glPushMatrix();
+      glTranslatef(0,0.2,movementParameter);
+      //glRotatef(-turnParameter,0,1,0);
+      glScalef(0.15,0.15,0.15);
+      if(activateHole)
+      {
+        glTranslatef(6*holeParameter,0.15-1.2*holeRotation,0);
+      	glRotatef(8*holeRotation,0,0,-1);
+      }else if(activateXtrap)
+      {
+        
+        glTranslatef(xTrapHorizontal,xTrapVertical,0);
+        glRotatef(xTrapRotation,0,-1,0);    
+      }
+      drawBuggy();
+    glPopMatrix();
 
 
 

@@ -72,9 +72,9 @@ static void detectTrapColision(void);
 static void detectStarColision(void);
 static void initializeTextures(void);
 static void displayStartScreen(void);
-static void displayEndScreen(void);
+static void displayEndScreen();
 static void displayYouWinScreen(void);
-static void displayScore(int score,int starsCollected);
+static void displayScore(int score,int starsCollected,int starsStreak);
 static float matrix[16];
 
 /* Struktura prepreke */
@@ -113,6 +113,7 @@ float movementSpeed = 0;
 int starRotationParameter = 0;
 int score = 0;
 int starsCollected = 0;
+int starsStreak = 1;
 vector<float> blockPosition(BLOCK_NUMBER);
 vector<OBSTACLE> obstacle(OBSTACLE_NUMBER);
 vector<STARS> stars(STAR_NUMBER);
@@ -430,14 +431,6 @@ void onTimer(int id){
           }  
 
 
-          /*if(score > 150)
-          {
-            driveAnimation = 0;
-            glutDisplayFunc(displayEndScreen);
-          }  */
-
-          
-
 	        /* Promena pozicija blokova u zavisnosti od brzine kretanja.
 	           Kada prvi blok dodje na poziciju manju od -72 on se translira
 	           na poziciju poslednjeg bloka plus 24 (24 je duzina jednog bloka)
@@ -483,6 +476,11 @@ void onTimer(int id){
 
             if(stars[i].goUp && stars[i].y < 4) 
               stars[i].y += 1;
+          }
+
+          if(stars[firstStar].x <= -10 && stars[firstStar].goUp == false)
+          {
+            starsStreak = 1;
           }
 
 	        if(stars[firstStar].x <= -20) 
@@ -557,7 +555,7 @@ void onTimer(int id){
 
           if( holeParameter > 10)
           {
-            cout << score << endl;
+            glDisable(GL_LIGHTING);
             glutDisplayFunc(displayEndScreen);
             if(!endScreen)
             {
@@ -576,7 +574,7 @@ void onTimer(int id){
           }
           else
           {
-          cout << score << endl;
+          glDisable(GL_LIGHTING);  
           glutDisplayFunc(displayEndScreen);
           if(!endScreen)
             {
@@ -594,7 +592,7 @@ void onTimer(int id){
             bombParameter += 0.3;
           else
           {
-          cout << score << endl;
+          glDisable(GL_LIGHTING);
           glutDisplayFunc(displayEndScreen);
           if(!endScreen)
             {
@@ -662,23 +660,16 @@ void on_display() {
 
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
- 	
- 	 //draw_axes(50);
-   drawFixedParts();
+ 
 
-   glPushMatrix();
-    drawCompleteScene();
-   glPopMatrix();
-
-  if(driveAnimation)
+   if(driveAnimation && thirdPerson)
   {
     glPushMatrix();
       glDisable(GL_LIGHTING);
-        displayScore(score,starsCollected);
+        displayScore(score,starsCollected,starsStreak);
       glEnable(GL_LIGHTING);
     glPopMatrix();
   }
-
 
    glBindTexture(GL_TEXTURE_2D, names[7]);
 	    glBegin(GL_QUADS);
@@ -799,6 +790,13 @@ void on_display() {
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+  /* Iscrtavanje buggy-ja sa terenom */
+
+  glPushMatrix();
+    drawCompleteScene();
+    drawFixedParts();
+  glPopMatrix();
+
   if(godMode) {
 
      glPushMatrix();
@@ -814,8 +812,6 @@ void on_display() {
         glEnable(GL_LIGHTING); 
      glPopMatrix();
    }
-
-    
 
     glutSwapBuffers();
 }
@@ -919,6 +915,7 @@ void resetAllParameters(){
   starsCollected = 0;
   godMode = false;
   endScreen = false;
+  starsStreak = 1;
 
   engine->removeSoundSource("Sounds/siren.wav");
   engine->removeSoundSource("Sounds/song.wav");
@@ -1066,7 +1063,12 @@ void detectStarColision() {
       			if(movementParameter < 1.8 && movementParameter > -1.8) {
       				    starsCollected += 1;
               		stars[firstStar].goUp = true;
-                  score += STAR_POINTS;
+                  score += STAR_POINTS*starsStreak;
+
+                  if(starsStreak < 5)
+                    starsStreak += 1;
+
+                  cout << starsStreak << endl;
                   engine->play2D("Sounds/star.wav");
                   cout << "Uhvatio si zvezdicu u srednjoj traci,poeni: " << score << endl;
               	}
@@ -1075,7 +1077,12 @@ void detectStarColision() {
       			if(movementParameter < 5.4 && movementParameter > 1.8) {
       				    starsCollected += 1;
               		stars[firstStar].goUp = true;
-                  score += STAR_POINTS;
+                  score += STAR_POINTS*starsStreak;
+
+                  if(starsStreak < 5)
+                    starsStreak += 1;
+
+                  cout << starsStreak << endl;
                   engine->play2D("Sounds/star.wav");
                   cout << "Uhvatio si zvezdicu u desnoj traci,poeni: " << score << endl;
               	}
@@ -1084,7 +1091,12 @@ void detectStarColision() {
       			if(movementParameter > -5.4 && movementParameter < -1.8) {
       				  starsCollected += 1;
               	stars[firstStar].goUp = true;
-                score += STAR_POINTS;
+                score += STAR_POINTS*starsStreak;
+
+                if(starsStreak < 5)
+                    starsStreak += 1;
+
+                cout << starsStreak << endl;
                 engine->play2D("Sounds/star.wav");
                 cout << "Uhvatio si zvezdicu u levoj traci,poeni: " << score << endl;
               }
@@ -1312,10 +1324,19 @@ void displayStartScreen() {
 
 void displayEndScreen() {
 
+  string scoreString = "You got  ";
+  scoreString.append(to_string(score));
+  scoreString.append(" points!");
+
+  string leftToFinish = "Only ";
+  leftToFinish.append(to_string(15000-score));
+  leftToFinish.append(" more and you would've WON!");
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, names[6]);
+  glColor3f(1,1,1);
+
+
   glMatrixMode(GL_PROJECTION);
 
   glPushMatrix();
@@ -1324,6 +1345,19 @@ void displayEndScreen() {
 	    
 	  glMatrixMode(GL_MODELVIEW);
 	  glLoadIdentity();
+
+    glPushMatrix();
+
+    glRasterPos2f(windowWidth-1100,windowHeight-825);
+      for(int i = 0 ; i < scoreString.length() ; i++ )
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, scoreString[i]);
+
+    glRasterPos2f(windowWidth-1170,windowHeight-860);
+      for(int i = 0 ; i < leftToFinish.length() ; i++ )
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, leftToFinish[i]);    
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, names[6]);      
 
 	  glBegin(GL_QUADS);
 		  glTexCoord2f(0, 0);
@@ -1338,6 +1372,7 @@ void displayEndScreen() {
 		  glTexCoord2f(1, 0);
 		  glVertex2f(windowWidth,0);
 	  glEnd();
+  glPopMatrix();  
 	    
 	  glMatrixMode(GL_PROJECTION);
   glPopMatrix();
@@ -1389,13 +1424,16 @@ void displayYouWinScreen() {
 }
 
 
-void displayScore(int score,int starsCollected){
+void displayScore(int score,int starsCollected,int starsStreak){
 
   string scoreString;
   scoreString.append(to_string(score));
 
   string starsString;
   starsString.append(to_string(starsCollected));
+
+  string streakString="x";
+  streakString.append(to_string(starsStreak));
 
 	glColor3f(0,0,0);
 
@@ -1409,13 +1447,18 @@ void displayScore(int score,int starsCollected){
     glLoadIdentity();
     glPushMatrix();
 
-      glRasterPos2f(windowWidth-130,windowHeight-47);
+      glRasterPos2f(windowWidth-150,windowHeight-47);
       for(int i = 0 ; i < scoreString.length() ; i++ )
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, scoreString[i]);
 
-      glRasterPos2f(windowWidth-130,windowHeight-82);
+      glRasterPos2f(windowWidth-150,windowHeight-85);
       for(int i = 0 ; i < starsString.length() ; i++ )
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, starsString[i]);
+
+
+      glRasterPos2f(windowWidth-105,windowHeight-123);
+      for(int i = 0 ; i < streakString.length() ; i++ )
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, streakString[i]);  
 
       glEnable(GL_TEXTURE_2D);
 
@@ -1425,16 +1468,16 @@ void displayScore(int score,int starsCollected){
 
       glBegin(GL_QUADS);
         glTexCoord2f(0, 0);
-        glVertex2f(windowWidth-230,windowHeight-100);
+        glVertex2f(windowWidth-250,windowHeight-150);
 
         glTexCoord2f(0, 1);
-        glVertex2f(windowWidth-230,windowHeight-20);
+        glVertex2f(windowWidth-250,windowHeight-20);
 
         glTexCoord2f(1, 1);
         glVertex2f(windowWidth-50,windowHeight-20);
 
         glTexCoord2f(1, 0);
-        glVertex2f(windowWidth-50,windowHeight-100);
+        glVertex2f(windowWidth-50,windowHeight-150);
       glEnd();
       
 
