@@ -1,9 +1,10 @@
 # :checkered_flag: Crazy chicken kart :checkered_flag:
 _____
 ### :memo: Info:
-  Crazy chicken kart je race tip igrice sa preprekama.<br>Cilj je izbegavati prepreke kretajući se levo/desno i skupiti što više zvezdica.Jedna zvezdica vredi 100 poena,ali ako skupite više zvezdica za redom dobićete :fire: **streak bonus** :fire: (do x5 poena)."Finish line"(uspešni kraj igre) se nalazi na 15000 poena.
+  Crazy chicken kart je race tip igrice sa preprekama.<br>Cilj je izbegavati prepreke kretajući se levo/desno i skupiti što više zvezdica. Jedna zvezdica vredi 100 poena,ali ako skupite više zvezdica za redom dobićete :fire: **streak bonus** :fire: (do x5 poena). "Finish line"(uspešni kraj igre) se nalazi na 15000 poena.
 _____
 ### :video_game: Gameplay:
+![gameplay](https://github.com/MATF-RG19/RG153-crazy-chicken-kart/blob/master/GIFs/Gameplay.gif?raw=true)
 _____
 ### :keyboard: Hotkeys:
 
