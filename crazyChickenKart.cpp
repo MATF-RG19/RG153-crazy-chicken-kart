@@ -151,6 +151,7 @@ static bool keyGuideScreen = true;
 static bool godMode = false;
 static bool endScreen = false;
 static bool claps = false;
+static bool pause = false;
 bool goLeft = false;
 bool goRight = false;
 bool activateHole = false;
@@ -272,6 +273,10 @@ void on_keyboard(unsigned char key, int x, int y) {
 
           }
           break;
+        case 'p':
+        case 'P':
+          pause = !pause;  
+          break;  
         case 'q':
         case 'Q':
           if(takeOffRoof)
@@ -380,6 +385,8 @@ void onSpecialKeyPress(int key, int x, int y){
 }
 
 void onTimer(int id){
+  if(!pause)
+  {
 
     /* Promene parametara za skidanje krova,aktiviranje spojlera */
 
@@ -520,7 +527,7 @@ void onTimer(int id){
     else if(id == TIMER_ID2)
     {
 
-    	cameraParameter+=2.5;
+    	cameraParameter+=3.25;
     	if(cameraParameter > 1130)
     	{
     		cameraAnimation = 0;
@@ -603,6 +610,7 @@ void onTimer(int id){
         }
       }
     }
+  }
     
     glutPostRedisplay();
     if (driveAnimation)
@@ -791,11 +799,11 @@ void on_display() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
   /* Iscrtavanje buggy-ja sa terenom */
-
   glPushMatrix();
     drawCompleteScene();
     drawFixedParts();
   glPopMatrix();
+  
 
   if(godMode) {
 
@@ -812,7 +820,6 @@ void on_display() {
         glEnable(GL_LIGHTING); 
      glPopMatrix();
    }
-
     glutSwapBuffers();
 }
 

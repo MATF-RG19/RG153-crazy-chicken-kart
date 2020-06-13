@@ -54,6 +54,7 @@ extern float holeParameter,holeRotation;
 extern float xTrapHorizontal,xTrapVertical,xTrapRotation;
 extern float bombParameter;
 extern int starRotationParameter;
+extern int track;
 
 
 
@@ -4205,11 +4206,19 @@ void drawFixedParts(){
       {
         glTranslatef(6*holeParameter,0.15-1.2*holeRotation,0);
       	glRotatef(8*holeRotation,0,0,-1);
-      }else if(activateXtrap)
-      {
-        
+      }
+	  else if(activateXtrap)
+	  {
+       if(track == 0 || track == -1)
+	   { 
         glTranslatef(xTrapHorizontal,xTrapVertical,0);
-        glRotatef(xTrapRotation,0,-1,0);    
+        glRotatef(xTrapRotation,0,-1,0);   
+	   }
+	   else
+	   {
+		glTranslatef(xTrapHorizontal,xTrapVertical,0);
+        glRotatef(xTrapRotation,0,1,0);    
+	   } 
       }
       drawBuggy();
     glPopMatrix();
