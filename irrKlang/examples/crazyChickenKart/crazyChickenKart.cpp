@@ -1,16 +1,18 @@
-#include <iostream>
-#include <cstdlib>
-#include <vector>
-#include <string>
-#include <ctime>
 #include <GL/glut.h>
-#include <cmath>
-#include <cstring>
-#include "DrawFunctions.hpp"
-#include "image.hpp"
 #include <irrKlang.h>
 
-//using namespace std;
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include "DrawFunctions.hpp"
+#include "image.hpp"
+
+// using namespace std;
 using namespace irrklang;
 
 #pragma comment(lib, "irrKlang.lib")
@@ -25,9 +27,9 @@ using namespace irrklang;
 static GLuint names[5];
 
 #define TIMER_INTERVAL 20
-#define TIMER_ID1 0 // Koristimo za animaciju voznje
-#define TIMER_ID2 1 // Koristimo za animaciju kamere
-#define TIMER_ID3 2 // Koristimo za animaciju prepreka
+#define TIMER_ID1 0  // Koristimo za animaciju voznje
+#define TIMER_ID2 1  // Koristimo za animaciju kamere
+#define TIMER_ID3 2  // Koristimo za animaciju prepreka
 #define LEN 100
 #define BLOCK_NUMBER 10
 #define OBSTACLE_NUMBER 20
@@ -36,13 +38,10 @@ static GLuint names[5];
 #define ESC 27
 #define STAR_POINTS 100
 
-
 /* Granice kretanja */
 #define MAX_LEFT -3.6
 #define MAX_RIGHT 3.6
 #define MAX_TURN_LENGTH 3.6
-
-
 
 /* Callback funkcije */
 
@@ -51,9 +50,6 @@ static void on_reshape(int width, int height);
 static void on_keyboard(unsigned char key, int x, int y);
 static void onSpecialKeyPress(int key, int x, int y);
 static void onTimer(int id);
-
-
-
 
 static void lightInitialization(void);
 static void adjustPositionParameters(void);
@@ -68,636 +64,548 @@ static float matrix[16];
 /* Struktura prepreke */
 
 struct OBSTACLE {
-	float x;
-	int track;
-	int type;
+  float x;
+  int track;
+  int type;
 };
 
 /* Struktura zvezde */
 
 struct STARS {
-	float x;
+  float x;
   float y;
-	int track;
+  int track;
   bool goUp;
 };
 
-
 /* Promenljive */
 
-float roofParameter = 10.25;
-float spoilerParameter = 3.3;
-float tiresParameter = 0;
+float roofParameter     = 10.25;
+float spoilerParameter  = 3.3;
+float tiresParameter    = 0;
 float movementParameter = 0;
-//float turnParameter = 0;
-int track = 0; // -1 oznacava levu traku,0 srednju,a 1 desnu
-float holeParameter = 0;
-float holeRotation = 0;
-float xTrapHorizontal = 0;
-float xTrapVertical = 0;
-float xTrapRotation = 0;
-float bombParameter = 0;
-float movementSpeed = 0;
+// float turnParameter = 0;
+int track                 = 0;  // -1 oznacava levu traku,0 srednju,a 1 desnu
+float holeParameter       = 0;
+float holeRotation        = 0;
+float xTrapHorizontal     = 0;
+float xTrapVertical       = 0;
+float xTrapRotation       = 0;
+float bombParameter       = 0;
+float movementSpeed       = 0;
 int starRotationParameter = 0;
-int score = 0;
-int starsCollected = 0;
+int score                 = 0;
+int starsCollected        = 0;
 vector<float> blockPosition(BLOCK_NUMBER);
 vector<OBSTACLE> obstacle(OBSTACLE_NUMBER);
 vector<STARS> stars(STAR_NUMBER);
 
 /* Pokazivaci na prvi i poslednji blok */
 int firstBlock = 0;
-int lastBlock = 9;
+int lastBlock  = 9;
 
 /* Pokazivaci na prvu i poslenju prepreku */
 
 int firstObstacle = 0;
-int lastObstacle = 19;
+int lastObstacle  = 19;
 
 /* Pokazivaci na prvu i poslednju zvezdu */
 
 int firstStar = 0;
-int lastStar = 9;
-
-
+int lastStar  = 9;
 
 static float animationOngoing = 0;
-static float cameraParameter = 0;
+static float cameraParameter  = 0;
 static int windowWidth;
 static int windowHeight;
-static bool roofOn = true;
-static bool roofOff = false;
-static bool takeOffRoof = false;
-static bool putOnRoof = false; 
+static bool roofOn          = true;
+static bool roofOff         = false;
+static bool takeOffRoof     = false;
+static bool putOnRoof       = false;
 static bool activateSpoiler = false;
-static bool thirdPerson = true;
-static bool pressedStart = false;
-static bool goPressed = false;
-static bool keyGuideScreen = true;
-static bool godMode = false;
-bool goLeft = false;
-bool goRight = false;
-bool activateHole = false;
-bool activateXtrap = false;
-bool activateBomb = false;
-
+static bool thirdPerson     = true;
+static bool pressedStart    = false;
+static bool goPressed       = false;
+static bool keyGuideScreen  = true;
+static bool godMode         = false;
+bool goLeft                 = false;
+bool goRight                = false;
+bool activateHole           = false;
+bool activateXtrap          = false;
+bool activateBomb           = false;
 
 /* Promenljive za odredjivanje animacija */
 
 static float driveAnimation = 0;
-int cameraAnimation = 1;
-int trapAnimation = 0;
+int cameraAnimation         = 1;
+int trapAnimation           = 0;
 
 ISoundEngine *SoundEngine = createIrrKlangDevice();
 
+int main(int argc, char **argv) {
+  glutInit(&argc, argv);
+  glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE | GLUT_MULTISAMPLE |
+                      GLUT_ALPHA);
 
+  /* Postavljanje prozora */
 
+  glutInitWindowSize(800, 600);
+  glutInitWindowPosition(500, 300);
+  glutCreateWindow("Crazy Chicken Kart");
+  // glutFullScreen();
 
-int main(int argc, char **argv){
-   
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE | GLUT_MULTISAMPLE | GLUT_ALPHA );
+  /* Inicijalizacija pocetnih pozicija blokova okoline,prepreka i zvezdica */
 
-    /* Postavljanje prozora */
+  for (int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24) blockPosition[i] = j;
 
-    glutInitWindowSize(800, 600);
-    glutInitWindowPosition(500, 300);
-    glutCreateWindow("Crazy Chicken Kart");
-    //glutFullScreen();
+  srand(time(NULL));
+  for (int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40) {
+    obstacle[i].x     = j;
+    obstacle[i].type  = rand() % 3;
+    obstacle[i].track = rand() % 3 - 1;
+  }
 
-    /* Inicijalizacija pocetnih pozicija blokova okoline,prepreka i zvezdica */
+  for (int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250) {
+    stars[i].x     = j;
+    stars[i].track = rand() % 3 - 1;
+    stars[i].goUp  = false;
+    stars[i].y     = 0;
+  }
 
-    for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
-    	blockPosition[i] = j;
+  /* Inicijalizacija tekstura */
 
-    srand(time(NULL));
-    for(int i = 0 , j = 40; i < OBSTACLE_NUMBER ; i++ , j+=40)
-    {
-    	obstacle[i].x = j;
-    	obstacle[i].type = rand()%3;
-    	obstacle[i].track = rand()%3-1;
-    }
+  initializeTextures();
 
-    for(int i = 0 , j = 250 ; i < STAR_NUMBER ; i++ ,j+=250)
-    {
-    	stars[i].x = j;
-    	stars[i].track = rand()%3-1;
-      stars[i].goUp = false;
-      stars[i].y = 0;
-    }
+  /* Registrovanje callback funkcija */
 
-    /* Inicijalizacija tekstura */
+  glutDisplayFunc(on_display);
+  glutReshapeFunc(on_reshape);
+  glutKeyboardFunc(on_keyboard);
+  glutSpecialFunc(onSpecialKeyPress);
 
-    initializeTextures();
+  /* Ukljucivanje dodatnih opengl opcija */
 
-    /* Registrovanje callback funkcija */
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_NORMALIZE);
+  glEnable(GL_COLOR_MATERIAL);
 
-    glutDisplayFunc(on_display);
-    glutReshapeFunc(on_reshape);
-    glutKeyboardFunc(on_keyboard);
-    glutSpecialFunc(onSpecialKeyPress);
+  /*Postavljanje pozadine na crnu boju */
 
-    /* Ukljucivanje dodatnih opengl opcija */
+  glClearColor(0.031, 0.094, 0.227, 0);
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_NORMALIZE);
-    glEnable(GL_COLOR_MATERIAL);
+  if (!engine) return 0;
 
-    /*Postavljanje pozadine na crnu boju */
+  engine->play2D("../../media/getout.ogg", true);
 
-    glClearColor(0.031, 0.094, 0.227,0);
+  glutMainLoop();
 
-    if (!engine)
-      return 0;
-
-  	engine->play2D("../../media/getout.ogg", true);
-
-    glutMainLoop();
-
-    return 0;
+  return 0;
 }
 
 void on_keyboard(unsigned char key, int x, int y) {
-    switch(key) {
-        case 'r':
-        	resetAllParameters();
-        	glutPostRedisplay();
-        	break;
-        case 's':
-        case 'S':
-          	animationOngoing = 0;
-          	break;
-        case 'g':
-        case 'G':
-        	if(!pressedStart)
-        	{
-            keyGuideScreen = false;
-        		pressedStart = true;
-	          	if(!driveAnimation && cameraAnimation == 0)
-	          	{
-	            	driveAnimation = 1;
-	            	glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID1);
-	          	}else if(cameraAnimation)
-	          		glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
-          	}
-          	break;
-        case 'q':
-        case 'Q':
-          if(takeOffRoof)
-          {
-            putOnRoof = true;
-            takeOffRoof = false;
-          }
-          else
-          {
-            takeOffRoof = true; 
-            putOnRoof = false;
-          }
-        	break;
-          	
-        case 'e':
-          	activateSpoiler=true;
-          	break;
-        case 'f':
-          	if(thirdPerson)
-            	thirdPerson = false;
-          	else
-            	thirdPerson = true;
-          	break;  
-        case 'd':
-        case 'D':
-        	if(driveAnimation)
-       		{
-		        goRight=true;
-		        goLeft=false;
-	          	if(track != 1)
-	            	track += 1;
-		        glutPostRedisplay();
-       		}
-        	break;
-        case 'a':
-        case 'A':
-        	if(driveAnimation)
-       		{
-		        goLeft=true;
-		        goRight=false;
-	          	if(track != -1)
-	            	track -= 1;
-		        glutPostRedisplay();
-       		}
-        	break;
-        case SPACEBAR:
-        	if(!goPressed && driveAnimation)
-        		goPressed=true;
-        	break;
-        case 'k':
-        case 'K':
-          if(!godMode)
-            godMode = true;
-          else
-            godMode = false;
-          break;  		                
-        case ESC:
-          exit(0);
-          break;  
-            
-    }
-}
+  switch (key) {
+    case 'r':
+      resetAllParameters();
+      glutPostRedisplay();
+      break;
+    case 's':
+    case 'S': animationOngoing = 0; break;
+    case 'g':
+    case 'G':
+      if (!pressedStart) {
+        keyGuideScreen = false;
+        pressedStart   = true;
+        if (!driveAnimation && cameraAnimation == 0) {
+          driveAnimation = 1;
+          glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID1);
+        } else if (cameraAnimation)
+          glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
+      }
+      break;
+    case 'q':
+    case 'Q':
+      if (takeOffRoof) {
+        putOnRoof   = true;
+        takeOffRoof = false;
+      } else {
+        takeOffRoof = true;
+        putOnRoof   = false;
+      }
+      break;
 
-void onSpecialKeyPress(int key, int x, int y){
-
-  switch(key){
-    case GLUT_KEY_RIGHT:
-      if(driveAnimation)
-       {
-	        goRight=true;
-	        goLeft=false;
-          if(track != 1)
-            track += 1;
-	        glutPostRedisplay();
-        }
-        break;
-    case GLUT_KEY_LEFT:
-      if(driveAnimation)
-      	{
-	        goLeft = true;
-	        goRight = false;
-          if(track != -1)
-            track -= 1;
-	        glutPostRedisplay();
-    	}
-        break;
-      
-    
+    case 'e': activateSpoiler = true; break;
+    case 'f':
+      if (thirdPerson)
+        thirdPerson = false;
+      else
+        thirdPerson = true;
+      break;
+    case 'd':
+    case 'D':
+      if (driveAnimation) {
+        goRight = true;
+        goLeft  = false;
+        if (track != 1) track += 1;
+        glutPostRedisplay();
+      }
+      break;
+    case 'a':
+    case 'A':
+      if (driveAnimation) {
+        goLeft  = true;
+        goRight = false;
+        if (track != -1) track -= 1;
+        glutPostRedisplay();
+      }
+      break;
+    case SPACEBAR:
+      if (!goPressed && driveAnimation) goPressed = true;
+      break;
+    case 'k':
+    case 'K':
+      if (!godMode)
+        godMode = true;
+      else
+        godMode = false;
+      break;
+    case ESC: exit(0); break;
   }
 }
 
-void onTimer(int id){
-    if(id == TIMER_ID1){
+void onSpecialKeyPress(int key, int x, int y) {
+  switch (key) {
+    case GLUT_KEY_RIGHT:
+      if (driveAnimation) {
+        goRight = true;
+        goLeft  = false;
+        if (track != 1) track += 1;
+        glutPostRedisplay();
+      }
+      break;
+    case GLUT_KEY_LEFT:
+      if (driveAnimation) {
+        goLeft  = true;
+        goRight = false;
+        if (track != -1) track -= 1;
+        glutPostRedisplay();
+      }
+      break;
+  }
+}
 
-    	if(goPressed) {
+void onTimer(int id) {
+  if (id == TIMER_ID1) {
+    if (goPressed) {
+      tiresParameter += 2;
+      starRotationParameter += 5;
 
-	        tiresParameter+=2;
-	        starRotationParameter += 5;
+      /* Uvecavanje brzine kretanja */
 
-	        /* Uvecavanje brzine kretanja */
+      if (movementSpeed < 1) {
+        movementSpeed += 0.005;
+        score += 1;
+      } else if (movementSpeed < 1.5) {
+        movementSpeed += 0.0025;
+        score += 2;
+      } else if (movementSpeed < 3) {
+        movementSpeed += 0.001;
+        score += 3;
+      }
 
-	        if(movementSpeed < 1) {	
-	        	movementSpeed += 0.005;
-	        	score += 1;
-	        }
-	        else if(movementSpeed < 1.5) {
-	        	movementSpeed += 0.0025;
-	        	score += 2;
-	        }
-	        else if(movementSpeed < 3) {
-	        	movementSpeed += 0.001;
-	        	score += 3;
-	        }
+      /* Promena pozicija blokova u zavisnosti od brzine kretanja.
+         Kada prvi blok dodje na poziciju manju od -72 on se translira
+         na poziciju poslednjeg bloka plus 24 (24 je duzina jednog bloka)
+         Ako pokazivac za prvi blok pokazuje na poslednji blok(9),njega
+         prebacujemo da pokazuje na prvi blok(0) */
 
-	        /* Promena pozicija blokova u zavisnosti od brzine kretanja.
-	           Kada prvi blok dodje na poziciju manju od -72 on se translira
-	           na poziciju poslednjeg bloka plus 24 (24 je duzina jednog bloka)
-	           Ako pokazivac za prvi blok pokazuje na poslednji blok(9),njega prebacujemo
-	           da pokazuje na prvi blok(0) */
+      for (int i = 0; i < BLOCK_NUMBER; i++) blockPosition[i] -= movementSpeed;
 
+      if (blockPosition[firstBlock] <= -72) {
+        blockPosition[firstBlock] = blockPosition[lastBlock] + 24;
+        lastBlock                 = firstBlock;
+        firstBlock++;
 
-	        for(int i = 0 ; i < BLOCK_NUMBER ; i++)
-	        	blockPosition[i] -= movementSpeed;
+        if (firstBlock == BLOCK_NUMBER) firstBlock = 0;
+      }
 
-	        if(blockPosition[firstBlock] <= -72) {
-	        	blockPosition[firstBlock] = blockPosition[lastBlock] + 24;
-	        	lastBlock = firstBlock;
-	        	firstBlock++;
+      /* Vrsi se promena pozicija prepreka po istom principu kao sa blokovima */
 
-	        	if(firstBlock == BLOCK_NUMBER)
-	        		firstBlock = 0;
-	        }
+      for (int i = 0; i < OBSTACLE_NUMBER; i++) obstacle[i].x -= movementSpeed;
 
-	        /* Vrsi se promena pozicija prepreka po istom principu kao sa blokovima */
+      if (obstacle[firstObstacle].x <= -20) {
+        obstacle[firstObstacle].x = obstacle[lastObstacle].x + 40;
+        lastObstacle              = firstObstacle;
+        firstObstacle++;
 
-	        for( int i = 0 ; i < OBSTACLE_NUMBER ; i++)
-	        	obstacle[i].x -= movementSpeed;
+        if (firstObstacle == OBSTACLE_NUMBER) firstObstacle = 0;
+      }
 
-	        if( obstacle[firstObstacle].x <= -20 ) {
+      /* Vrsi se promena pozicija zvezdica po istom principu kao sa blokovima i
+       * preprekama */
 
-	        	obstacle[firstObstacle].x = obstacle[lastObstacle].x + 40;
-	        	lastObstacle = firstObstacle;
-	        	firstObstacle++;
-
-	        	if(firstObstacle == OBSTACLE_NUMBER)
-	        		firstObstacle = 0;
-
-	        }
-
-	        /* Vrsi se promena pozicija zvezdica po istom principu kao sa blokovima i preprekama */
-
-	        for( int i = 0 ; i < STAR_NUMBER ; i++ ) {
-	        	stars[i].x -= movementSpeed;
-            if(stars[i].goUp && stars[i].y < 4) {
-              stars[i].y += 1;
-              
-            }
-          }
-
-	        if(stars[firstStar].x <= -20) {
-
-            stars[firstStar].goUp = false;
-            stars[firstStar].y = 0;
-	        	stars[firstStar].x = stars[lastStar].x + 250;
-	        	lastStar = firstStar;
-	        	firstStar++;
-
-            if(firstStar == STAR_NUMBER)
-              firstStar = 0;
-	        }
-
-	        /* Detektovanje kolizije sa preprekama se aktivira u 
-             zavisnosti od bool promenljive godMode(da li je 
-             aktiviran stit oko buggy-ja) */
-          
-          if(!godMode)
-            detectTrapColision();
-
-          /* Detektovanje kolizije sa zvezdicama, naredbom if(!stars[firstStar].goUp)
-             izbegavamo ponavljanje detekcije kolizije iste zvezdice */
-
-          if(!stars[firstStar].goUp)
-	          detectStarColision();
-
-
-	        /* Promene parametara za skidanje krova,aktiviranje spojlera */
-
-	        if(roofParameter >= 0 && takeOffRoof)
-	        	roofParameter -= 0.06;
-
-	        if(roofParameter <= 10.25 && putOnRoof)
-	        	roofParameter += 0.06;
-
-	        if(activateSpoiler)
-	        	spoilerParameter += 0.05;
-
-	        /* Promene pozicije buggy-ja */
-
-	        adjustPositionParameters();
-	       
-    }
-
-    }else if(id == TIMER_ID2)
-    {
-
-    	cameraParameter+=2.5;
-    	if(cameraParameter > 1130)
-    	{
-    		cameraAnimation = 0;
-    		driveAnimation = 1;
-    	}
-    }else
-    {
-      thirdPerson = true;
-
-      if(activateHole)
-      {
-        holeParameter += 0.1;
-
-        if(holeParameter > 1.2)
-        {
-          holeRotation += 0.2;
-          holeParameter += 0.05;
-        }
-
-        if( holeParameter > 10)
-        {
-      		score += starsCollected*STAR_POINTS;
-      		cout << score << endl;
-          	resetAllParameters();  
-        }
-      }else if(activateXtrap)
-      {
-        if(xTrapHorizontal < 75)
-        {
-          xTrapHorizontal += 0.5;
-          if(xTrapHorizontal > 25)
-            xTrapRotation += 0.5;
-        }
-        else
-        {
-	      score += starsCollected*STAR_POINTS;
-	      cout << score << endl;
-          resetAllParameters();
-        }
-
-        if(xTrapVertical > -2)
-          xTrapVertical -= 0.05;
-      }else
-      {
-        if(bombParameter < 5.7)
-          bombParameter += 0.3;
-        else
-        {
-	      score += starsCollected*STAR_POINTS;
-	      cout << score << endl;
-          resetAllParameters();
+      for (int i = 0; i < STAR_NUMBER; i++) {
+        stars[i].x -= movementSpeed;
+        if (stars[i].goUp && stars[i].y < 4) {
+          stars[i].y += 1;
         }
       }
 
+      if (stars[firstStar].x <= -20) {
+        stars[firstStar].goUp = false;
+        stars[firstStar].y    = 0;
+        stars[firstStar].x    = stars[lastStar].x + 250;
+        lastStar              = firstStar;
+        firstStar++;
+
+        if (firstStar == STAR_NUMBER) firstStar = 0;
+      }
+
+      /* Detektovanje kolizije sa preprekama se aktivira u
+   zavisnosti od bool promenljive godMode(da li je
+   aktiviran stit oko buggy-ja) */
+
+      if (!godMode) detectTrapColision();
+
+      /* Detektovanje kolizije sa zvezdicama, naredbom
+         if(!stars[firstStar].goUp) izbegavamo ponavljanje detekcije kolizije
+         iste zvezdice */
+
+      if (!stars[firstStar].goUp) detectStarColision();
+
+      /* Promene parametara za skidanje krova,aktiviranje spojlera */
+
+      if (roofParameter >= 0 && takeOffRoof) roofParameter -= 0.06;
+
+      if (roofParameter <= 10.25 && putOnRoof) roofParameter += 0.06;
+
+      if (activateSpoiler) spoilerParameter += 0.05;
+
+      /* Promene pozicije buggy-ja */
+
+      adjustPositionParameters();
     }
-    glutPostRedisplay();
-    if (driveAnimation)
-    	glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID1);
-  	else if(cameraAnimation)
-  		glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID2);
-  	else
-  		glutTimerFunc(TIMER_INTERVAL,onTimer,TIMER_ID3);
+
+  } else if (id == TIMER_ID2) {
+    cameraParameter += 2.5;
+    if (cameraParameter > 1130) {
+      cameraAnimation = 0;
+      driveAnimation  = 1;
+    }
+  } else {
+    thirdPerson = true;
+
+    if (activateHole) {
+      holeParameter += 0.1;
+
+      if (holeParameter > 1.2) {
+        holeRotation += 0.2;
+        holeParameter += 0.05;
+      }
+
+      if (holeParameter > 10) {
+        score += starsCollected * STAR_POINTS;
+        cout << score << endl;
+        resetAllParameters();
+      }
+    } else if (activateXtrap) {
+      if (xTrapHorizontal < 75) {
+        xTrapHorizontal += 0.5;
+        if (xTrapHorizontal > 25) xTrapRotation += 0.5;
+      } else {
+        score += starsCollected * STAR_POINTS;
+        cout << score << endl;
+        resetAllParameters();
+      }
+
+      if (xTrapVertical > -2) xTrapVertical -= 0.05;
+    } else {
+      if (bombParameter < 5.7)
+        bombParameter += 0.3;
+      else {
+        score += starsCollected * STAR_POINTS;
+        cout << score << endl;
+        resetAllParameters();
+      }
+    }
+  }
+  glutPostRedisplay();
+  if (driveAnimation)
+    glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID1);
+  else if (cameraAnimation)
+    glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
+  else
+    glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID3);
 }
 
 void on_reshape(int width, int height) {
+  windowWidth  = width;
+  windowHeight = height;
 
-	  windowWidth = width;
-	  windowHeight = height;
+  /* Viewport */
 
-	  /* Viewport */
+  glViewport(0, 0, width, height);
 
-	  glViewport(0, 0, width, height);
+  /* Postavljanje projekcije */
 
-	  /* Postavljanje projekcije */
-
-	  glMatrixMode(GL_PROJECTION);
-	  glLoadIdentity();
-	  gluPerspective(60, (float) width / height, 0.3, 150);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(60, (float)width / height, 0.3, 150);
 }
 
 void on_display() {
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  lightInitialization();
 
+  /* Postavljanje pogleda */
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    lightInitialization();
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
-    /* Postavljanje pogleda */
+  if (driveAnimation || trapAnimation) {
+    if (thirdPerson)
+      gluLookAt(-5, 3, movementParameter, 120, 0, movementParameter, 0, 1, 0);
+    else
+      gluLookAt(1, 0.8, -0.3 + movementParameter, 120, 0, movementParameter, 0,
+                1, 0);
+  } else
+    gluLookAt(5 * cos(cameraParameter / 360), 3,
+              -2.5 * sin(cameraParameter / 360), 1.5, cameraParameter / 400, 0,
+              0, 1, 0);
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+  /* Aktiviranje multisamplovanja(anti-aliasing) */
 
-    if(driveAnimation || trapAnimation)
-    {
-	    if(thirdPerson)
-	      gluLookAt(-5, 3,movementParameter,
-	                120, 0,movementParameter,
-	                0, 1, 0);
-	    else
-	      gluLookAt(1, 0.8, -0.3+movementParameter,
-	              120, 0, movementParameter,
-	              0, 1, 0);
-	  }
-	else
-		gluLookAt(5*cos(cameraParameter/360), 3,-2.5*sin(cameraParameter/360),
-		                1.5, cameraParameter/400, 0,
-		                0, 1, 0);
+  glEnable(GL_MULTISAMPLE);
+  glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
 
-    /* Aktiviranje multisamplovanja(anti-aliasing) */
+  // draw_axes(50);
+  drawFixedParts();
 
-    glEnable(GL_MULTISAMPLE);
-    glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
- 	
- 	 //draw_axes(50);
-   drawFixedParts();
+  glPushMatrix();
+  drawCompleteScene();
+  glPopMatrix();
 
-   glPushMatrix();
-    drawCompleteScene();
-   glPopMatrix();
+  if (keyGuideScreen) displayStartScreen();
 
+  glPushMatrix();
+  glTranslatef(0, 0.2, movementParameter);
 
-   if(keyGuideScreen)
-    displayStartScreen();
+  /* Tekstura neba */
 
-   glPushMatrix();
-    	glTranslatef(0,0.2,movementParameter);
+  glBindTexture(GL_TEXTURE_2D, names[3]);
+  glBegin(GL_QUADS);
+  glNormal3f(0, 0, -1);
 
-	   	/* Tekstura neba */
+  glTexCoord2f(0, 0);
+  glVertex3f(140, -25, -200);
 
-	    glBindTexture(GL_TEXTURE_2D, names[3]);
-	    glBegin(GL_QUADS);
-	        glNormal3f(0, 0, -1);
+  glTexCoord2f(1, 0);
+  glVertex3f(140, -25, 200);
 
-	        glTexCoord2f(0, 0);
-	        glVertex3f(140,-25,-200);
+  glTexCoord2f(1, 1);
+  glVertex3f(140, 90, 200);
 
-	        glTexCoord2f(1, 0);
-	        glVertex3f(140,-25,200);
+  glTexCoord2f(0, 1);
+  glVertex3f(140, 90, -200);
+  glEnd();
+  glPopMatrix();
 
-	        glTexCoord2f(1, 1);
-	        glVertex3f(140,90,200);
+  if (!trapAnimation) {
+    glPushMatrix();
+    glTranslatef(0, 0.2, movementParameter);
 
-	        glTexCoord2f(0, 1);
-	        glVertex3f(140,90,-200);
-	      glEnd();
-    glPopMatrix();
-   
+    /*Tekstura navigacije*/
 
-   if(!trapAnimation)
-   {
+    glBindTexture(GL_TEXTURE_2D, names[0]);
+    glBegin(GL_QUADS);
+    glNormal3f(0, 0, -1);
 
-	   glPushMatrix();
-	   glTranslatef(0,0.2,movementParameter);
+    glTexCoord2f(0, 0);
+    glVertex3f(1.8105, 0.23625, -0.0765);
 
-      /*Tekstura navigacije*/
+    glTexCoord2f(1, 0);
+    glVertex3f(1.8105, 0.23625, 0.0765);
 
-	    glBindTexture(GL_TEXTURE_2D, names[0]);
-	    glBegin(GL_QUADS);
-	        glNormal3f(0, 0, -1);
+    glTexCoord2f(1, 1);
+    glVertex3f(1.932, 0.32625, 0.0765);
 
-	        glTexCoord2f(0, 0);
-	        glVertex3f(1.8105,0.23625,-0.0765);
+    glTexCoord2f(0, 1);
+    glVertex3f(1.932, 0.32625, -0.0765);
 
-	        glTexCoord2f(1, 0);
-	        glVertex3f(1.8105,0.23625,0.0765);
+    glEnd();
 
-	        glTexCoord2f(1, 1);
-	        glVertex3f(1.932,0.32625,0.0765);
+    glScalef(0.15, 0.15, 0.15);
 
-	        glTexCoord2f(0, 1);
-	        glVertex3f(1.932,0.32625,-0.0765);
+    /*Tekstura brzinometra*/
 
+    glBindTexture(GL_TEXTURE_2D, names[1]);
+    glBegin(GL_QUADS);
+    glNormal3f(0, 0, -1);
 
-	    glEnd();
+    glTexCoord2f(0, 0);
+    glVertex3f(12.98, 2.25, -3);
 
-	    glScalef(0.15,0.15,0.15);
+    glTexCoord2f(1, 0);
+    glVertex3f(12.98, 2.25, -1.5);
 
-	    /*Tekstura brzinometra*/
-	    
-	    
-	    glBindTexture(GL_TEXTURE_2D, names[1]);
-	    glBegin(GL_QUADS);
-	      glNormal3f(0, 0, -1);
+    glTexCoord2f(1, 1);
+    glVertex3f(13.73, 2.8125, -1.5);
 
-	      glTexCoord2f(0, 0);
-	      glVertex3f(12.98,2.25,-3);
+    glTexCoord2f(0, 1);
+    glVertex3f(13.73, 2.8125, -3);
+    glEnd();
 
-	      glTexCoord2f(1, 0);
-	      glVertex3f(12.98,2.25,-1.5);
+    /*Tekstura tablice*/
 
-	      glTexCoord2f(1, 1);
-	      glVertex3f(13.73,2.8125,-1.5);
+    glBindTexture(GL_TEXTURE_2D, names[2]);
+    glBegin(GL_QUADS);
+    glNormal3f(0, 0, -1);
 
-	      glTexCoord2f(0, 1);
-	      glVertex3f(13.73,2.8125,-3);
-	    glEnd();
+    glTexCoord2f(0, 0);
+    glVertex3f(-0.51, 2.25, -1.75);
 
-      /*Tekstura tablice*/
+    glTexCoord2f(1, 0);
+    glVertex3f(-0.51, 2.25, 1.75);
 
-      glBindTexture(GL_TEXTURE_2D, names[2]);
-      glBegin(GL_QUADS);
-        glNormal3f(0, 0, -1);
+    glTexCoord2f(1, 1);
+    glVertex3f(-0.51, 3.25, 1.75);
 
-        glTexCoord2f(0, 0);
-        glVertex3f(-0.51,2.25,-1.75);
-
-        glTexCoord2f(1, 0);
-        glVertex3f(-0.51,2.25,1.75);
-
-        glTexCoord2f(1, 1);
-        glVertex3f(-0.51,3.25,1.75);
-
-        glTexCoord2f(0, 1);
-        glVertex3f(-0.51,3.25,-1.75);
-      glEnd();
+    glTexCoord2f(0, 1);
+    glVertex3f(-0.51, 3.25, -1.75);
+    glEnd();
 
     glPopMatrix();
-
   }
 
   /* Iskljucujemo aktivnu teksturu */
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D, 0);
 
-  if(godMode) {
+  if (godMode) {
+    glPushMatrix();
+    glDisable(GL_LIGHTING);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+    glTranslatef(1.2, 0.2, movementParameter);
+    glScalef(1.94, 1.1, 1.2);
+    glRotatef(starRotationParameter, -1, 0, 0);
+    glutSolidSphere(1.2, 50, 50);
+    glDisable(GL_BLEND);
+    glEnable(GL_LIGHTING);
+    glPopMatrix();
+  }
 
-     glPushMatrix();
-        glDisable(GL_LIGHTING);
-        glEnable (GL_BLEND);
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glColor4f (0.0f, 0.0f, 1.0f, 0.5f);
-        glTranslatef(1.2,0.2,movementParameter);
-        glScalef(1.94,1.1,1.2);
-        glRotatef(starRotationParameter,-1,0,0);
-        glutSolidSphere(1.2,50,50);
-        glDisable (GL_BLEND);
-        glEnable(GL_LIGHTING); 
-     glPopMatrix();
-   }
-
-    
-
-    glutSwapBuffers();
+  glutSwapBuffers();
 }
 
-void lightInitialization(){
-  float lightPosition[] = { 5*cos(cameraParameter/360), 8, 4*sin(cameraParameter/360), 0};
-  float lightAmbient[] = { 0.1, 0.1, 0.1, 0.1,1};
-  float lightDiffuse[] = { 1, 1, 1, 1};
-  float lightSpecular[] = { 0.9, 0.9, 0.9, 1};
+void lightInitialization() {
+  float lightPosition[] = {5 * cos(cameraParameter / 360), 8,
+                           4 * sin(cameraParameter / 360), 0};
+  float lightAmbient[]  = {0.1, 0.1, 0.1, 0.1, 1};
+  float lightDiffuse[]  = {1, 1, 1, 1};
+  float lightSpecular[] = {0.9, 0.9, 0.9, 1};
 
-  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE,1);
+  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
   glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
@@ -706,360 +614,299 @@ void lightInitialization(){
   glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
 }
 
-void adjustPositionParameters(){
-
-
-	  /* Iz srednje u desnu */
-  	if(goRight && track==1)
-  	{
-        movementParameter+=0.2;
-        if(movementParameter>=MAX_RIGHT)
-        {
-          	movementParameter=MAX_RIGHT;
-          	goRight=false;
-        }
+void adjustPositionParameters() {
+  /* Iz srednje u desnu */
+  if (goRight && track == 1) {
+    movementParameter += 0.2;
+    if (movementParameter >= MAX_RIGHT) {
+      movementParameter = MAX_RIGHT;
+      goRight           = false;
     }
+  }
 
-    if(goRight && track==0)
-    {
-    	movementParameter+=0.2;
-        if(movementParameter>=0)
-        {
-          movementParameter=0;
-          goRight=false;
-        }
+  if (goRight && track == 0) {
+    movementParameter += 0.2;
+    if (movementParameter >= 0) {
+      movementParameter = 0;
+      goRight           = false;
     }
+  }
 
-
-    if(goLeft && track==-1)
-    {
-        movementParameter-=0.2;
-        if(movementParameter<=MAX_LEFT)
-        {
-          movementParameter=MAX_LEFT;
-          goLeft=false;
-        }
+  if (goLeft && track == -1) {
+    movementParameter -= 0.2;
+    if (movementParameter <= MAX_LEFT) {
+      movementParameter = MAX_LEFT;
+      goLeft            = false;
     }
+  }
 
-
-    if(goLeft && track==0)
-    {
-        movementParameter-=0.2;
-        if(movementParameter<=0)
-        {
-          movementParameter=0;
-          goLeft=false;
-        }
+  if (goLeft && track == 0) {
+    movementParameter -= 0.2;
+    if (movementParameter <= 0) {
+      movementParameter = 0;
+      goLeft            = false;
     }
-
+  }
 }
 
-void resetAllParameters(){
-  cameraParameter = 0;
-  roofParameter=10.25;
-  takeOffRoof=false;
-  putOnRoof=false;
-  spoilerParameter=3.3;
-  activateSpoiler=false;
+void resetAllParameters() {
+  cameraParameter   = 0;
+  roofParameter     = 10.25;
+  takeOffRoof       = false;
+  putOnRoof         = false;
+  spoilerParameter  = 3.3;
+  activateSpoiler   = false;
   movementParameter = 0;
-  track = 0;
-  firstBlock=0;
-  firstObstacle=0;
-  activateHole = false;
-  activateXtrap = false;
-  activateBomb = false;
-  driveAnimation = 0;
-  cameraAnimation = 1;
-  trapAnimation = 0;
-  goPressed = false;
-  goLeft = false;
-  goRight = false;
-  holeRotation = 0;
-  holeParameter = 0;
-  xTrapHorizontal = 0;
-  xTrapVertical = 0;
-  xTrapRotation = 0;
-  bombParameter = 0;
-  pressedStart = false;
-  lastBlock = 9;
-  lastObstacle = 19;
-  lastStar = 9;
-  firstStar = 0;
-  movementSpeed = 0;
-  score = 0;
-  starsCollected = 0;
-  godMode = false;
+  track             = 0;
+  firstBlock        = 0;
+  firstObstacle     = 0;
+  activateHole      = false;
+  activateXtrap     = false;
+  activateBomb      = false;
+  driveAnimation    = 0;
+  cameraAnimation   = 1;
+  trapAnimation     = 0;
+  goPressed         = false;
+  goLeft            = false;
+  goRight           = false;
+  holeRotation      = 0;
+  holeParameter     = 0;
+  xTrapHorizontal   = 0;
+  xTrapVertical     = 0;
+  xTrapRotation     = 0;
+  bombParameter     = 0;
+  pressedStart      = false;
+  lastBlock         = 9;
+  lastObstacle      = 19;
+  lastStar          = 9;
+  firstStar         = 0;
+  movementSpeed     = 0;
+  score             = 0;
+  starsCollected    = 0;
+  godMode           = false;
 
+  for (int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24) blockPosition[i] = j;
 
-  for(int i = 0, j = 0 ; i < BLOCK_NUMBER ; i++ , j+=24)
-  	blockPosition[i] = j;
+  for (int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40) {
+    obstacle[i].x     = j;
+    obstacle[i].type  = rand() % 3;
+    obstacle[i].track = rand() % 3 - 1;
+  }
 
-    for(int i = 0 , j = 40; i < OBSTACLE_NUMBER ; i++ , j+=40)
-    {
-    	obstacle[i].x = j;
-    	obstacle[i].type = rand()%3;
-    	obstacle[i].track = rand()%3-1;
-    }
-
-  for(int i = 0 , j = 250 ; i < STAR_NUMBER ; i++ ,j+=250)
-    {
-    	stars[i].x = j;
-    	stars[i].track = rand()%3-1;
-      stars[i].goUp = false;
-      stars[i].y = 0;
-    }  
+  for (int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250) {
+    stars[i].x     = j;
+    stars[i].track = rand() % 3 - 1;
+    stars[i].goUp  = false;
+    stars[i].y     = 0;
+  }
 }
 
 void detectTrapColision() {
-	if(obstacle[firstObstacle].x - 1 <= 3 && obstacle[firstObstacle].x + 1 >= 0)
+  if (obstacle[firstObstacle].x - 1 <= 3 && obstacle[firstObstacle].x + 1 >= 0)
 
-      	switch(obstacle[firstObstacle].track)
-      	{
-      		case 0:
-      			if(movementParameter < 1.8 && movementParameter > -1.8)
-      			{
-	      			cout << "Udario si u: ";
-	      			switch(obstacle[firstObstacle].type)
-	      			{
-		      			case 0:
-		      				cout << "X zamku" << endl;
-		      				driveAnimation = 0;
-		      				trapAnimation = 1;
-                  activateXtrap = true;
-		      				break;
-		      			case 1:
-		      				cout << "Rupu" << endl;
-		      				activateHole = true;
-		      				driveAnimation = 0;
-		      				trapAnimation = 1;
-		      				break;
-		      			case 2:
-		      				cout << "Bombu" << endl;
-		      				driveAnimation = 0;
-		      				trapAnimation = 1;
-                  activateBomb = true;
-		      				break;
-		      		}		
-
-      			
-
-      			}
-      			break;
-      		case 1:
-      			if(movementParameter < 5.4 && movementParameter > 1.8)
-      			{
-	      			cout << "Udario si u: ";
-	      			switch(obstacle[firstObstacle].type)
-	      			{
-		      			case 0:
-		      				cout << "X zamku" << endl;
-		      				driveAnimation = 0;
-		      				trapAnimation = 1;
-                  activateXtrap = true;
-		      				break;
-		      			case 1:
-		      				cout << "Rupu" << endl;
-		      				activateHole = true;
-		      				driveAnimation = 0;
-		      				trapAnimation = 1;
-		      				break;
-		      			case 2:
-		      				cout << "Bombu" << endl;
-		      				driveAnimation = 0;
-		      				trapAnimation = 1;
-                  activateBomb = true;
-		      				break;
-		      		}		
-
-      			
-
-      			}
-      			break;
-      		case -1:
-      			if(movementParameter > -5.4 && movementParameter < -1.8)
-      			{
-	      			cout << "Udario si u: ";
-	      			switch(obstacle[firstObstacle].type)
-	      			{
-		      			case 0:
-		      				cout << "X zamku" << endl;
-		      				driveAnimation = 0;
-		      				trapAnimation = 1;
-                  activateXtrap = true;
-		      				break;
-		      			case 1:
-		      				cout << "Rupu" << endl;
-		      				driveAnimation = 0;
-		      				trapAnimation = 1;
-		      				activateHole = true;
-		      				break;
-		      			case 2:
-		      				cout << "Bombu" << endl;
-		      				driveAnimation = 0;
-		      				trapAnimation = 1;
-                  activateBomb = true;
-		      				break;
-		      		}		
-
-      			
-
-      			}
-      			break;		
-
-
-
-      	}
+    switch (obstacle[firstObstacle].track) {
+      case 0:
+        if (movementParameter < 1.8 && movementParameter > -1.8) {
+          cout << "Udario si u: ";
+          switch (obstacle[firstObstacle].type) {
+            case 0:
+              cout << "X zamku" << endl;
+              driveAnimation = 0;
+              trapAnimation  = 1;
+              activateXtrap  = true;
+              break;
+            case 1:
+              cout << "Rupu" << endl;
+              activateHole   = true;
+              driveAnimation = 0;
+              trapAnimation  = 1;
+              break;
+            case 2:
+              cout << "Bombu" << endl;
+              driveAnimation = 0;
+              trapAnimation  = 1;
+              activateBomb   = true;
+              break;
+          }
+        }
+        break;
+      case 1:
+        if (movementParameter < 5.4 && movementParameter > 1.8) {
+          cout << "Udario si u: ";
+          switch (obstacle[firstObstacle].type) {
+            case 0:
+              cout << "X zamku" << endl;
+              driveAnimation = 0;
+              trapAnimation  = 1;
+              activateXtrap  = true;
+              break;
+            case 1:
+              cout << "Rupu" << endl;
+              activateHole   = true;
+              driveAnimation = 0;
+              trapAnimation  = 1;
+              break;
+            case 2:
+              cout << "Bombu" << endl;
+              driveAnimation = 0;
+              trapAnimation  = 1;
+              activateBomb   = true;
+              break;
+          }
+        }
+        break;
+      case -1:
+        if (movementParameter > -5.4 && movementParameter < -1.8) {
+          cout << "Udario si u: ";
+          switch (obstacle[firstObstacle].type) {
+            case 0:
+              cout << "X zamku" << endl;
+              driveAnimation = 0;
+              trapAnimation  = 1;
+              activateXtrap  = true;
+              break;
+            case 1:
+              cout << "Rupu" << endl;
+              driveAnimation = 0;
+              trapAnimation  = 1;
+              activateHole   = true;
+              break;
+            case 2:
+              cout << "Bombu" << endl;
+              driveAnimation = 0;
+              trapAnimation  = 1;
+              activateBomb   = true;
+              break;
+          }
+        }
+        break;
+    }
 }
 
 void detectStarColision() {
-	if(stars[firstStar].x <= 3 && stars[firstStar].x >= 0)
-	{
-		switch(stars[firstStar].track)
-		{
-			case 0:
-      			if(movementParameter < 1.8 && movementParameter > -1.8) {
-      				    starsCollected += 1;
-              		stars[firstStar].goUp = true;
-                  cout << "Uhvatio si zvezdicu u srednjoj traci,poeni: " << score << endl;
-              	}
-      			break;
-      		case 1:
-      			if(movementParameter < 5.4 && movementParameter > 1.8) {
-      				    starsCollected += 1;
-              		stars[firstStar].goUp = true;
-                  cout << "Uhvatio si zvezdicu u desnoj traci,poeni: " << score << endl;
-              	}
-      			break;
-      		case -1:
-      			if(movementParameter > -5.4 && movementParameter < -1.8) {
-      				  starsCollected += 1;
-              	stars[firstStar].goUp = true;
-                cout << "Uhvatio si zvezdicu u levoj traci,poeni: " << score << endl;
-              }
-      			break;				
-
-      			
-		}
-	}
+  if (stars[firstStar].x <= 3 && stars[firstStar].x >= 0) {
+    switch (stars[firstStar].track) {
+      case 0:
+        if (movementParameter < 1.8 && movementParameter > -1.8) {
+          starsCollected += 1;
+          stars[firstStar].goUp = true;
+          cout << "Uhvatio si zvezdicu u srednjoj traci,poeni: " << score
+               << endl;
+        }
+        break;
+      case 1:
+        if (movementParameter < 5.4 && movementParameter > 1.8) {
+          starsCollected += 1;
+          stars[firstStar].goUp = true;
+          cout << "Uhvatio si zvezdicu u desnoj traci,poeni: " << score << endl;
+        }
+        break;
+      case -1:
+        if (movementParameter > -5.4 && movementParameter < -1.8) {
+          starsCollected += 1;
+          stars[firstStar].goUp = true;
+          cout << "Uhvatio si zvezdicu u levoj traci,poeni: " << score << endl;
+        }
+        break;
+    }
+  }
 }
 
+static void initializeTextures(void) {
+  /* Objekat koji predstavlja teskturu ucitanu iz fajla. */
+  Image *image;
 
-static void initializeTextures(void)
-{
-    /* Objekat koji predstavlja teskturu ucitanu iz fajla. */
-    Image * image;
+  /* Postavlja se boja pozadine. */
+  glClearColor(0, 0, 0, 0);
 
-    /* Postavlja se boja pozadine. */
-    glClearColor(0, 0, 0, 0);
+  /* Ukljucuje se testiranje z-koordinate piksela. */
+  glEnable(GL_DEPTH_TEST);
 
-    /* Ukljucuje se testiranje z-koordinate piksela. */
-    glEnable(GL_DEPTH_TEST);
+  /* Ukljucuju se teksture. */
+  glEnable(GL_TEXTURE_2D);
 
-    /* Ukljucuju se teksture. */
-    glEnable(GL_TEXTURE_2D);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-    glTexEnvf(GL_TEXTURE_ENV,
-              GL_TEXTURE_ENV_MODE,
-              GL_REPLACE);
+  /*
+   * Inicijalizuje se objekat koji ce sadrzati teksture ucitane iz
+   * fajla.
+   */
+  image = image_init(0, 0);
 
-    /*
-     * Inicijalizuje se objekat koji ce sadrzati teksture ucitane iz
-     * fajla.
-     */
-    image = image_init(0, 0);
+  /* Kreira se prva tekstura. */
+  image_read(image, FILENAME0);
 
-    /* Kreira se prva tekstura. */
-    image_read(image, FILENAME0);
+  /* Generisu se identifikatori tekstura. */
+  glGenTextures(5, names);
 
-    /* Generisu se identifikatori tekstura. */
-    glGenTextures(5, names);
+  glBindTexture(GL_TEXTURE_2D, names[0]);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB,
+               GL_UNSIGNED_BYTE, image->pixels);
 
-    glBindTexture(GL_TEXTURE_2D, names[0]);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                 image->width, image->height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+  /* Kreira se druga tekstura. */
+  image_read(image, FILENAME1);
 
-    /* Kreira se druga tekstura. */
-    image_read(image, FILENAME1);
+  glBindTexture(GL_TEXTURE_2D, names[1]);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB,
+               GL_UNSIGNED_BYTE, image->pixels);
 
-    glBindTexture(GL_TEXTURE_2D, names[1]);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                 image->width, image->height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+  /* Kreira se treca tekstura. */
 
-    /* Kreira se treca tekstura. */
+  image_read(image, FILENAME2);
 
-    image_read(image, FILENAME2);
+  glBindTexture(GL_TEXTURE_2D, names[2]);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB,
+               GL_UNSIGNED_BYTE, image->pixels);
 
-    glBindTexture(GL_TEXTURE_2D, names[2]);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                 image->width, image->height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+  /* Kreira se cetvrta tekstura. */
 
-    /* Kreira se cetvrta tekstura. */
+  image_read(image, FILENAME3);
 
-    image_read(image, FILENAME3);
+  glBindTexture(GL_TEXTURE_2D, names[3]);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB,
+               GL_UNSIGNED_BYTE, image->pixels);
 
-    glBindTexture(GL_TEXTURE_2D, names[3]);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                 image->width, image->height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+  /* Kreira se peta tekstura. */
 
-    /* Kreira se peta tekstura. */
+  image_read(image, FILENAME4);
 
-    image_read(image, FILENAME4);
+  glBindTexture(GL_TEXTURE_2D, names[4]);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB,
+               GL_UNSIGNED_BYTE, image->pixels);
 
-    glBindTexture(GL_TEXTURE_2D, names[4]);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                 image->width, image->height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+  /* Iskljucujemo aktivnu teksturu */
+  glBindTexture(GL_TEXTURE_2D, 0);
 
-    /* Iskljucujemo aktivnu teksturu */
-    glBindTexture(GL_TEXTURE_2D, 0);
+  /* Unistava se objekat za citanje tekstura iz fajla. */
+  image_done(image);
 
-    /* Unistava se objekat za citanje tekstura iz fajla. */
-    image_done(image);
-
-    /* Inicijalizujemo matricu rotacije. */
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+  /* Inicijalizujemo matricu rotacije. */
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
 }
 
 void displayStartScreen() {
-
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glEnable(GL_TEXTURE_2D);
@@ -1067,30 +914,28 @@ void displayStartScreen() {
   glMatrixMode(GL_PROJECTION);
 
   glPushMatrix();
-	  glLoadIdentity();
-	  gluOrtho2D(0, windowWidth,0, windowHeight);
-	    
-	  glMatrixMode(GL_MODELVIEW);
-	  glLoadIdentity();
+  glLoadIdentity();
+  gluOrtho2D(0, windowWidth, 0, windowHeight);
 
-	  glBegin(GL_QUADS);
-		  glTexCoord2f(0, 0);
-		  glVertex2f(0,0);
-
-		  glTexCoord2f(0, 1);
-		  glVertex2f(0, windowHeight);
-
-		  glTexCoord2f(1, 1);
-		  glVertex2f(windowWidth,windowHeight);
-
-		  glTexCoord2f(1, 0);
-		  glVertex2f(windowWidth,0);
-	  glEnd();
-	    
-	  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  
   glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
+  glBegin(GL_QUADS);
+  glTexCoord2f(0, 0);
+  glVertex2f(0, 0);
+
+  glTexCoord2f(0, 1);
+  glVertex2f(0, windowHeight);
+
+  glTexCoord2f(1, 1);
+  glVertex2f(windowWidth, windowHeight);
+
+  glTexCoord2f(1, 0);
+  glVertex2f(windowWidth, 0);
+  glEnd();
+
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+
+  glMatrixMode(GL_MODELVIEW);
 }
-
