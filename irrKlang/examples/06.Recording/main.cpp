@@ -16,7 +16,7 @@
 #else
 #include "../common/conio.h"
 #endif
-#pragma comment(lib, "irrKlang.lib")  // link with irrKlang.dll
+#pragma comment(lib, "irrKlang.lib")   // link with irrKlang.dll
 
 using namespace irrklang;
 
@@ -30,7 +30,7 @@ int main(int argc, const char** argv) {
   ISoundEngine* engine     = createIrrKlangDevice();
   IAudioRecorder* recorder = createIrrKlangAudioRecorder(engine);
 
-  if (!engine || !recorder) {
+  if ( !engine || !recorder ) {
     printf("Could not create audio engine or audio recoder\n");
     return 1;
   }
@@ -66,7 +66,7 @@ int main(int argc, const char** argv) {
   getch();
 
   recorder->drop();
-  engine->drop();  // delete engine
+  engine->drop();   // delete engine
 
   return 0;
 }
@@ -74,14 +74,14 @@ int main(int argc, const char** argv) {
 // writes the recorded audio data into a .WAV file
 void writeWaveFile(const char* filename, SAudioStreamFormat format,
                    void* data) {
-  if (!data) {
+  if ( !data ) {
     printf("Could not save recorded data to %s, nothing recorded\n", filename);
     return;
   }
 
   FILE* file = fopen(filename, "wb");
 
-  if (file) {
+  if ( file ) {
     // write wave header
     unsigned short formatType     = 1;
     unsigned short numChannels    = format.ChannelCount;

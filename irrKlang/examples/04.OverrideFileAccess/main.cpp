@@ -16,7 +16,7 @@
 #include <string.h>
 using namespace irrklang;
 
-#pragma comment(lib, "irrKlang.lib")  // link with irrKlang.dll
+#pragma comment(lib, "irrKlang.lib")   // link with irrKlang.dll
 
 // To start, we need to implement the class IFileFactory, which irrKlang uses
 // to open files. The interface consists only of one single method named
@@ -32,7 +32,7 @@ class CMyFileFactory : public IFileFactory {
     printf("MyFileFactory: open file %s\n", filename);
 
     FILE* file = fopen(filename, "rb");
-    if (!file) return 0;
+    if ( !file ) return 0;
 
     return new CMyReadFile(file, filename);
   }
@@ -85,9 +85,9 @@ class CMyFileFactory : public IFileFactory {
     char Filename[1024];
     ik_s32 FileSize;
 
-  };  // end class CMyReadFile
+  };   // end class CMyReadFile
 
-};  // end class CMyFileFactory
+};   // end class CMyFileFactory
 
 // The main work is done, the only thing missing is to start up the
 // sound engine and tell it to use the created FileFactory for file access:
@@ -98,7 +98,7 @@ int main(int argc, const char** argv) {
   // start the sound engine with default parameters
   ISoundEngine* engine = createIrrKlangDevice();
 
-  if (!engine) return 0;  // error starting up the engine
+  if ( !engine ) return 0;   // error starting up the engine
 
   // create an instance of the file factory and let
   // irrKlang know about it. irrKlang will drop() the
@@ -106,7 +106,7 @@ int main(int argc, const char** argv) {
 
   CMyFileFactory* factory = new CMyFileFactory();
   engine->addFileFactory(factory);
-  factory->drop();  // we don't need it anymore, delete it
+  factory->drop();   // we don't need it anymore, delete it
 
   // that's it, play some sounds with our overriden
   // file access methods:
@@ -119,14 +119,14 @@ int main(int argc, const char** argv) {
 
   engine->play2D("../../media/getout.ogg", true);
 
-  while (true)  // endless loop until user exits
+  while ( true )   // endless loop until user exits
   {
     // play some wave sound
     engine->play2D("../../media/explosion.wav");
 
-    if (getch() == 27) break;  // user pressed ESCAPE key, cancel
+    if ( getch() == 27 ) break;   // user pressed ESCAPE key, cancel
   }
 
-  engine->drop();  // delete engine
+  engine->drop();   // delete engine
   return 0;
 }

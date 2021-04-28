@@ -27,7 +27,7 @@ void irrKlangPluginInit(ISoundEngine* engine, const char* version)
   // by some newer irrKlang version with changed interfaces which could
   // possibily cause crashes.
 
-  if (strcmp(version, IRR_KLANG_VERSION)) {
+  if ( strcmp(version, IRR_KLANG_VERSION) ) {
     printf(
         "This MP3 plugin only supports irrKlang version %s, mp3 playback "
         "disabled.\n",

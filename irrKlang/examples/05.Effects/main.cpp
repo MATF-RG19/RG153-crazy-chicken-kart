@@ -17,7 +17,7 @@
 #include <stdlib.h>
 using namespace irrklang;
 
-#pragma comment(lib, "irrKlang.lib")  // link with irrKlang.dll
+#pragma comment(lib, "irrKlang.lib")   // link with irrKlang.dll
 
 // Now let's start with the irrKlang 3D sound engine example 05,
 // demonstrating sound effects. Simply startup the engine using
@@ -26,7 +26,7 @@ int main(int argc, const char** argv) {
   // start the sound engine with default parameters
   ISoundEngine* engine = createIrrKlangDevice();
 
-  if (!engine) return 0;  // error starting up the engine
+  if ( !engine ) return 0;   // error starting up the engine
 
   // we play a .xm file as music here. Note that the last parameter
   // named 'enableSoundEffects' has been set to 'true' here. If this
@@ -38,7 +38,7 @@ int main(int argc, const char** argv) {
 
 #ifdef __BIG_ENDIAN__
   filename =
-      "../../media/ophelia.mp3";  // no xm playback on power pcs currently
+      "../../media/ophelia.mp3";   // no xm playback on power pcs currently
 #endif
 
   ISound* music =
@@ -53,12 +53,12 @@ int main(int argc, const char** argv) {
   printf("e: enable/disable echo\n");
   printf("a: disable all effects\n");
 
-  while (true)  // endless loop until user exits
+  while ( true )   // endless loop until user exits
   {
     int key = getch();
 
-    if (key == 27)
-      break;  // user pressed ESCAPE key
+    if ( key == 27 )
+      break;   // user pressed ESCAPE key
     else {
       // user maybe pressed an effects key,
       // now enable or disable a sound effect.
@@ -70,9 +70,9 @@ int main(int argc, const char** argv) {
       // we don't call music->drop() and delete the music with this.
 
       ISoundEffectControl* fx = 0;
-      if (music) fx = music->getSoundEffectControl();
+      if ( music ) fx = music->getSoundEffectControl();
 
-      if (!fx) {
+      if ( !fx ) {
         // some sound devices do not support sound effects.
         printf("This device or sound does not support sound effects.\n");
         continue;
@@ -86,26 +86,26 @@ int main(int argc, const char** argv) {
       // enableXXXSoundEffect() method again to just change the effect
       // parameters, although we aren't doing this here.
 
-      if (key < 'a')  // make key lower
+      if ( key < 'a' )   // make key lower
         key += 'a' - 'A';
 
-      switch (key) {
+      switch ( key ) {
         case 'd':
-          if (fx->isDistortionSoundEffectEnabled())
+          if ( fx->isDistortionSoundEffectEnabled() )
             fx->disableDistortionSoundEffect();
           else
             fx->enableDistortionSoundEffect();
           break;
 
         case 'e':
-          if (fx->isEchoSoundEffectEnabled())
+          if ( fx->isEchoSoundEffectEnabled() )
             fx->disableEchoSoundEffect();
           else
             fx->enableEchoSoundEffect();
           break;
 
         case 'w':
-          if (fx->isWavesReverbSoundEffectEnabled())
+          if ( fx->isWavesReverbSoundEffectEnabled() )
             fx->disableWavesReverbSoundEffect();
           else
             fx->enableWavesReverbSoundEffect();
@@ -118,9 +118,9 @@ int main(int argc, const char** argv) {
 
   // don't forget to release the resources
 
-  if (music) music->drop();  // release music stream.
+  if ( music ) music->drop();   // release music stream.
 
-  engine->drop();  // delete Engine
+  engine->drop();   // delete Engine
 
   return 0;
 }

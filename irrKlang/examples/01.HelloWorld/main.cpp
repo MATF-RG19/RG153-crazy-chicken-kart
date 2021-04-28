@@ -29,7 +29,7 @@ using namespace irrklang;
 // irrKlang.lib. We could set this option in the project settings, but to make
 // it easy we use a pragma comment:
 
-#pragma comment(lib, "irrKlang.lib")  // link with irrKlang.dll
+#pragma comment(lib, "irrKlang.lib")   // link with irrKlang.dll
 
 // Now lets start with irrKlang 3D sound engine example 01, demonstrating simple
 // 2D sound. Start up the sound engine using createIrrKlangDevice(). You can
@@ -39,9 +39,9 @@ int main(int argc, const char** argv) {
   // start the sound engine with default parameters
   ISoundEngine* engine = createIrrKlangDevice();
 
-  if (!engine) {
+  if ( !engine ) {
     printf("Could not startup engine\n");
-    return 0;  // error starting up the engine
+    return 0;   // error starting up the engine
   }
 
   // To play a sound, we only to call play2D(). The second parameter
@@ -60,7 +60,7 @@ int main(int argc, const char** argv) {
 
     // play a single sound
     engine->play2D("../../media/bell.wav");
-  } while (getch() != 'q');
+  } while ( getch() != 'q' );
 
   // After we are finished, we have to delete the irrKlang Device created
   // earlier with createIrrKlangDevice(). Use ::drop() to do that. In irrKlang,
@@ -69,6 +69,6 @@ int main(int argc, const char** argv) {
   // see the documentation or the next example for an explanation) The object is
   // deleted simply by calling ->drop().
 
-  engine->drop();  // delete engine
+  engine->drop();   // delete engine
   return 0;
 }

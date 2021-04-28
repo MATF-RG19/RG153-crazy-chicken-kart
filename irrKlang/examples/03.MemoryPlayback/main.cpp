@@ -17,7 +17,7 @@ using namespace irrklang;
 #include "../common/conio.h"
 #endif
 
-#pragma comment(lib, "irrKlang.lib")  // link with irrKlang.dll
+#pragma comment(lib, "irrKlang.lib")   // link with irrKlang.dll
 
 // the following huge array simply represents the plain sound data we
 // want to play back. It is just the content of a .wav file from the
@@ -27,7 +27,7 @@ using namespace irrklang;
 
 // test.wav, converted to this array by bin2h tool, available at
 // bin2h.irrlicht3d.org
-int memorySoundDataSize = 3932;  // data size in bytes
+int memorySoundDataSize = 3932;   // data size in bytes
 int memorySoundData[]   = {
     0x46464952, 0xf54,      0x45564157, 0x20746d66, 0x12,       0x10001,
     0x1f40,     0x1f40,     0x80001,    0x61660000, 0x47463,    0xf220000,
@@ -200,7 +200,7 @@ int main(int argc, const char** argv) {
   // start the sound engine with default parameters
   ISoundEngine* engine = createIrrKlangDevice();
 
-  if (!engine) return 0;  // error starting up the engine
+  if ( !engine ) return 0;   // error starting up the engine
 
 #ifdef __BIG_ENDIAN__
   printf(
@@ -225,14 +225,14 @@ int main(int argc, const char** argv) {
   printf("\nPlaying sound from memory.\n");
   printf("Press any key to play, ESCAPE to end program.\n");
 
-  while (true)  // endless loop until user exits
+  while ( true )   // endless loop until user exits
   {
     // play the sound we added to memory
     engine->play2D("testsound.wav");
 
-    if (getch() == 27) break;  // user pressed ESCAPE key, cancel
+    if ( getch() == 27 ) break;   // user pressed ESCAPE key, cancel
   }
 
-  engine->drop();  // delete engine
+  engine->drop();   // delete engine
   return 0;
 }

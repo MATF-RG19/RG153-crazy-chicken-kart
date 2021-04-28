@@ -23,7 +23,7 @@ IAudioStream* CIrrKlangAudioStreamLoaderMP3::createAudioStream(
     irrklang::IFileReader* file) {
   CIrrKlangAudioStreamMP3* stream = new CIrrKlangAudioStreamMP3(file);
 
-  if (stream && !stream->isOK()) {
+  if ( stream && !stream->isOK() ) {
     stream->drop();
     stream = 0;
   }
@@ -31,4 +31,4 @@ IAudioStream* CIrrKlangAudioStreamLoaderMP3::createAudioStream(
   return stream;
 }
 
-}  // end namespace irrklang
+}   // end namespace irrklang

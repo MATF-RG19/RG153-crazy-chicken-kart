@@ -27,9 +27,9 @@ using namespace irrklang;
 static GLuint names[5];
 
 #define TIMER_INTERVAL 20
-#define TIMER_ID1 0  // Koristimo za animaciju voznje
-#define TIMER_ID2 1  // Koristimo za animaciju kamere
-#define TIMER_ID3 2  // Koristimo za animaciju prepreka
+#define TIMER_ID1 0   // Koristimo za animaciju voznje
+#define TIMER_ID2 1   // Koristimo za animaciju kamere
+#define TIMER_ID3 2   // Koristimo za animaciju prepreka
 #define LEN 100
 #define BLOCK_NUMBER 10
 #define OBSTACLE_NUMBER 20
@@ -85,7 +85,7 @@ float spoilerParameter  = 3.3;
 float tiresParameter    = 0;
 float movementParameter = 0;
 // float turnParameter = 0;
-int track                 = 0;  // -1 oznacava levu traku,0 srednju,a 1 desnu
+int track                 = 0;   // -1 oznacava levu traku,0 srednju,a 1 desnu
 float holeParameter       = 0;
 float holeRotation        = 0;
 float xTrapHorizontal     = 0;
@@ -156,16 +156,16 @@ int main(int argc, char **argv) {
 
   /* Inicijalizacija pocetnih pozicija blokova okoline,prepreka i zvezdica */
 
-  for (int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24) blockPosition[i] = j;
+  for ( int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24 ) blockPosition[i] = j;
 
   srand(time(NULL));
-  for (int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40) {
+  for ( int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40 ) {
     obstacle[i].x     = j;
     obstacle[i].type  = rand() % 3;
     obstacle[i].track = rand() % 3 - 1;
   }
 
-  for (int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250) {
+  for ( int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250 ) {
     stars[i].x     = j;
     stars[i].track = rand() % 3 - 1;
     stars[i].goUp  = false;
@@ -193,7 +193,7 @@ int main(int argc, char **argv) {
 
   glClearColor(0.031, 0.094, 0.227, 0);
 
-  if (!engine) return 0;
+  if ( !engine ) return 0;
 
   engine->play2D("../../media/getout.ogg", true);
 
@@ -203,7 +203,7 @@ int main(int argc, char **argv) {
 }
 
 void on_keyboard(unsigned char key, int x, int y) {
-  switch (key) {
+  switch ( key ) {
     case 'r':
       resetAllParameters();
       glutPostRedisplay();
@@ -212,19 +212,19 @@ void on_keyboard(unsigned char key, int x, int y) {
     case 'S': animationOngoing = 0; break;
     case 'g':
     case 'G':
-      if (!pressedStart) {
+      if ( !pressedStart ) {
         keyGuideScreen = false;
         pressedStart   = true;
-        if (!driveAnimation && cameraAnimation == 0) {
+        if ( !driveAnimation && cameraAnimation == 0 ) {
           driveAnimation = 1;
           glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID1);
-        } else if (cameraAnimation)
+        } else if ( cameraAnimation )
           glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
       }
       break;
     case 'q':
     case 'Q':
-      if (takeOffRoof) {
+      if ( takeOffRoof ) {
         putOnRoof   = true;
         takeOffRoof = false;
       } else {
@@ -235,35 +235,35 @@ void on_keyboard(unsigned char key, int x, int y) {
 
     case 'e': activateSpoiler = true; break;
     case 'f':
-      if (thirdPerson)
+      if ( thirdPerson )
         thirdPerson = false;
       else
         thirdPerson = true;
       break;
     case 'd':
     case 'D':
-      if (driveAnimation) {
+      if ( driveAnimation ) {
         goRight = true;
         goLeft  = false;
-        if (track != 1) track += 1;
+        if ( track != 1 ) track += 1;
         glutPostRedisplay();
       }
       break;
     case 'a':
     case 'A':
-      if (driveAnimation) {
+      if ( driveAnimation ) {
         goLeft  = true;
         goRight = false;
-        if (track != -1) track -= 1;
+        if ( track != -1 ) track -= 1;
         glutPostRedisplay();
       }
       break;
     case SPACEBAR:
-      if (!goPressed && driveAnimation) goPressed = true;
+      if ( !goPressed && driveAnimation ) goPressed = true;
       break;
     case 'k':
     case 'K':
-      if (!godMode)
+      if ( !godMode )
         godMode = true;
       else
         godMode = false;
@@ -273,20 +273,20 @@ void on_keyboard(unsigned char key, int x, int y) {
 }
 
 void onSpecialKeyPress(int key, int x, int y) {
-  switch (key) {
+  switch ( key ) {
     case GLUT_KEY_RIGHT:
-      if (driveAnimation) {
+      if ( driveAnimation ) {
         goRight = true;
         goLeft  = false;
-        if (track != 1) track += 1;
+        if ( track != 1 ) track += 1;
         glutPostRedisplay();
       }
       break;
     case GLUT_KEY_LEFT:
-      if (driveAnimation) {
+      if ( driveAnimation ) {
         goLeft  = true;
         goRight = false;
-        if (track != -1) track -= 1;
+        if ( track != -1 ) track -= 1;
         glutPostRedisplay();
       }
       break;
@@ -294,20 +294,20 @@ void onSpecialKeyPress(int key, int x, int y) {
 }
 
 void onTimer(int id) {
-  if (id == TIMER_ID1) {
-    if (goPressed) {
+  if ( id == TIMER_ID1 ) {
+    if ( goPressed ) {
       tiresParameter += 2;
       starRotationParameter += 5;
 
       /* Uvecavanje brzine kretanja */
 
-      if (movementSpeed < 1) {
+      if ( movementSpeed < 1 ) {
         movementSpeed += 0.005;
         score += 1;
-      } else if (movementSpeed < 1.5) {
+      } else if ( movementSpeed < 1.5 ) {
         movementSpeed += 0.0025;
         score += 2;
-      } else if (movementSpeed < 3) {
+      } else if ( movementSpeed < 3 ) {
         movementSpeed += 0.001;
         score += 3;
       }
@@ -318,108 +318,110 @@ void onTimer(int id) {
          Ako pokazivac za prvi blok pokazuje na poslednji blok(9),njega
          prebacujemo da pokazuje na prvi blok(0) */
 
-      for (int i = 0; i < BLOCK_NUMBER; i++) blockPosition[i] -= movementSpeed;
+      for ( int i = 0; i < BLOCK_NUMBER; i++ )
+        blockPosition[i] -= movementSpeed;
 
-      if (blockPosition[firstBlock] <= -72) {
+      if ( blockPosition[firstBlock] <= -72 ) {
         blockPosition[firstBlock] = blockPosition[lastBlock] + 24;
         lastBlock                 = firstBlock;
         firstBlock++;
 
-        if (firstBlock == BLOCK_NUMBER) firstBlock = 0;
+        if ( firstBlock == BLOCK_NUMBER ) firstBlock = 0;
       }
 
       /* Vrsi se promena pozicija prepreka po istom principu kao sa blokovima */
 
-      for (int i = 0; i < OBSTACLE_NUMBER; i++) obstacle[i].x -= movementSpeed;
+      for ( int i = 0; i < OBSTACLE_NUMBER; i++ )
+        obstacle[i].x -= movementSpeed;
 
-      if (obstacle[firstObstacle].x <= -20) {
+      if ( obstacle[firstObstacle].x <= -20 ) {
         obstacle[firstObstacle].x = obstacle[lastObstacle].x + 40;
         lastObstacle              = firstObstacle;
         firstObstacle++;
 
-        if (firstObstacle == OBSTACLE_NUMBER) firstObstacle = 0;
+        if ( firstObstacle == OBSTACLE_NUMBER ) firstObstacle = 0;
       }
 
       /* Vrsi se promena pozicija zvezdica po istom principu kao sa blokovima i
        * preprekama */
 
-      for (int i = 0; i < STAR_NUMBER; i++) {
+      for ( int i = 0; i < STAR_NUMBER; i++ ) {
         stars[i].x -= movementSpeed;
-        if (stars[i].goUp && stars[i].y < 4) {
+        if ( stars[i].goUp && stars[i].y < 4 ) {
           stars[i].y += 1;
         }
       }
 
-      if (stars[firstStar].x <= -20) {
+      if ( stars[firstStar].x <= -20 ) {
         stars[firstStar].goUp = false;
         stars[firstStar].y    = 0;
         stars[firstStar].x    = stars[lastStar].x + 250;
         lastStar              = firstStar;
         firstStar++;
 
-        if (firstStar == STAR_NUMBER) firstStar = 0;
+        if ( firstStar == STAR_NUMBER ) firstStar = 0;
       }
 
       /* Detektovanje kolizije sa preprekama se aktivira u
    zavisnosti od bool promenljive godMode(da li je
    aktiviran stit oko buggy-ja) */
 
-      if (!godMode) detectTrapColision();
+      if ( !godMode ) detectTrapColision();
 
       /* Detektovanje kolizije sa zvezdicama, naredbom
          if(!stars[firstStar].goUp) izbegavamo ponavljanje detekcije kolizije
          iste zvezdice */
 
-      if (!stars[firstStar].goUp) detectStarColision();
+      if ( !stars[firstStar].goUp ) detectStarColision();
 
       /* Promene parametara za skidanje krova,aktiviranje spojlera */
 
-      if (roofParameter >= 0 && takeOffRoof) roofParameter -= 0.06;
+      if ( roofParameter >= 0 && takeOffRoof ) roofParameter -= 0.06;
 
-      if (roofParameter <= 10.25 && putOnRoof) roofParameter += 0.06;
+      if ( roofParameter <= 10.25 && putOnRoof ) roofParameter += 0.06;
 
-      if (activateSpoiler) spoilerParameter += 0.05;
+      if ( activateSpoiler ) spoilerParameter += 0.05;
 
       /* Promene pozicije buggy-ja */
 
       adjustPositionParameters();
     }
 
-  } else if (id == TIMER_ID2) {
+  } else if ( id == TIMER_ID2 ) {
     cameraParameter += 2.5;
-    if (cameraParameter > 1130) {
+    if ( cameraParameter > 1130 ) {
       cameraAnimation = 0;
       driveAnimation  = 1;
     }
   } else {
     thirdPerson = true;
 
-    if (activateHole) {
+    if ( activateHole ) {
       holeParameter += 0.1;
 
-      if (holeParameter > 1.2) {
+      if ( holeParameter > 1.2 ) {
         holeRotation += 0.2;
         holeParameter += 0.05;
       }
 
-      if (holeParameter > 10) {
+      if ( holeParameter > 10 ) {
         score += starsCollected * STAR_POINTS;
         cout << score << endl;
         resetAllParameters();
       }
-    } else if (activateXtrap) {
-      if (xTrapHorizontal < 75) {
+    } else if ( activateXtrap ) {
+      if ( xTrapHorizontal < 75 ) {
         xTrapHorizontal += 0.5;
-        if (xTrapHorizontal > 25) xTrapRotation += 0.5;
+        if ( xTrapHorizontal > 25 ) xTrapRotation += 0.5;
       } else {
         score += starsCollected * STAR_POINTS;
         cout << score << endl;
         resetAllParameters();
       }
 
-      if (xTrapVertical > -2) xTrapVertical -= 0.05;
+      if ( xTrapVertical > -2 ) xTrapVertical -= 0.05;
     } else {
-      if (bombParameter < 5.7)
+      if ( bombParameter < 5.7 )
         bombParameter += 0.3;
       else {
         score += starsCollected * STAR_POINTS;
@@ -429,9 +431,9 @@ void onTimer(int id) {
     }
   }
   glutPostRedisplay();
-  if (driveAnimation)
+  if ( driveAnimation )
     glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID1);
-  else if (cameraAnimation)
+  else if ( cameraAnimation )
     glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
   else
     glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID3);
@@ -461,8 +463,8 @@ void on_display() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if (driveAnimation || trapAnimation) {
-    if (thirdPerson)
+  if ( driveAnimation || trapAnimation ) {
+    if ( thirdPerson )
       gluLookAt(-5, 3, movementParameter, 120, 0, movementParameter, 0, 1, 0);
     else
       gluLookAt(1, 0.8, -0.3 + movementParameter, 120, 0, movementParameter, 0,
@@ -484,7 +486,7 @@ void on_display() {
   drawCompleteScene();
   glPopMatrix();
 
-  if (keyGuideScreen) displayStartScreen();
+  if ( keyGuideScreen ) displayStartScreen();
 
   glPushMatrix();
   glTranslatef(0, 0.2, movementParameter);
@@ -509,7 +511,7 @@ void on_display() {
   glEnd();
   glPopMatrix();
 
-  if (!trapAnimation) {
+  if ( !trapAnimation ) {
     glPushMatrix();
     glTranslatef(0, 0.2, movementParameter);
 
@@ -580,7 +582,7 @@ void on_display() {
 
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  if (godMode) {
+  if ( godMode ) {
     glPushMatrix();
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
@@ -616,33 +618,33 @@ void lightInitialization() {
 
 void adjustPositionParameters() {
   /* Iz srednje u desnu */
-  if (goRight && track == 1) {
+  if ( goRight && track == 1 ) {
     movementParameter += 0.2;
-    if (movementParameter >= MAX_RIGHT) {
+    if ( movementParameter >= MAX_RIGHT ) {
       movementParameter = MAX_RIGHT;
       goRight           = false;
     }
   }
 
-  if (goRight && track == 0) {
+  if ( goRight && track == 0 ) {
     movementParameter += 0.2;
-    if (movementParameter >= 0) {
+    if ( movementParameter >= 0 ) {
       movementParameter = 0;
       goRight           = false;
     }
   }
 
-  if (goLeft && track == -1) {
+  if ( goLeft && track == -1 ) {
     movementParameter -= 0.2;
-    if (movementParameter <= MAX_LEFT) {
+    if ( movementParameter <= MAX_LEFT ) {
       movementParameter = MAX_LEFT;
       goLeft            = false;
     }
   }
 
-  if (goLeft && track == 0) {
+  if ( goLeft && track == 0 ) {
     movementParameter -= 0.2;
-    if (movementParameter <= 0) {
+    if ( movementParameter <= 0 ) {
       movementParameter = 0;
       goLeft            = false;
     }
@@ -685,15 +687,15 @@ void resetAllParameters() {
   starsCollected    = 0;
   godMode           = false;
 
-  for (int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24) blockPosition[i] = j;
+  for ( int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24 ) blockPosition[i] = j;
 
-  for (int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40) {
+  for ( int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40 ) {
     obstacle[i].x     = j;
     obstacle[i].type  = rand() % 3;
     obstacle[i].track = rand() % 3 - 1;
   }
 
-  for (int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250) {
+  for ( int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250 ) {
     stars[i].x     = j;
     stars[i].track = rand() % 3 - 1;
     stars[i].goUp  = false;
@@ -702,13 +704,14 @@ void resetAllParameters() {
 }
 
 void detectTrapColision() {
-  if (obstacle[firstObstacle].x - 1 <= 3 && obstacle[firstObstacle].x + 1 >= 0)
+  if ( obstacle[firstObstacle].x - 1 <= 3 &&
+       obstacle[firstObstacle].x + 1 >= 0 )
 
-    switch (obstacle[firstObstacle].track) {
+    switch ( obstacle[firstObstacle].track ) {
       case 0:
-        if (movementParameter < 1.8 && movementParameter > -1.8) {
+        if ( movementParameter < 1.8 && movementParameter > -1.8 ) {
           cout << "Udario si u: ";
-          switch (obstacle[firstObstacle].type) {
+          switch ( obstacle[firstObstacle].type ) {
             case 0:
               cout << "X zamku" << endl;
               driveAnimation = 0;
@@ -731,9 +734,9 @@ void detectTrapColision() {
         }
         break;
       case 1:
-        if (movementParameter < 5.4 && movementParameter > 1.8) {
+        if ( movementParameter < 5.4 && movementParameter > 1.8 ) {
           cout << "Udario si u: ";
-          switch (obstacle[firstObstacle].type) {
+          switch ( obstacle[firstObstacle].type ) {
             case 0:
               cout << "X zamku" << endl;
               driveAnimation = 0;
@@ -756,9 +759,9 @@ void detectTrapColision() {
         }
         break;
       case -1:
-        if (movementParameter > -5.4 && movementParameter < -1.8) {
+        if ( movementParameter > -5.4 && movementParameter < -1.8 ) {
           cout << "Udario si u: ";
-          switch (obstacle[firstObstacle].type) {
+          switch ( obstacle[firstObstacle].type ) {
             case 0:
               cout << "X zamku" << endl;
               driveAnimation = 0;
@@ -784,10 +787,10 @@ void detectTrapColision() {
 }
 
 void detectStarColision() {
-  if (stars[firstStar].x <= 3 && stars[firstStar].x >= 0) {
-    switch (stars[firstStar].track) {
+  if ( stars[firstStar].x <= 3 && stars[firstStar].x >= 0 ) {
+    switch ( stars[firstStar].track ) {
       case 0:
-        if (movementParameter < 1.8 && movementParameter > -1.8) {
+        if ( movementParameter < 1.8 && movementParameter > -1.8 ) {
           starsCollected += 1;
           stars[firstStar].goUp = true;
           cout << "Uhvatio si zvezdicu u srednjoj traci,poeni: " << score
@@ -795,14 +798,14 @@ void detectStarColision() {
         }
         break;
       case 1:
-        if (movementParameter < 5.4 && movementParameter > 1.8) {
+        if ( movementParameter < 5.4 && movementParameter > 1.8 ) {
           starsCollected += 1;
           stars[firstStar].goUp = true;
           cout << "Uhvatio si zvezdicu u desnoj traci,poeni: " << score << endl;
         }
         break;
       case -1:
-        if (movementParameter > -5.4 && movementParameter < -1.8) {
+        if ( movementParameter > -5.4 && movementParameter < -1.8 ) {
           starsCollected += 1;
           stars[firstStar].goUp = true;
           cout << "Uhvatio si zvezdicu u levoj traci,poeni: " << score << endl;

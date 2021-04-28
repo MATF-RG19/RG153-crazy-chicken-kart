@@ -23,7 +23,7 @@ inline void sleepSomeTime() { Sleep(100); }
 #include <stdio.h>
 using namespace irrklang;
 
-#pragma comment(lib, "irrKlang.lib")  // link with irrKlang.dll
+#pragma comment(lib, "irrKlang.lib")   // link with irrKlang.dll
 
 // Now let's start with the irrKlang 3D sound engine example 02,
 // demonstrating simple 3D sound. Simply startup the engine using
@@ -32,7 +32,7 @@ int main(int argc, const char** argv) {
   // start the sound engine with default parameters
   ISoundEngine* engine = createIrrKlangDevice();
 
-  if (!engine) return 0;  // error starting up the engine
+  if ( !engine ) return 0;   // error starting up the engine
 
   // Now play some sound stream as music in 3d space, looped.
   // We are setting the last parameter named 'track' to 'true' to
@@ -50,7 +50,7 @@ int main(int argc, const char** argv) {
   // distance simply is the distance in which the sound gets played
   // at maximum volume.
 
-  if (music) music->setMinDistance(5.0f);
+  if ( music ) music->setMinDistance(5.0f);
 
   // Print some help text and start the display loop
 
@@ -65,7 +65,7 @@ int main(int argc, const char** argv) {
   float posOnCircle  = 0;
   const float radius = 5;
 
-  while (true)  // endless loop until user exits
+  while ( true )   // endless loop until user exits
   {
     // Each step we calculate the position of the 3D music.
     // For this example, we let the
@@ -81,14 +81,14 @@ int main(int argc, const char** argv) {
 
     engine->setListenerPosition(vec3df(0, 0, 0), vec3df(0, 0, 1));
 
-    if (music) music->setPosition(pos3d);
+    if ( music ) music->setPosition(pos3d);
 
     // Now print the position of the sound in a nice way to the console
     // and also print the play position
 
     char stringForDisplay[] = "          +         ";
     int charpos             = (int)((pos3d.X + radius) / radius * 10.0f);
-    if (charpos >= 0 && charpos < 20) stringForDisplay[charpos] = 'o';
+    if ( charpos >= 0 && charpos < 20 ) stringForDisplay[charpos] = 'o';
     int playPos = music ? music->getPlayPosition() : 0;
 
     printf("\rx:(%s)   3dpos: %.1f %.1f %.1f, playpos:%d:%.2d    ",
@@ -100,11 +100,11 @@ int main(int argc, const char** argv) {
     // Handle user input: Every time the user presses a key in the console,
     // play a random sound or exit the application if he pressed ESCAPE.
 
-    if (kbhit()) {
+    if ( kbhit() ) {
       int key = getch();
 
-      if (key == 27)
-        break;  // user pressed ESCAPE key
+      if ( key == 27 )
+        break;   // user pressed ESCAPE key
       else {
         // Play random sound at some random position.
         // Note that when calling play3D(), no pointer is returned because we
@@ -115,7 +115,7 @@ int main(int argc, const char** argv) {
 
         const char* filename;
 
-        if (rand() % 2)
+        if ( rand() % 2 )
           filename = "../../media/bell.wav";
         else
           filename = "../../media/explosion.wav";
@@ -130,8 +130,8 @@ int main(int argc, const char** argv) {
 
   // don't forget to release the resources as explained above.
 
-  if (music) music->drop();  // release music stream.
+  if ( music ) music->drop();   // release music stream.
 
-  engine->drop();  // delete engine
+  engine->drop();   // delete engine
   return 0;
 }

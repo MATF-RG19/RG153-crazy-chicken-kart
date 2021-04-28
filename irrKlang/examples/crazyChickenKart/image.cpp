@@ -17,7 +17,7 @@ Image *image_init(int width, int height) {
   /* Inicijlizuju se clanovi strukture. */
   image->width  = width;
   image->height = height;
-  if (width == 0 || height == 0)
+  if ( width == 0 || height == 0 )
     image->pixels = NULL;
   else {
     image->pixels = (char *)malloc(3 * width * height * sizeof(char));
@@ -84,9 +84,9 @@ void image_read(Image *image, char *filename) {
    * (da li samo R, G i B komponenta ili R, G, B i A), alociramo niz
    * odgovarajuce duzine.
    */
-  if (bih.bitcount == 24)
+  if ( bih.bitcount == 24 )
     image->pixels = (char *)malloc(3 * bih.width * bih.height * sizeof(char));
-  else if (bih.bitcount == 32)
+  else if ( bih.bitcount == 32 )
     image->pixels = (char *)malloc(4 * bih.width * bih.height * sizeof(char));
   else {
     fprintf(stderr,
@@ -97,13 +97,13 @@ void image_read(Image *image, char *filename) {
   assert(image->pixels != NULL);
 
   /* Ucitavaju se podaci o pikselima i smestaju u alocirani niz. */
-  if (bih.bitcount == 24)
+  if ( bih.bitcount == 24 )
     /*
      * Ako se po pikselu cita 24 bita = 3 bajta informacija, pretpostavljamo
      * da oni (ta 3 bajta) predstavljaju R, G i B komponentu boje (1 bajt po
      * komponenti).
      */
-    for (i = 0; i < bih.width * bih.height; i++) {
+    for ( i = 0; i < bih.width * bih.height; i++ ) {
       /*
        * Ovo mozda izgleda cudno, to sto se komponente boje citaju u suprotnom
        * redosledu, tj. prvo plava, pa zelena, pa crvena, ali tako pise u
@@ -117,13 +117,13 @@ void image_read(Image *image, char *filename) {
       image->pixels[3 * i + 1] = g;
       image->pixels[3 * i + 2] = b;
     }
-  else if (bih.bitcount == 32)
+  else if ( bih.bitcount == 32 )
     /*
      * Ako se po pikselu cita 32 bita = 4 bajta informacija, pretpostavljamo
      * da oni (ta 4 bajta) predstavljaju R, G, B i A komponentu boje (1 bajt po
      * komponenti).
      */
-    for (i = 0; i < bih.width * bih.height; i++) {
+    for ( i = 0; i < bih.width * bih.height; i++ ) {
       fread(&b, sizeof(char), 1, file);
       fread(&g, sizeof(char), 1, file);
       fread(&r, sizeof(char), 1, file);

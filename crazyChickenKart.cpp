@@ -176,16 +176,16 @@ int main(int argc, char** argv) {
 
   /* Inicijalizacija pocetnih pozicija blokova okoline,prepreka i zvezdica */
 
-  for (int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24) blockPosition[i] = j;
+  for ( int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24 ) blockPosition[i] = j;
 
   srand(time(NULL));
-  for (int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40) {
+  for ( int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40 ) {
     obstacle[i].x     = j;
     obstacle[i].type  = rand() % 3;
     obstacle[i].track = rand() % 3 - 1;
   }
 
-  for (int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250) {
+  for ( int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250 ) {
     stars[i].x     = j;
     stars[i].track = rand() % 3 - 1;
     stars[i].goUp  = false;
@@ -217,7 +217,7 @@ int main(int argc, char** argv) {
 
   /* Provera da li je engine uspesno pokrenut */
 
-  if (!engine) {
+  if ( !engine ) {
     cerr << "Greska pri pokretanju engine!" << endl;
     return -1;
   }
@@ -230,7 +230,7 @@ int main(int argc, char** argv) {
 }
 
 void on_keyboard(unsigned char key, int x, int y) {
-  switch (key) {
+  switch ( key ) {
     case 'r':
       resetAllParameters();
       glutPostRedisplay();
@@ -239,14 +239,14 @@ void on_keyboard(unsigned char key, int x, int y) {
     case 'S': animationOngoing = 0; break;
     case 'g':
     case 'G':
-      if (!pressedStart) {
+      if ( !pressedStart ) {
         glutDisplayFunc(on_display);
         keyGuideScreen = false;
         pressedStart   = true;
-        if (!driveAnimation && cameraAnimation == 0) {
+        if ( !driveAnimation && cameraAnimation == 0 ) {
           driveAnimation = 1;
           glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID1);
-        } else if (cameraAnimation)
+        } else if ( cameraAnimation )
           glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
       }
       break;
@@ -254,7 +254,7 @@ void on_keyboard(unsigned char key, int x, int y) {
     case 'P': pause = !pause; break;
     case 'q':
     case 'Q':
-      if (takeOffRoof) {
+      if ( takeOffRoof ) {
         putOnRoof   = true;
         takeOffRoof = false;
       } else {
@@ -264,40 +264,40 @@ void on_keyboard(unsigned char key, int x, int y) {
       break;
     case 'e': activateSpoiler = true; break;
     case 'f':
-      if (thirdPerson)
+      if ( thirdPerson )
         thirdPerson = false;
       else
         thirdPerson = true;
       break;
     case 'd':
     case 'D':
-      if (driveAnimation) {
+      if ( driveAnimation ) {
         goRight = true;
         goLeft  = false;
 
-        if (track != 1) track += 1;
+        if ( track != 1 ) track += 1;
 
         glutPostRedisplay();
       }
       break;
     case 'a':
     case 'A':
-      if (driveAnimation) {
+      if ( driveAnimation ) {
         goLeft  = true;
         goRight = false;
 
-        if (track != -1) track -= 1;
+        if ( track != -1 ) track -= 1;
 
         glutPostRedisplay();
       }
       break;
     case SPACEBAR:
-      if (!goPressed && driveAnimation) goPressed = true;
+      if ( !goPressed && driveAnimation ) goPressed = true;
 
       break;
     case 'k':
     case 'K':
-      if (!godMode) {
+      if ( !godMode ) {
         godMode = true;
         engine->play2D("Sounds/laugh.wav");
         engine->play2D("Sounds/siren.wav", true);
@@ -309,27 +309,27 @@ void on_keyboard(unsigned char key, int x, int y) {
       break;
     case 'h':
     case 'H':
-      if (!endAnimation) engine->play2D("Sounds/horn.wav");
+      if ( !endAnimation ) engine->play2D("Sounds/horn.wav");
       break;
     case ESC: exit(0); break;
   }
 }
 
 void onSpecialKeyPress(int key, int x, int y) {
-  switch (key) {
+  switch ( key ) {
     case GLUT_KEY_RIGHT:
-      if (driveAnimation) {
+      if ( driveAnimation ) {
         goRight = true;
         goLeft  = false;
-        if (track != 1) track += 1;
+        if ( track != 1 ) track += 1;
         glutPostRedisplay();
       }
       break;
     case GLUT_KEY_LEFT:
-      if (driveAnimation) {
+      if ( driveAnimation ) {
         goLeft  = true;
         goRight = false;
-        if (track != -1) track -= 1;
+        if ( track != -1 ) track -= 1;
         glutPostRedisplay();
       }
       break;
@@ -337,35 +337,35 @@ void onSpecialKeyPress(int key, int x, int y) {
 }
 
 void onTimer(int id) {
-  if (!pause) {
+  if ( !pause ) {
     /* Promene parametara za skidanje krova,aktiviranje spojlera */
 
-    if (roofParameter >= 0 && takeOffRoof) roofParameter -= 0.06;
+    if ( roofParameter >= 0 && takeOffRoof ) roofParameter -= 0.06;
 
-    if (roofParameter <= 10.25 && putOnRoof) roofParameter += 0.06;
+    if ( roofParameter <= 10.25 && putOnRoof ) roofParameter += 0.06;
 
-    if (activateSpoiler) spoilerParameter += 0.05;
+    if ( activateSpoiler ) spoilerParameter += 0.05;
 
-    if (id == TIMER_ID1) {
-      if (goPressed) {
+    if ( id == TIMER_ID1 ) {
+      if ( goPressed ) {
         tiresParameter += 2;
         starRotationParameter += 5;
 
         /* Uvecavanje brzine kretanja */
 
-        if (movementSpeed < 1 && !endScreen) {
+        if ( movementSpeed < 1 && !endScreen ) {
           movementSpeed += 0.005;
           score += 1;
-        } else if (movementSpeed < 1.5 && !endScreen) {
+        } else if ( movementSpeed < 1.5 && !endScreen ) {
           movementSpeed += 0.0025;
           score += 2;
-        } else if (movementSpeed < 3 && !endScreen) {
+        } else if ( movementSpeed < 3 && !endScreen ) {
           movementSpeed += 0.001;
           score += 3;
-        } else if (!endScreen)
+        } else if ( !endScreen )
           score += 5;
 
-        if (score > 15000) {
+        if ( score > 15000 ) {
           driveAnimation = 0;
           endAnimation   = 1;
           winScreen      = 1;
@@ -377,81 +377,81 @@ void onTimer(int id) {
            Ako pokazivac za prvi blok pokazuje na poslednji blok(9),njega
            prebacujemo da pokazuje na prvi blok(0) */
 
-        for (int i = 0; i < BLOCK_NUMBER; i++)
+        for ( int i = 0; i < BLOCK_NUMBER; i++ )
           blockPosition[i] -= movementSpeed;
 
-        if (blockPosition[firstBlock] <= -72) {
+        if ( blockPosition[firstBlock] <= -72 ) {
           blockPosition[firstBlock] = blockPosition[lastBlock] + 24;
           lastBlock                 = firstBlock;
           firstBlock++;
 
-          if (firstBlock == BLOCK_NUMBER) firstBlock = 0;
+          if ( firstBlock == BLOCK_NUMBER ) firstBlock = 0;
         }
 
         /* Vrsi se promena pozicija prepreka po istom principu kao sa blokovima
          */
 
-        for (int i = 0; i < OBSTACLE_NUMBER; i++)
+        for ( int i = 0; i < OBSTACLE_NUMBER; i++ )
           obstacle[i].x -= movementSpeed;
 
-        if (obstacle[firstObstacle].x <= -20) {
+        if ( obstacle[firstObstacle].x <= -20 ) {
           obstacle[firstObstacle].x = obstacle[lastObstacle].x + 40;
           lastObstacle              = firstObstacle;
           firstObstacle++;
 
-          if (firstObstacle == OBSTACLE_NUMBER) firstObstacle = 0;
+          if ( firstObstacle == OBSTACLE_NUMBER ) firstObstacle = 0;
         }
 
         /* Vrsi se promena pozicija zvezdica po istom principu kao sa blokovima
          * i preprekama */
 
-        for (int i = 0; i < STAR_NUMBER; i++) {
+        for ( int i = 0; i < STAR_NUMBER; i++ ) {
           stars[i].x -= movementSpeed;
 
-          if (stars[i].goUp && stars[i].y < 4) stars[i].y += 1;
+          if ( stars[i].goUp && stars[i].y < 4 ) stars[i].y += 1;
         }
 
-        if (stars[firstStar].x <= -10 && stars[firstStar].goUp == false) {
+        if ( stars[firstStar].x <= -10 && stars[firstStar].goUp == false ) {
           starsStreak = 1;
         }
 
-        if (stars[firstStar].x <= -20) {
+        if ( stars[firstStar].x <= -20 ) {
           stars[firstStar].goUp = false;
           stars[firstStar].y    = 0;
           stars[firstStar].x    = stars[lastStar].x + 250;
           lastStar              = firstStar;
           firstStar++;
 
-          if (firstStar == STAR_NUMBER) firstStar = 0;
+          if ( firstStar == STAR_NUMBER ) firstStar = 0;
         }
 
         /* Detektovanje kolizije sa preprekama se aktivira u
      zavisnosti od bool promenljive godMode(da li je
      aktiviran stit oko buggy-ja) */
 
-        if (!godMode) detectTrapColision();
+        if ( !godMode ) detectTrapColision();
 
         /* Detektovanje kolizije sa zvezdicama, naredbom
            if(!stars[firstStar].goUp)
            izbegavamo ponavljanje detekcije kolizije iste zvezdice */
 
-        if (!stars[firstStar].goUp) detectStarColision();
+        if ( !stars[firstStar].goUp ) detectStarColision();
 
         /* Promene pozicije buggy-ja */
 
         adjustPositionParameters();
       }
 
-    } else if (id == TIMER_ID2) {
+    } else if ( id == TIMER_ID2 ) {
       cameraParameter += 3.25;
-      if (cameraParameter > 1130) {
+      if ( cameraParameter > 1130 ) {
         cameraAnimation = 0;
         driveAnimation  = 1;
       }
-    } else if (id == TIMER_ID3) {
-      if (winScreen) {
+    } else if ( id == TIMER_ID3 ) {
+      if ( winScreen ) {
         engine->removeSoundSource("Sounds/siren.wav");
-        if (!claps) {
+        if ( !claps ) {
           claps = true;
           engine->play2D("Sounds/claps.wav");
         }
@@ -459,43 +459,43 @@ void onTimer(int id) {
       } else {
         thirdPerson = true;
 
-        if (activateHole) {
+        if ( activateHole ) {
           holeParameter += 0.1;
 
-          if (holeParameter > 1.2) {
+          if ( holeParameter > 1.2 ) {
             holeRotation += 0.2;
             holeParameter += 0.05;
           }
 
-          if (holeParameter > 10) {
+          if ( holeParameter > 10 ) {
             glDisable(GL_LIGHTING);
             glutDisplayFunc(displayEndScreen);
-            if (!endScreen) {
+            if ( !endScreen ) {
               engine->play2D("Sounds/yousuck.wav");
               endScreen = true;
             }
           }
-        } else if (activateXtrap) {
-          if (xTrapHorizontal < 75) {
+        } else if ( activateXtrap ) {
+          if ( xTrapHorizontal < 75 ) {
             xTrapHorizontal += 0.5;
-            if (xTrapHorizontal > 25) xTrapRotation += 0.5;
+            if ( xTrapHorizontal > 25 ) xTrapRotation += 0.5;
           } else {
             glDisable(GL_LIGHTING);
             glutDisplayFunc(displayEndScreen);
-            if (!endScreen) {
+            if ( !endScreen ) {
               engine->play2D("Sounds/yousuck.wav");
               endScreen = true;
             }
           }
 
-          if (xTrapVertical > -2) xTrapVertical -= 0.05;
+          if ( xTrapVertical > -2 ) xTrapVertical -= 0.05;
         } else {
-          if (bombParameter < 5.7)
+          if ( bombParameter < 5.7 )
             bombParameter += 0.3;
           else {
             glDisable(GL_LIGHTING);
             glutDisplayFunc(displayEndScreen);
-            if (!endScreen) {
+            if ( !endScreen ) {
               engine->play2D("Sounds/yousuck.wav");
               endScreen = true;
             }
@@ -506,11 +506,11 @@ void onTimer(int id) {
   }
 
   glutPostRedisplay();
-  if (driveAnimation)
+  if ( driveAnimation )
     glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID1);
-  else if (cameraAnimation)
+  else if ( cameraAnimation )
     glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID2);
-  else if (endAnimation)
+  else if ( endAnimation )
     glutTimerFunc(TIMER_INTERVAL, onTimer, TIMER_ID3);
 }
 
@@ -538,8 +538,8 @@ void on_display() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if (driveAnimation || endAnimation) {
-    if (thirdPerson)
+  if ( driveAnimation || endAnimation ) {
+    if ( thirdPerson )
       gluLookAt(-5, 3, movementParameter, 120, 0, movementParameter, 0, 1, 0);
     else
       gluLookAt(1, 0.8, -0.3 + movementParameter, 120, 0, movementParameter, 0,
@@ -554,7 +554,7 @@ void on_display() {
   glEnable(GL_MULTISAMPLE);
   glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
 
-  if (driveAnimation && thirdPerson) {
+  if ( driveAnimation && thirdPerson ) {
     glPushMatrix();
     glDisable(GL_LIGHTING);
     displayScore(score, starsCollected, starsStreak);
@@ -603,7 +603,7 @@ void on_display() {
   glEnd();
   glPopMatrix();
 
-  if (!endAnimation) {
+  if ( !endAnimation ) {
     glPushMatrix();
     glTranslatef(0, 0.2, movementParameter);
 
@@ -680,7 +680,7 @@ void on_display() {
   drawFixedParts();
   glPopMatrix();
 
-  if (godMode) {
+  if ( godMode ) {
     glPushMatrix();
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
@@ -715,33 +715,33 @@ void lightInitialization() {
 
 void adjustPositionParameters() {
   /* Iz srednje u desnu */
-  if (goRight && track == 1) {
+  if ( goRight && track == 1 ) {
     movementParameter += 0.2;
-    if (movementParameter >= MAX_RIGHT) {
+    if ( movementParameter >= MAX_RIGHT ) {
       movementParameter = MAX_RIGHT;
       goRight           = false;
     }
   }
 
-  if (goRight && track == 0) {
+  if ( goRight && track == 0 ) {
     movementParameter += 0.2;
-    if (movementParameter >= 0) {
+    if ( movementParameter >= 0 ) {
       movementParameter = 0;
       goRight           = false;
     }
   }
 
-  if (goLeft && track == -1) {
+  if ( goLeft && track == -1 ) {
     movementParameter -= 0.2;
-    if (movementParameter <= MAX_LEFT) {
+    if ( movementParameter <= MAX_LEFT ) {
       movementParameter = MAX_LEFT;
       goLeft            = false;
     }
   }
 
-  if (goLeft && track == 0) {
+  if ( goLeft && track == 0 ) {
     movementParameter -= 0.2;
-    if (movementParameter <= 0) {
+    if ( movementParameter <= 0 ) {
       movementParameter = 0;
       goLeft            = false;
     }
@@ -791,15 +791,15 @@ void resetAllParameters() {
   engine->removeSoundSource("Sounds/claps.wav");
   engine->play2D("Sounds/song.wav", true);
 
-  for (int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24) blockPosition[i] = j;
+  for ( int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24 ) blockPosition[i] = j;
 
-  for (int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40) {
+  for ( int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40 ) {
     obstacle[i].x     = j;
     obstacle[i].type  = rand() % 3;
     obstacle[i].track = rand() % 3 - 1;
   }
 
-  for (int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250) {
+  for ( int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250 ) {
     stars[i].x     = j;
     stars[i].track = rand() % 3 - 1;
     stars[i].goUp  = false;
@@ -810,13 +810,14 @@ void resetAllParameters() {
 }
 
 void detectTrapColision() {
-  if (obstacle[firstObstacle].x - 1 <= 3 && obstacle[firstObstacle].x + 1 >= 0)
+  if ( obstacle[firstObstacle].x - 1 <= 3 &&
+       obstacle[firstObstacle].x + 1 >= 0 )
 
-    switch (obstacle[firstObstacle].track) {
+    switch ( obstacle[firstObstacle].track ) {
       case 0:
-        if (movementParameter < 1.8 && movementParameter > -1.8) {
+        if ( movementParameter < 1.8 && movementParameter > -1.8 ) {
           cout << "Udario si u: ";
-          switch (obstacle[firstObstacle].type) {
+          switch ( obstacle[firstObstacle].type ) {
             case 0:
               cout << "X zamku" << endl;
               driveAnimation = 0;
@@ -842,9 +843,9 @@ void detectTrapColision() {
         }
         break;
       case 1:
-        if (movementParameter < 5.4 && movementParameter > 1.8) {
+        if ( movementParameter < 5.4 && movementParameter > 1.8 ) {
           cout << "Udario si u: ";
-          switch (obstacle[firstObstacle].type) {
+          switch ( obstacle[firstObstacle].type ) {
             case 0:
               cout << "X zamku" << endl;
               driveAnimation = 0;
@@ -870,9 +871,9 @@ void detectTrapColision() {
         }
         break;
       case -1:
-        if (movementParameter > -5.4 && movementParameter < -1.8) {
+        if ( movementParameter > -5.4 && movementParameter < -1.8 ) {
           cout << "Udario si u: ";
-          switch (obstacle[firstObstacle].type) {
+          switch ( obstacle[firstObstacle].type ) {
             case 0:
               cout << "X zamku" << endl;
               driveAnimation = 0;
@@ -901,15 +902,15 @@ void detectTrapColision() {
 }
 
 void detectStarColision() {
-  if (stars[firstStar].x <= 3 && stars[firstStar].x >= 0) {
-    switch (stars[firstStar].track) {
+  if ( stars[firstStar].x <= 3 && stars[firstStar].x >= 0 ) {
+    switch ( stars[firstStar].track ) {
       case 0:
-        if (movementParameter < 1.8 && movementParameter > -1.8) {
+        if ( movementParameter < 1.8 && movementParameter > -1.8 ) {
           starsCollected += 1;
           stars[firstStar].goUp = true;
           score += STAR_POINTS * starsStreak;
 
-          if (starsStreak < 5) starsStreak += 1;
+          if ( starsStreak < 5 ) starsStreak += 1;
 
           cout << starsStreak << endl;
           engine->play2D("Sounds/star.wav");
@@ -918,12 +919,12 @@ void detectStarColision() {
         }
         break;
       case 1:
-        if (movementParameter < 5.4 && movementParameter > 1.8) {
+        if ( movementParameter < 5.4 && movementParameter > 1.8 ) {
           starsCollected += 1;
           stars[firstStar].goUp = true;
           score += STAR_POINTS * starsStreak;
 
-          if (starsStreak < 5) starsStreak += 1;
+          if ( starsStreak < 5 ) starsStreak += 1;
 
           cout << starsStreak << endl;
           engine->play2D("Sounds/star.wav");
@@ -931,12 +932,12 @@ void detectStarColision() {
         }
         break;
       case -1:
-        if (movementParameter > -5.4 && movementParameter < -1.8) {
+        if ( movementParameter > -5.4 && movementParameter < -1.8 ) {
           starsCollected += 1;
           stars[firstStar].goUp = true;
           score += STAR_POINTS * starsStreak;
 
-          if (starsStreak < 5) starsStreak += 1;
+          if ( starsStreak < 5 ) starsStreak += 1;
 
           cout << starsStreak << endl;
           engine->play2D("Sounds/star.wav");
@@ -1150,11 +1151,11 @@ void displayEndScreen() {
   glPushMatrix();
 
   glRasterPos2f(windowWidth - 1100, windowHeight - 825);
-  for (int i = 0; i < scoreString.length(); i++)
+  for ( int i = 0; i < scoreString.length(); i++ )
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, scoreString[i]);
 
   glRasterPos2f(windowWidth - 1170, windowHeight - 860);
-  for (int i = 0; i < leftToFinish.length(); i++)
+  for ( int i = 0; i < leftToFinish.length(); i++ )
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, leftToFinish[i]);
 
   glEnable(GL_TEXTURE_2D);
@@ -1242,15 +1243,15 @@ void displayScore(int score, int starsCollected, int starsStreak) {
   glPushMatrix();
 
   glRasterPos2f(windowWidth - 150, windowHeight - 47);
-  for (int i = 0; i < scoreString.length(); i++)
+  for ( int i = 0; i < scoreString.length(); i++ )
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, scoreString[i]);
 
   glRasterPos2f(windowWidth - 150, windowHeight - 85);
-  for (int i = 0; i < starsString.length(); i++)
+  for ( int i = 0; i < starsString.length(); i++ )
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, starsString[i]);
 
   glRasterPos2f(windowWidth - 105, windowHeight - 123);
-  for (int i = 0; i < streakString.length(); i++)
+  for ( int i = 0; i < streakString.length(); i++ )
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, streakString[i]);
 
   glEnable(GL_TEXTURE_2D);

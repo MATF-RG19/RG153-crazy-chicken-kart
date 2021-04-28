@@ -7,7 +7,7 @@
 #include "CIrrKlangAudioStreamMP3.h"
 
 #include <memory.h>
-#include <stdlib.h>  // free, malloc and realloc
+#include <stdlib.h>   // free, malloc and realloc
 #include <string.h>
 
 namespace irrklang {
@@ -22,12 +22,12 @@ CIrrKlangAudioStreamMP3::CIrrKlangAudioStreamMP3(IFileReader* file)
       EndOfFileReached(0),
       FileBegin(0),
       Position(0) {
-  if (File) {
+  if ( File ) {
     File->grab();
 
     TheMPAuDecContext = new MPAuDecContext();
 
-    if (!TheMPAuDecContext || mpaudec_init(TheMPAuDecContext) < 0) {
+    if ( !TheMPAuDecContext || mpaudec_init(TheMPAuDecContext) < 0 ) {
       File->drop();
       File = 0;
       delete TheMPAuDecContext;
@@ -39,7 +39,7 @@ CIrrKlangAudioStreamMP3::CIrrKlangAudioStreamMP3(IFileReader* file)
 
     DecodeBuffer = new ik_u8[MPAUDEC_MAX_AUDIO_FRAME_SIZE];
 
-    if (File->getSize() > 0) {
+    if ( File->getSize() > 0 ) {
       // seekable file, now parse file to get size
       // (needed to make it possible for the engine to loop a stream correctly)
 
@@ -48,12 +48,12 @@ CIrrKlangAudioStreamMP3::CIrrKlangAudioStreamMP3(IFileReader* file)
       TheMPAuDecContext->parse_only = 1;
       Format.FrameCount             = 0;
 
-      while (!EndOfFileReached) {
-        if (!decodeFrame()) break;
+      while ( !EndOfFileReached ) {
+        if ( !decodeFrame() ) break;
 
         Format.FrameCount += TheMPAuDecContext->frame_size;
 
-        if (!EndOfFileReached /*&& File->isSeekable()*/) {
+        if ( !EndOfFileReached /*&& File->isSeekable()*/ ) {
           // to be able to seek in the stream, store offsets and sizes
 
           SFramePositionData data;
@@ -68,9 +68,9 @@ CIrrKlangAudioStreamMP3::CIrrKlangAudioStreamMP3(IFileReader* file)
       TheMPAuDecContext->parse_only = 0;
       setPosition(0);
     } else
-      decodeFrame();  // decode first frame to read audio format
+      decodeFrame();   // decode first frame to read audio format
 
-    if (!TheMPAuDecContext->channels || !TheMPAuDecContext->sample_rate) {
+    if ( !TheMPAuDecContext->channels || !TheMPAuDecContext->sample_rate ) {
       File->drop();
       File = 0;
       delete TheMPAuDecContext;
@@ -81,9 +81,9 @@ CIrrKlangAudioStreamMP3::CIrrKlangAudioStreamMP3(IFileReader* file)
 }
 
 CIrrKlangAudioStreamMP3::~CIrrKlangAudioStreamMP3() {
-  if (File) File->drop();
+  if ( File ) File->drop();
 
-  if (TheMPAuDecContext) {
+  if ( TheMPAuDecContext ) {
     mpaudec_clear(TheMPAuDecContext);
     delete TheMPAuDecContext;
   }
@@ -102,13 +102,13 @@ ik_s32 CIrrKlangAudioStreamMP3::readFrames(void* target,
   int framesRead = 0;
   ik_u8* out     = (ik_u8*)target;
 
-  while (framesRead < frameCountToRead) {
+  while ( framesRead < frameCountToRead ) {
     // no more samples?  ask the MP3 for more
-    if (DecodedQueue.getSize() < frameSize) {
-      if (!decodeFrame() || EndOfFileReached) return framesRead;
+    if ( DecodedQueue.getSize() < frameSize ) {
+      if ( !decodeFrame() || EndOfFileReached ) return framesRead;
 
       // if the buffer is still empty, we are done
-      if (DecodedQueue.getSize() < frameSize) return framesRead;
+      if ( DecodedQueue.getSize() < frameSize ) return framesRead;
     }
 
     const int framesLeft   = frameCountToRead - framesRead;
@@ -128,12 +128,12 @@ ik_s32 CIrrKlangAudioStreamMP3::readFrames(void* target,
 bool CIrrKlangAudioStreamMP3::decodeFrame() {
   int outputSize = 0;
 
-  while (!outputSize) {
-    if (InputPosition == InputLength) {
+  while ( !outputSize ) {
+    if ( InputPosition == InputLength ) {
       InputPosition = 0;
       InputLength   = File->read(InputBuffer, IKP_MP3_INPUT_BUFFER_SIZE);
 
-      if (InputLength == 0) {
+      if ( InputLength == 0 ) {
         EndOfFileReached = true;
         return true;
       }
@@ -143,26 +143,26 @@ bool CIrrKlangAudioStreamMP3::decodeFrame() {
         TheMPAuDecContext, (ik_s16*)DecodeBuffer, &outputSize,
         (ik_u8*)InputBuffer + InputPosition, InputLength - InputPosition);
 
-    if (rv < 0) return false;
+    if ( rv < 0 ) return false;
 
     InputPosition += rv;
-  }  // end while
+  }   // end while
 
-  if (!FirstFrameRead) {
+  if ( !FirstFrameRead ) {
     Format.ChannelCount = TheMPAuDecContext->channels;
     Format.SampleRate   = TheMPAuDecContext->sample_rate;
     Format.SampleFormat = ESF_S16;
-    Format.FrameCount   = -1;  // unknown lenght
+    Format.FrameCount   = -1;   // unknown lenght
 
     FirstFrameRead = true;
-  } else if (TheMPAuDecContext->channels != Format.ChannelCount ||
-             TheMPAuDecContext->sample_rate != Format.SampleRate) {
+  } else if ( TheMPAuDecContext->channels != Format.ChannelCount ||
+              TheMPAuDecContext->sample_rate != Format.SampleRate ) {
     // Can't handle format changes mid-stream.
     return false;
   }
 
-  if (!TheMPAuDecContext->parse_only) {
-    if (outputSize < 0) {
+  if ( !TheMPAuDecContext->parse_only ) {
+    if ( outputSize < 0 ) {
       // Couldn't decode this frame.  Too bad, already lost it.
       // This should only happen when seeking.
 
@@ -182,12 +182,12 @@ setPosition(0) would be called. This is usually done be the sound engine to
 loop a stream after if has reached the end. Return true if sucessful and 0 if
 not. */
 bool CIrrKlangAudioStreamMP3::setPosition(ik_s32 pos) {
-  if (!File || !TheMPAuDecContext) return false;
+  if ( !File || !TheMPAuDecContext ) return false;
 
-  if (pos == 0) {
+  if ( pos == 0 ) {
     // usually done for looping, just reset to start
 
-    File->seek(FileBegin);  // skip possible ID3 header
+    File->seek(FileBegin);   // skip possible ID3 header
 
     EndOfFileReached = false;
 
@@ -216,10 +216,10 @@ bool CIrrKlangAudioStreamMP3::setPosition(ik_s32 pos) {
     int target_frame  = 0;
     int frame_count   = (int)FramePositionData.size();
 
-    while (target_frame < frame_count) {
+    while ( target_frame < frame_count ) {
       int frame_size = FramePositionData[target_frame].size;
 
-      if (pos <= scan_position + frame_size)
+      if ( pos <= scan_position + frame_size )
         break;
       else {
         scan_position += frame_size;
@@ -234,8 +234,8 @@ bool CIrrKlangAudioStreamMP3::setPosition(ik_s32 pos) {
     File->seek(FramePositionData[target_frame].offset, false);
 
     int i;
-    for (i = 0; i < target_frame; i++) {
-      if (i >= (int)FramePositionData.size()) {
+    for ( i = 0; i < target_frame; i++ ) {
+      if ( i >= (int)FramePositionData.size() ) {
         // internal error
         setPosition(0);
         return false;
@@ -244,13 +244,13 @@ bool CIrrKlangAudioStreamMP3::setPosition(ik_s32 pos) {
       Position += FramePositionData[i].size;
     }
 
-    if (!decodeFrame() || EndOfFileReached) {
+    if ( !decodeFrame() || EndOfFileReached ) {
       setPosition(0);
       return false;
     }
 
-    int frames_to_consume = pos - Position;  // PCM frames now
-    if (frames_to_consume > 0) {
+    int frames_to_consume = pos - Position;   // PCM frames now
+    if ( frames_to_consume > 0 ) {
       ik_u8* buf = new ik_u8[frames_to_consume * Format.getFrameSize()];
       readFrames(buf, frames_to_consume);
       delete[] buf;
@@ -276,12 +276,12 @@ int CIrrKlangAudioStreamMP3::QueueBuffer::getSize() { return Size; }
 void CIrrKlangAudioStreamMP3::QueueBuffer::write(const void* buffer, int size) {
   bool needRealloc = false;
 
-  while (size + Size > Capacity) {
+  while ( size + Size > Capacity ) {
     Capacity *= 2;
     needRealloc = true;
   }
 
-  if (needRealloc) {
+  if ( needRealloc ) {
     Buffer = (ik_u8*)realloc(Buffer, Capacity);
   }
 
@@ -305,7 +305,8 @@ void CIrrKlangAudioStreamMP3::skipID3IfNecessary() {
   char header[10];
   int read = File->read(&header, 10);
 
-  if (read == 10 && header[0] == 'I' && header[1] == 'D' && header[2] == '3') {
+  if ( read == 10 && header[0] == 'I' && header[1] == 'D' &&
+       header[2] == '3' ) {
     int versionMajor = header[3];
     int versionMinor = header[4];
     int flags        = header[5];
@@ -319,7 +320,7 @@ void CIrrKlangAudioStreamMP3::skipID3IfNecessary() {
     size |= (header[8] & 0x7f) << (1 * 7);
     size |= (header[9] & 0x7f);
 
-    size += 10;  // header size
+    size += 10;   // header size
 
     FileBegin = size;
     File->seek(FileBegin);
@@ -327,4 +328,4 @@ void CIrrKlangAudioStreamMP3::skipID3IfNecessary() {
     File->seek(0);
 }
 
-}  // end namespace irrklang
+}   // end namespace irrklang

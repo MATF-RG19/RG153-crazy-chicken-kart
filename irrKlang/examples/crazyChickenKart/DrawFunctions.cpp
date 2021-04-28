@@ -1046,7 +1046,7 @@ void drawRoof() {
 void drawBuggy() {
   glColor3f(0.1, 0.1, 0.1);
 
-  if (!activateXtrap) {
+  if ( !activateXtrap ) {
     glPushMatrix();
     glScalef(17, 17, 17);
     drawTiresForBuggy();
@@ -3084,7 +3084,7 @@ void drawBuggy() {
   // Stop svetla
 
   glPushMatrix();
-  if (!goRight)
+  if ( !goRight )
     glColor3f(1, 0, 0);
   else
     glColor3f(1, 0.6, 0);
@@ -3099,7 +3099,7 @@ void drawBuggy() {
   glPopMatrix();
 
   glPushMatrix();
-  if (!goLeft)
+  if ( !goLeft )
     glColor3f(1, 0, 0);
   else
     glColor3f(1, 0.6, 0);
@@ -3974,7 +3974,7 @@ void drawFixedParts() {
     drawKart();
   glPopMatrix();*/
 
-  if (activateBomb) {
+  if ( activateBomb ) {
     glPushMatrix();
     glColor3f(1, 0, 0);
     glTranslatef(1.5, 0, movementParameter);
@@ -3986,10 +3986,10 @@ void drawFixedParts() {
   glTranslatef(0, 0.2, movementParameter);
   // glRotatef(-turnParameter,0,1,0);
   glScalef(0.15, 0.15, 0.15);
-  if (activateHole) {
+  if ( activateHole ) {
     glTranslatef(6 * holeParameter, 0.15 - 1.2 * holeRotation, 0);
     glRotatef(8 * holeRotation, 0, 0, -1);
-  } else if (activateXtrap) {
+  } else if ( activateXtrap ) {
     glTranslatef(xTrapHorizontal, xTrapVertical, 0);
     glRotatef(xTrapRotation, 0, -1, 0);
   }
@@ -4102,14 +4102,14 @@ void drawBlock(int blockNumber) {
   // drawChristmasTree();
   glPopMatrix();
 
-  if (blockNumber % 2 == 0) {
+  if ( blockNumber % 2 == 0 ) {
     glPushMatrix();
     glTranslatef(0, 0.105, -6);
     drawElectricPole();
     glPopMatrix();
   }
 
-  if (blockNumber == 0 || blockNumber == 4 || blockNumber == 7) {
+  if ( blockNumber == 0 || blockNumber == 4 || blockNumber == 7 ) {
     glPushMatrix();
     glTranslatef(0, 2, -20);
     glRotatef(-45, 0, 1, 0);
@@ -4121,7 +4121,7 @@ void drawBlock(int blockNumber) {
   glTranslatef(1, 0, 5.2);
   glScalef(2, 0.1, 0.4);
   drawRedWhiteTrack();
-  for (int i = 0; i < 5; i++) {
+  for ( int i = 0; i < 5; i++ ) {
     glTranslatef(2, 0, 0);
     drawRedWhiteTrack();
   }
@@ -4131,7 +4131,7 @@ void drawBlock(int blockNumber) {
   glTranslatef(1, 0, -5.2);
   glScalef(2, 0.1, 0.4);
   drawRedWhiteTrack();
-  for (int i = 0; i < 5; i++) {
+  for ( int i = 0; i < 5; i++ ) {
     glTranslatef(2, 0, 0);
     drawRedWhiteTrack();
   }
@@ -4141,7 +4141,7 @@ void drawBlock(int blockNumber) {
   glTranslatef(2, 0, 1.8);
   glScalef(4, 0.02, 0.2);
   drawWhiteTracks();
-  for (int i = 0; i < 2; i++) {
+  for ( int i = 0; i < 2; i++ ) {
     glTranslatef(2, 0, 0);
     drawWhiteTracks();
   }
@@ -4151,7 +4151,7 @@ void drawBlock(int blockNumber) {
   glTranslatef(2, 0, -1.8);
   glScalef(4, 0.02, 0.2);
   drawWhiteTracks();
-  for (int i = 0; i < 2; i++) {
+  for ( int i = 0; i < 2; i++ ) {
     glTranslatef(2, 0, 0);
     drawWhiteTracks();
   }
@@ -4307,7 +4307,7 @@ void drawXtrap(void) {
 }
 
 void drawXtrapOnTrack(int track) {
-  switch (track) {
+  switch ( track ) {
     case 0:
       glPushMatrix();
       glScalef(1, 3, 1);
@@ -4357,7 +4357,7 @@ void drawBomb() {
 }
 
 void drawBombOnTrack(int track) {
-  switch (track) {
+  switch ( track ) {
     case 0:
       glPushMatrix();
       glScalef(0.5, 0.5, 0.5);
@@ -4392,7 +4392,7 @@ void drawHole() {
 }
 
 void drawHoleOnTrack(int track) {
-  switch (track) {
+  switch ( track ) {
     case 0:
       glPushMatrix();
       drawHole();
@@ -4414,7 +4414,7 @@ void drawHoleOnTrack(int track) {
 }
 
 void drawObstacle(float x, int type, int track) {
-  switch (type) {
+  switch ( type ) {
     case 0:
       glPushMatrix();
       glTranslatef(x, 0, 0);
@@ -4439,7 +4439,7 @@ void drawObstacle(float x, int type, int track) {
 }
 
 void drawObstacles() {
-  for (int i = 0; i < OBSTACLE_NUMBER; i++) {
+  for ( int i = 0; i < OBSTACLE_NUMBER; i++ ) {
     glPushMatrix();
     drawObstacle(obstacle[i].x, obstacle[i].type, obstacle[i].track);
     glPopMatrix();
@@ -4587,7 +4587,7 @@ void drawStar() {
 void drawStarOnTrack(int track) {
   glTranslatef(0, 1, 0);
 
-  switch (track) {
+  switch ( track ) {
     case 0:
       glPushMatrix();
       glScalef(0.05, 0.05, 0.05);
@@ -4615,7 +4615,7 @@ void drawStarOnTrack(int track) {
 }
 
 void drawStars() {
-  for (int i = 0; i < STAR_NUMBER; i++) {
+  for ( int i = 0; i < STAR_NUMBER; i++ ) {
     glPushMatrix();
     glTranslatef(stars[i].x, stars[i].y, 0);
     drawStarOnTrack(stars[i].track);
@@ -4626,7 +4626,7 @@ void drawStars() {
 void drawCompleteScene() {
   // draw_axes(150);
 
-  for (int i = 0; i < 10; i++) {
+  for ( int i = 0; i < 10; i++ ) {
     glPushMatrix();
     glTranslatef(blockPosition[i], 0, 0);
     drawBlock(i);
