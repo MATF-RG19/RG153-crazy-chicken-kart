@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.16)
 project(crazyChickenKart)
 add_executable(crazyChickenKart crazyChickenKart.cpp DrawFunctions.cpp DrawFunctions.hpp  Textures/image.cpp Textures/image.hpp) 
 
+set(CMAKE_BUILD_TYPE Debug)
+
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 
