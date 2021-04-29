@@ -184,11 +184,15 @@ int main(int argc, char** argv) {
   for ( int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24 ) blockPosition[i] = j;
 
   srand(time(NULL));
-  for ( int i = 0, j = 40, k = 15; i < OBSTACLE_NUMBER ; i++, j += 40, k-- ) {
+  for ( int i = 0, j = 40, k = 15; i < OBSTACLE_NUMBER ; i++, j += 40) {
     obstacle[i].x     = j;
     obstacle[i].type  = rand() % 3;
     obstacle[i].track = rand() % 3 - 1;
-    result = number / k;
+
+    if(--k)
+    {
+      result = number / k;
+    }
   }
 
   for ( int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250 ) {
