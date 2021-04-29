@@ -21,14 +21,14 @@ using namespace std;
 
 // #pragma comment(lib, "irrKlang.lib")
 
-#define FILENAME0 "Textures/navigation.bmp"
-#define FILENAME1 "Textures/speedometer.bmp"
-#define FILENAME2 "Textures/plate.bmp"
-#define FILENAME3 "Textures/sky.bmp"
-#define FILENAME4 "Textures/keyguide.bmp"
-#define FILENAME5 "Textures/scoregui.bmp"
-#define FILENAME6 "Textures/gameover.bmp"
-#define FILENAME7 "Textures/win.bmp"
+#define FILENAME0 "../Textures/navigation.bmp"
+#define FILENAME1 "../Textures/speedometer.bmp"
+#define FILENAME2 "../Textures/plate.bmp"
+#define FILENAME3 "../Textures/sky.bmp"
+#define FILENAME4 "../Textures/keyguide.bmp"
+#define FILENAME5 "../Textures/scoregui.bmp"
+#define FILENAME6 "../Textures/gameover.bmp"
+#define FILENAME7 "../Textures/win.bmp"
 
 /* Identifikatori tekstura. */
 
