@@ -876,6 +876,8 @@ void drawTiresForBuggy() {
   glTranslatef(0, 0, -0.1);
   gluDisk(quad1, 0, 0.05, 20, 20);
   glPopMatrix();
+
+  free(quad1);
 }
 
 void drawRoof() {
@@ -1042,6 +1044,8 @@ void drawRoof() {
   glPopMatrix();
 
   glDisable(GL_CLIP_PLANE2);
+
+  free(quad5);
 }
 
 void drawBuggy() {
@@ -3099,6 +3103,7 @@ void drawBuggy() {
 
   glPopMatrix();
 
+
   glPushMatrix();
   if ( !goLeft )
     glColor3f(1, 0, 0);
@@ -3112,6 +3117,8 @@ void drawBuggy() {
   gluDisk(quad4, 0.2, 0.4, 20, 20);
 
   glPopMatrix();
+
+  free(quad4);
 
   /*
 
@@ -3148,6 +3155,8 @@ glPopMatrix();
   glColor3f(0.2, 0.2, 0.2);
   gluCylinder(quad6, 0.1, 0.1, 1.5, 20, 20);
   glPopMatrix();
+
+  free(quad6);
 
   // Brzinometar
   GLUquadric* quad7 = gluNewQuadric();
@@ -3197,6 +3206,7 @@ glPopMatrix();
   glutSolidCube(1);
 
   glPopMatrix();
+
 
   // Dugmici za radio
 
@@ -3491,6 +3501,8 @@ glPopMatrix();
   gluDisk(quad7, 0, 0.3, 20, 20);
   glPopMatrix();
 
+  free(quad7);
+
   // Retrovizori
 
   // Levi
@@ -3636,6 +3648,9 @@ void drawFence() {
   glScalef(2, 0.05, 0.1);
   glutSolidCube(2);
   glPopMatrix();
+
+  free(quad3);
+  
 }
 
 void drawTrack() {
@@ -3674,6 +3689,8 @@ void drawChristmasTree() {
   glutSolidCone(0.9, 1.2, 20, 20);
 
   glPopMatrix();
+
+  free(quad4);
 }
 
 void drawTree() {
@@ -3795,6 +3812,8 @@ void drawElectricPole() {
   glEnd();
 
   glEnable(GL_LIGHTING);
+
+  free(quad8);
 }
 
 void drawHouse() {
@@ -3994,6 +4013,8 @@ void drawHouse() {
   glScalef(0.5, 1.5, 1);
   gluDisk(quad10, 0, 1, 20, 20);
   glPopMatrix();
+
+  free(quad10);
 }
 
 void drawFixedParts() {
@@ -4388,6 +4409,8 @@ void drawBomb() {
   glTranslatef(0, 0, 0.15);
   gluDisk(quad3, 0, 0.1, 20, 20);
   glPopMatrix();
+
+  free(quad3);
 }
 
 void drawBombOnTrack(int track) {
@@ -4423,6 +4446,8 @@ void drawHole() {
   glRotatef(-90, 1, 0, 0);
   gluDisk(quad9, 0, 1.3, 50, 50);
   glPopMatrix();
+
+  free(quad9);
 }
 
 void drawHoleOnTrack(int track) {
