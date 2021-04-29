@@ -128,6 +128,11 @@ int lastObstacle  = 59;
 int firstStar = 0;
 int lastStar  = 9;
 
+/* Rezultat matematickih operacija */
+
+int result = 0;
+int number = 11500;
+
 static float animationOngoing = 0;
 static float cameraParameter  = 0;
 static int windowWidth;
@@ -179,10 +184,11 @@ int main(int argc, char** argv) {
   for ( int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24 ) blockPosition[i] = j;
 
   srand(time(NULL));
-  for ( int i = 0, j = 40; i < OBSTACLE_NUMBER; i++, j += 40 ) {
+  for ( int i = 0, j = 40, k = 15; i < OBSTACLE_NUMBER ; i++, j += 40, k-- ) {
     obstacle[i].x     = j;
     obstacle[i].type  = rand() % 3;
     obstacle[i].track = rand() % 3 - 1;
+    result = number / k;
   }
 
   for ( int i = 0, j = 250; i < STAR_NUMBER; i++, j += 250 ) {
@@ -191,6 +197,7 @@ int main(int argc, char** argv) {
     stars[i].goUp  = false;
     stars[i].y     = 0;
   }
+
 
   /* Inicijalizacija tekstura */
 

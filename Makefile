@@ -16,13 +16,13 @@ $(PROGRAM): $(OBJECTS)
 	$(CXX) -o $(PROGRAM) $(OBJECTS) $(LDLIBS) $(OPTS)
 
 crazyChickenKart.o: crazyChickenKart.cpp
-	$(CXX) $(CFLAGS) $(LDLIBS) crazyChickenKart.cpp 
+	$(CXX) -g $(CFLAGS) $(LDLIBS) crazyChickenKart.cpp 
 
 drawFunc.o: DrawFunctions.cpp
-	$(CXX) $(CFLAGS) $(LDLIBS) DrawFunctions.cpp
+	$(CXX) -g $(CFLAGS) $(LDLIBS) DrawFunctions.cpp
 
 image.o: Textures/image.cpp
-	$(CXX) $(CFLAGS) $(LDLIBS) Textures/image.cpp
+	$(CXX) -g $(CFLAGS) $(LDLIBS) Textures/image.cpp
 
 
 
