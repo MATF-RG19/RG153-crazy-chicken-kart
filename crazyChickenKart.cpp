@@ -10,25 +10,25 @@
 
 #include "DrawFunctions.hpp"
 #include "Textures/image.hpp"
-#include "irrKlang/include/irrKlang.h"
+// #include "irrKlang/include/irrKlang.h"
 
 using namespace std;
-using namespace irrklang;
+// using namespace irrklang;
 
 /* Da bi mogli da koristimo irrKlang.dll fajl,
    moramo da se povezemo sa irrKlang.lib.
    Povezujemo se preko narednog pragma komentara */
 
-#pragma comment(lib, "irrKlang.lib")
+// #pragma comment(lib, "irrKlang.lib")
 
-#define FILENAME0 "Textures/navigation.bmp"
-#define FILENAME1 "Textures/speedometer.bmp"
-#define FILENAME2 "Textures/plate.bmp"
-#define FILENAME3 "Textures/sky.bmp"
-#define FILENAME4 "Textures/keyguide.bmp"
-#define FILENAME5 "Textures/scoregui.bmp"
-#define FILENAME6 "Textures/gameover.bmp"
-#define FILENAME7 "Textures/win.bmp"
+#define FILENAME0 "../Textures/navigation.bmp"
+#define FILENAME1 "../Textures/speedometer.bmp"
+#define FILENAME2 "../Textures/plate.bmp"
+#define FILENAME3 "../Textures/sky.bmp"
+#define FILENAME4 "../Textures/keyguide.bmp"
+#define FILENAME5 "../Textures/scoregui.bmp"
+#define FILENAME6 "../Textures/gameover.bmp"
+#define FILENAME7 "../Textures/win.bmp"
 
 /* Identifikatori tekstura. */
 
@@ -165,7 +165,7 @@ int winScreen               = 0;
 
 /* Pokrecemo sound engine sa default parametrima */
 
-ISoundEngine* engine = createIrrKlangDevice();
+// ISoundEngine* engine = createIrrKlangDevice();
 
 int main(int argc, char** argv) {
   glutInit(&argc, argv);
@@ -228,12 +228,12 @@ int main(int argc, char** argv) {
 
   /* Provera da li je engine uspesno pokrenut */
 
-  if ( !engine ) {
-    cerr << "Greska pri pokretanju engine!" << endl;
-    return -1;
-  }
+  // if ( !engine ) {
+  //   cerr << "Greska pri pokretanju engine!" << endl;
+  //   return -1;
+  // }
 
-  engine->play2D("Sounds/song.wav", true);
+  // engine->play2D("Sounds/song.wav", true);
 
   glutMainLoop();
 
@@ -310,17 +310,17 @@ void on_keyboard(unsigned char key, int x, int y) {
     case 'K':
       if ( !godMode ) {
         godMode = true;
-        engine->play2D("Sounds/laugh.wav");
-        engine->play2D("Sounds/siren.wav", true);
+        // engine->play2D("Sounds/laugh.wav");
+        // engine->play2D("Sounds/siren.wav", true);
       } else {
         godMode = false;
-        engine->removeSoundSource("Sounds/siren.wav");
+        // engine->removeSoundSource("Sounds/siren.wav");
       }
 
       break;
     case 'h':
     case 'H':
-      if ( !endAnimation ) engine->play2D("Sounds/horn.wav");
+      // if ( !endAnimation ) engine->play2D("Sounds/horn.wav");
       break;
     case ESC: exit(0); break;
   }
@@ -461,10 +461,10 @@ void onTimer(int id) {
       }
     } else if ( id == TIMER_ID3 ) {
       if ( winScreen ) {
-        engine->removeSoundSource("Sounds/siren.wav");
+        // engine->removeSoundSource("Sounds/siren.wav");
         if ( !claps ) {
           claps = true;
-          engine->play2D("Sounds/claps.wav");
+          // engine->play2D("Sounds/claps.wav");
         }
         glutDisplayFunc(displayYouWinScreen);
       } else {
@@ -482,7 +482,7 @@ void onTimer(int id) {
             glDisable(GL_LIGHTING);
             glutDisplayFunc(displayEndScreen);
             if ( !endScreen ) {
-              engine->play2D("Sounds/yousuck.wav");
+              // engine->play2D("Sounds/yousuck.wav");
               endScreen = true;
             }
           }
@@ -494,7 +494,7 @@ void onTimer(int id) {
             glDisable(GL_LIGHTING);
             glutDisplayFunc(displayEndScreen);
             if ( !endScreen ) {
-              engine->play2D("Sounds/yousuck.wav");
+              // engine->play2D("Sounds/yousuck.wav");
               endScreen = true;
             }
           }
@@ -507,7 +507,7 @@ void onTimer(int id) {
             glDisable(GL_LIGHTING);
             glutDisplayFunc(displayEndScreen);
             if ( !endScreen ) {
-              engine->play2D("Sounds/yousuck.wav");
+              // engine->play2D("Sounds/yousuck.wav");
               endScreen = true;
             }
           }
@@ -797,10 +797,10 @@ void resetAllParameters() {
   endScreen         = false;
   starsStreak       = 1;
 
-  engine->removeSoundSource("Sounds/siren.wav");
-  engine->removeSoundSource("Sounds/song.wav");
-  engine->removeSoundSource("Sounds/claps.wav");
-  engine->play2D("Sounds/song.wav", true);
+  // engine->removeSoundSource("Sounds/siren.wav");
+  // engine->removeSoundSource("Sounds/song.wav");
+  // engine->removeSoundSource("Sounds/claps.wav");
+  // engine->play2D("Sounds/song.wav", true);
 
   for ( int i = 0, j = 0; i < BLOCK_NUMBER; i++, j += 24 ) blockPosition[i] = j;
 
@@ -834,21 +834,21 @@ void detectTrapColision() {
               driveAnimation = 0;
               endAnimation   = 1;
               activateXtrap  = true;
-              engine->play2D("Sounds/xtrap.wav");
+              // engine->play2D("Sounds/xtrap.wav");
               break;
             case 1:
               cout << "Rupu" << endl;
               activateHole   = true;
               driveAnimation = 0;
               endAnimation   = 1;
-              engine->play2D("Sounds/hole.wav");
+              // engine->play2D("Sounds/hole.wav");
               break;
             case 2:
               cout << "Bombu" << endl;
               driveAnimation = 0;
               endAnimation   = 1;
               activateBomb   = true;
-              engine->play2D("Sounds/explosion.wav");
+              // engine->play2D("Sounds/explosion.wav");
               break;
           }
         }
@@ -862,21 +862,21 @@ void detectTrapColision() {
               driveAnimation = 0;
               endAnimation   = 1;
               activateXtrap  = true;
-              engine->play2D("Sounds/xtrap.wav");
+              // engine->play2D("Sounds/xtrap.wav");
               break;
             case 1:
               cout << "Rupu" << endl;
               activateHole   = true;
               driveAnimation = 0;
               endAnimation   = 1;
-              engine->play2D("Sounds/hole.wav");
+              // engine->play2D("Sounds/hole.wav");
               break;
             case 2:
               cout << "Bombu" << endl;
               driveAnimation = 0;
               endAnimation   = 1;
               activateBomb   = true;
-              engine->play2D("Sounds/explosion.wav");
+              // engine->play2D("Sounds/explosion.wav");
               break;
           }
         }
@@ -890,21 +890,21 @@ void detectTrapColision() {
               driveAnimation = 0;
               endAnimation   = 1;
               activateXtrap  = true;
-              engine->play2D("Sounds/xtrap.wav");
+              // engine->play2D("Sounds/xtrap.wav");
               break;
             case 1:
               cout << "Rupu" << endl;
               driveAnimation = 0;
               endAnimation   = 1;
               activateHole   = true;
-              engine->play2D("Sounds/hole.wav");
+              // engine->play2D("Sounds/hole.wav");
               break;
             case 2:
               cout << "Bombu" << endl;
               driveAnimation = 0;
               endAnimation   = 1;
               activateBomb   = true;
-              engine->play2D("Sounds/explosion.wav");
+              // engine->play2D("Sounds/explosion.wav");
               break;
           }
         }
@@ -924,7 +924,7 @@ void detectStarColision() {
           if ( starsStreak < 5 ) starsStreak += 1;
 
           cout << starsStreak << endl;
-          engine->play2D("Sounds/star.wav");
+          // engine->play2D("Sounds/star.wav");
           cout << "Uhvatio si zvezdicu u srednjoj traci,poeni: " << score
                << endl;
         }
@@ -938,7 +938,7 @@ void detectStarColision() {
           if ( starsStreak < 5 ) starsStreak += 1;
 
           cout << starsStreak << endl;
-          engine->play2D("Sounds/star.wav");
+          // engine->play2D("Sounds/star.wav");
           cout << "Uhvatio si zvezdicu u desnoj traci,poeni: " << score << endl;
         }
         break;
@@ -951,7 +951,7 @@ void detectStarColision() {
           if ( starsStreak < 5 ) starsStreak += 1;
 
           cout << starsStreak << endl;
-          engine->play2D("Sounds/star.wav");
+          // engine->play2D("Sounds/star.wav");
           cout << "Uhvatio si zvezdicu u levoj traci,poeni: " << score << endl;
         }
         break;
